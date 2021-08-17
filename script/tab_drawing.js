@@ -81,7 +81,6 @@ var draw_a_note = function(ctx, data, xpos) {
   var f_g, f_c, f_e, f_a;     // finger 정보 
   var c_g, c_c, c_e, c_a;     // 숫자의 색상 (y좌표) 컬러 값 (1=검지=green, 2=중지=Magenta, 3=약지=CYAN, 4=새끼=짙은파랑)
 
-
   data.tab.forEach(element => {
     switch(element.substr(0,1) ) {
       case "G":
@@ -129,14 +128,14 @@ var draw_a_note = function(ctx, data, xpos) {
     ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, tab_line_A_y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
 
-  if (data.lyric)
+  if (data.lyric) {
     ctx.fillText( data.lyric, xpos, lyric_text_y );
+  }
 
   if (data.technic) {
     if (data.technic.indexOf("|") >= 0) {   // 마디 표시
-      ctx.moveTo(xpos-2, tab_line_A_y);   ctx.lineTo(xpos-2, tab_line_G_y);
+      ctx.fillRect(xpos-2, tab_line_A_y, 1, (tab_line_G_y-tab_line_A_y) );
     }
-    ctx.stroke();
   }
 }
 
@@ -158,8 +157,9 @@ window.onload = function main() {
   };
   console.log("request Song file" );
   // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json", true);
+  xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json", true);
   // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json", true);
-  xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json", true);
+  // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json", true);
   xmlhttp.send();
 
   ////  Drawing Tabulature
@@ -172,12 +172,13 @@ function window_resized(event) {
   resize_canvas (event.target.innerWidth-30 );
 }
 
-function resize_canvas(canvas_width) {
+function resize_canvas(cnvs_width) {
   var cnvs = document.getElementsByClassName("tabulature");
   for (var i = 0; i<cnvs.length; i++ ) {
-    cnvs[i].width = canvas_width;     // event.target.innerWidth-30;
+    cnvs[i].width = cnvs_width;     // event.target.innerWidth-30;
+    cnvs[i].height = 200;     // event.target.innerWidth-30;
   }
-  canvas_width = canvas_width;
+  canvas_width = cnvs_width;
   draw_tabulature();
 }
 
@@ -188,7 +189,6 @@ function draw_tabulature() {
   var ctx = cnvs[0].getContext("2d");
   ctx.textBaseline = 'top';
   ctx.font = '18px NotoSansCJKKR';
-  // ctx.font = "36px NotoSansKR";
   ctx.fillStyle = 'white';
   ctx.clearRect(0, 0, canvas_width, canvas_height);
   ctx.fillStyle = 'black';
@@ -197,11 +197,8 @@ function draw_tabulature() {
     return;
   console.log("song_data="+song_data.title );
   calculate_note_space(song_data);
-  let sizeText = "canvas size: " + canvas_width + " x " + canvas_height + ";";
 
-  // ctx.fillText("Hello World! " + sizeText , 100, 60 );
   draw_tab_lines(ctx);
-
   draw_notes(ctx, song_data);
 }
 
