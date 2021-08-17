@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <link rel="shortcut icon" href="./favicon.ico">
+    <!-- <link rel="shortcut icon" href="./favicon.ico"> -->
     <meta charset="utf-8" lang="kr">
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="style/ukeblog.css" />
@@ -9,15 +9,13 @@
     <style>
       canvas {
         margin: 12px;
+        /* width: 960px; 
+        height: 400px; */
         background-color: #EEE;
         border-style: solid 1px dark-grey;
       }
       @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
-      /* @font-face{
-        font-family:"Officina";
-        src:url('OfficinaSansStd-Book.otf');
-      } */
-      h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 }
+      /* h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 } */
       .thin       { font-weight: 100 }
     </style>
   </head>
@@ -26,9 +24,12 @@
     <h1>Lots of Information will be drawing... </h1>
     <h1>  UKE 악보를 그려주는 웹앱을 만들고 있습니다. 폰트를 테스트하고 있습니다. </h1>... </h1>
 
-    <canvas id="tabulature" width="800" height="200">캔버스기능이 필요함</canvas>
+    <canvas class="tabulature" >캔버스기능이 필요함</canvas>
     
     <script src="./script/tab_drawing.js" type="text/javascript" charset="utf-8"/> </script>
 
+    <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
+    <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
+    
   </body>
 </html>

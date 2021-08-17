@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <!-- <link rel="shortcut icon" href="./favicon.ico"> -->
+    <meta charset="utf-8" lang="kr">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style/ukeblog.css" />
+    <title> UKULELE Chord Simbol Drawing. </title>
+    <style>
+      canvas {
+        margin: 12px;
+        width: 50px; 
+        height: 54px;
+        background-color: rgba(0, 0, 0, 0.0 );
+        border-style: solid 1px darkgreen;
+      }
+      /* @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
+      @font-face {
+        font-family: 'NotoSansCJKKR';
+        src: url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+      } */
+      h1,canvas { font-family: 'Goudy Old Style', sans-serif; font-weight: 600 }
+      .thin       { font-weight: 100 }
+    </style>
+  </head>
+  <body>
+    <h1>우쿨렐레 코드 다이어그램 일람표. </h1>
+    <h1>  to Capture and making icons</h1>
+    <h1>  UKE 악보의 코드 표기 아이콘을 만들고 있습니다. 캡쳐해서 사용할 것.</h1>
+    <h1>  font-check:  C .. D#maj7 .. G7 .. F.</h1>
+
+    <canvas class="chordicon" name="C" >캔버스</canvas>
+    <canvas class="chordicon" name="Cm" >캔버스</canvas>
+    <canvas class="chordicon" name="C7" >캔버스</canvas>
+    <canvas class="chordicon" name="Cmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Cm7" >캔버스</canvas>
+    <canvas class="chordicon" name="Cdim" >캔버스</canvas>
+    <canvas class="chordicon" name="Cm7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Caug" >캔버스</canvas>
+    <canvas class="chordicon" name="Csus4" >캔버스</canvas>
+    <canvas class="chordicon" name="C6" >캔버스</canvas>
+    <canvas class="chordicon" name="C9" >캔버스</canvas>
+    <canvas class="chordicon" name="Cmaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Cmmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Cadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="C#" >캔버스</canvas>
+    <canvas class="chordicon" name="C#m" >캔버스</canvas>
+    <canvas class="chordicon" name="C#7" >캔버스</canvas>
+    <canvas class="chordicon" name="C#maj7" >캔버스</canvas>
+    <canvas class="chordicon" name="C#m7" >캔버스</canvas>
+    <canvas class="chordicon" name="C#dim" >캔버스</canvas>
+    <canvas class="chordicon" name="C#m7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="C#aug" >캔버스</canvas>
+    <canvas class="chordicon" name="C#sus4" >캔버스</canvas>
+    <canvas class="chordicon" name="C#6" >캔버스</canvas>
+    <canvas class="chordicon" name="C#9" >캔버스</canvas>
+    <canvas class="chordicon" name="C#maj9" >캔버스</canvas>
+    <canvas class="chordicon" name="C#mmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="C3add9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="D" >캔버스</canvas>
+    <canvas class="chordicon" name="Dm" >캔버스</canvas>
+    <canvas class="chordicon" name="D7" >캔버스</canvas>
+    <canvas class="chordicon" name="Dmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Dm7" >캔버스</canvas>
+    <canvas class="chordicon" name="Ddim" >캔버스</canvas>
+    <canvas class="chordicon" name="Dm7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Daug" >캔버스</canvas>
+    <canvas class="chordicon" name="Dsus4" >캔버스</canvas>
+    <canvas class="chordicon" name="D6" >캔버스</canvas>
+    <canvas class="chordicon" name="D9" >캔버스</canvas>
+    <canvas class="chordicon" name="Dmaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Dmmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Dadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="D#" >캔버스</canvas>
+    <canvas class="chordicon" name="D#m" >캔버스</canvas>
+    <canvas class="chordicon" name="D#7" >캔버스</canvas>
+    <canvas class="chordicon" name="D#maj7" >캔버스</canvas>
+    <canvas class="chordicon" name="D#m7" >캔버스</canvas>
+    <canvas class="chordicon" name="D#dim" >캔버스</canvas>
+    <canvas class="chordicon" name="D#m7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="D#aug" >캔버스</canvas>
+    <canvas class="chordicon" name="D#sus4" >캔버스</canvas>
+    <canvas class="chordicon" name="D#6" >캔버스</canvas>
+    <canvas class="chordicon" name="D#9" >캔버스</canvas>
+    <canvas class="chordicon" name="D#maj9" >캔버스</canvas>
+    <canvas class="chordicon" name="D#mmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="D3add9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="E" >캔버스</canvas>
+    <canvas class="chordicon" name="Em" >캔버스</canvas>
+    <canvas class="chordicon" name="E7" >캔버스</canvas>
+    <canvas class="chordicon" name="Emaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Em7" >캔버스</canvas>
+    <canvas class="chordicon" name="Edim" >캔버스</canvas>
+    <canvas class="chordicon" name="Em7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Eaug" >캔버스</canvas>
+    <canvas class="chordicon" name="Esus4" >캔버스</canvas>
+    <canvas class="chordicon" name="E6" >캔버스</canvas>
+    <canvas class="chordicon" name="E9" >캔버스</canvas>
+    <canvas class="chordicon" name="Emaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Emmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Eadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="F" >캔버스</canvas>
+    <canvas class="chordicon" name="Fm" >캔버스</canvas>
+    <canvas class="chordicon" name="F7" >캔버스</canvas>
+    <canvas class="chordicon" name="Fmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Fm7" >캔버스</canvas>
+    <canvas class="chordicon" name="Fdim" >캔버스</canvas>
+    <canvas class="chordicon" name="Fm7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Faug" >캔버스</canvas>
+    <canvas class="chordicon" name="Fsus4" >캔버스</canvas>
+    <canvas class="chordicon" name="F6" >캔버스</canvas>
+    <canvas class="chordicon" name="F9" >캔버스</canvas>
+    <canvas class="chordicon" name="Fmaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Fmmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Fadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="F#" >캔버스</canvas>
+    <canvas class="chordicon" name="F#m" >캔버스</canvas>
+    <canvas class="chordicon" name="F#7" >캔버스</canvas>
+    <canvas class="chordicon" name="F#maj7" >캔버스</canvas>
+    <canvas class="chordicon" name="F#m7" >캔버스</canvas>
+    <canvas class="chordicon" name="F#dim" >캔버스</canvas>
+    <canvas class="chordicon" name="F#m7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="F#aug" >캔버스</canvas>
+    <canvas class="chordicon" name="F#sus4" >캔버스</canvas>
+    <canvas class="chordicon" name="F#6" >캔버스</canvas>
+    <canvas class="chordicon" name="F#9" >캔버스</canvas>
+    <canvas class="chordicon" name="F#maj9" >캔버스</canvas>
+    <canvas class="chordicon" name="F#mmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="F#add9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="G" >캔버스</canvas>
+    <canvas class="chordicon" name="Gm" >캔버스</canvas>
+    <canvas class="chordicon" name="G7" >캔버스</canvas>
+    <canvas class="chordicon" name="Gmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Gm7" >캔버스</canvas>
+    <canvas class="chordicon" name="Gdim" >캔버스</canvas>
+    <canvas class="chordicon" name="Gm7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Gaug" >캔버스</canvas>
+    <canvas class="chordicon" name="Gsus4" >캔버스</canvas>
+    <canvas class="chordicon" name="G6" >캔버스</canvas>
+    <canvas class="chordicon" name="G9" >캔버스</canvas>
+    <canvas class="chordicon" name="Gmaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Gmmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Gadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="G#" >캔버스</canvas>
+    <canvas class="chordicon" name="G#m" >캔버스</canvas>
+    <canvas class="chordicon" name="G#7" >캔버스</canvas>
+    <canvas class="chordicon" name="G#maj7" >캔버스</canvas>
+    <canvas class="chordicon" name="G#m7" >캔버스</canvas>
+    <canvas class="chordicon" name="G#dim" >캔버스</canvas>
+    <canvas class="chordicon" name="G#m7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="G#aug" >캔버스</canvas>
+    <canvas class="chordicon" name="G#sus4" >캔버스</canvas>
+    <canvas class="chordicon" name="G#6" >캔버스</canvas>
+    <canvas class="chordicon" name="G#9" >캔버스</canvas>
+    <canvas class="chordicon" name="G#maj9" >캔버스</canvas>
+    <canvas class="chordicon" name="G#mmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="G#add9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="A" >캔버스</canvas>
+    <canvas class="chordicon" name="Am" >캔버스</canvas>
+    <canvas class="chordicon" name="A7" >캔버스</canvas>
+    <canvas class="chordicon" name="Amaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Am7" >캔버스</canvas>
+    <canvas class="chordicon" name="Adim" >캔버스</canvas>
+    <canvas class="chordicon" name="Am7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Aaug" >캔버스</canvas>
+    <canvas class="chordicon" name="Asus4" >캔버스</canvas>
+    <canvas class="chordicon" name="A6" >캔버스</canvas>
+    <canvas class="chordicon" name="A9" >캔버스</canvas>
+    <canvas class="chordicon" name="Amaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Ammaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Aadd9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="A#" >캔버스</canvas>
+    <canvas class="chordicon" name="A#m" >캔버스</canvas>
+    <canvas class="chordicon" name="A#7" >캔버스</canvas>
+    <canvas class="chordicon" name="A#maj7" >캔버스</canvas>
+    <canvas class="chordicon" name="A#m7" >캔버스</canvas>
+    <canvas class="chordicon" name="A#dim" >캔버스</canvas>
+    <canvas class="chordicon" name="A#m7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="A#aug" >캔버스</canvas>
+    <canvas class="chordicon" name="A#sus4" >캔버스</canvas>
+    <canvas class="chordicon" name="A#6" >캔버스</canvas>
+    <canvas class="chordicon" name="A#9" >캔버스</canvas>
+    <canvas class="chordicon" name="A#maj9" >캔버스</canvas>
+    <canvas class="chordicon" name="A#mmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="A#add9" >캔버스</canvas>
+
+    <canvas class="chordicon" name="B" >캔버스</canvas>
+    <canvas class="chordicon" name="Bm" >캔버스</canvas>
+    <canvas class="chordicon" name="B7" >캔버스</canvas>
+    <canvas class="chordicon" name="Bmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Bm7" >캔버스</canvas>
+    <canvas class="chordicon" name="Bdim" >캔버스</canvas>
+    <canvas class="chordicon" name="Bm7b5" >캔버스</canvas>
+    <canvas class="chordicon" name="Baug" >캔버스</canvas>
+    <canvas class="chordicon" name="Bsus4" >캔버스</canvas>
+    <canvas class="chordicon" name="B6" >캔버스</canvas>
+    <canvas class="chordicon" name="B9" >캔버스</canvas>
+    <canvas class="chordicon" name="Bmaj9" >캔버스</canvas>
+    <canvas class="chordicon" name="Bmmaj7" >캔버스</canvas>
+    <canvas class="chordicon" name="Badd9" >캔버스</canvas>
+
+    <canvas id="whole_chords" name="whole_chords" width="700px" height="648px">코드모음캔버스</canvas>
+
+    <script src="./tab_chorddrawing.js" type="text/javascript" charset="utf-8"/> </script>
+
+    <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
+  </body>
+</html>
