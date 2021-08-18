@@ -1,3 +1,21 @@
+/* ================================
+    우쿨렐레 악보 보여주는 페이지.
+================================ */
+
+var song_list = [
+  "하와이 연정 - 패티킴",
+  "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
+  "때로는 옛 이야기를 - 붉은 돼지 OST",
+  "세계의 약속 - 하울의 움직이는 성 OST"
+];
+var file_list = [
+  "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json"
+];
+
+
 var canvas_width = 0, canvas_height = 0;
 var drawing_start = 0;      // 캔버스에 그려질 TAB 악보의 시작점. - 각 마디/라인 마다 캔버스를 분리해서 그릴 경우.
 
@@ -15,20 +33,60 @@ var total_chord_table;  // 코드 테이블을 모아 둔 비트맵
 
 var song_data = null;    // 우쿨렐레 TAB 악보를 저장할 JSON 객체. 
 
-var draw_tab_lines = function(ctx) {
-  ctx.fillStyle = "white";
-  ctx.fillRect(0,0,canvas_width,canvas_height);
-  ctx.lineWidth = "2px";
-  ctx.fillStyle = "black";
-  ctx.moveTo(10,tab_line_A_y);    ctx.lineTo(canvas_width-20, tab_line_A_y);
-  ctx.moveTo(10,tab_line_E_y);    ctx.lineTo(canvas_width-20, tab_line_E_y);
-  ctx.moveTo(10,tab_line_C_y);    ctx.lineTo(canvas_width-20, tab_line_C_y);
-  ctx.moveTo(10,tab_line_G_y);    ctx.lineTo(canvas_width-20, tab_line_G_y);
-  ctx.stroke();
-  ctx.font = '18px NotoSansCJKKR';
-  // 'TAB' 표시 
-  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, tab_line_A_y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+window.onload = function main() {
+
+  ////  bitmap resources ready.
+  note_icon = document.getElementById("uke_note");
+  total_chord_table = document.getElementById("whole_chords");
+
+  selector = document.getElementById("song_data");
+  for (var i=0; i<song_list.length; i++) {
+    var item = document.createElement("option");
+    item.text = song_list[i]; 
+    item.value = file_list[i];
+    selector.appendChild(item);
+  }
+  selector.onchange = function() {
+    console.log("Song file - Changed : " + file_list[selector.selectedIndex] );
+    xmlhttp.open("GET", file_list[selector.selectedIndex], true);
+    xmlhttp.send();
+    ////  Drawing Tabulature
+    resize_canvas( window.innerWidth-30);
+  }
+
+  ////  loading *.uke JSON data
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+          song_data = JSON.parse(this.responseText);
+          console.log("--> parsing Song file" );
+          draw_tabulature();
+    }
+  };
+  console.log("request Song file" );
+  xmlhttp.open("GET", file_list[0], true);
+  xmlhttp.send();
+
+  ////  Drawing Tabulature
+  resize_canvas( window.innerWidth-30);
 }
+
+window.addEventListener("resize", window_resized);
+
+function window_resized(event) {
+  resize_canvas (event.target.innerWidth-30 );
+}
+
+function resize_canvas(cnvs_width) {
+  var cnvs = document.getElementsByClassName("tabulature");
+  for (var i = 0; i<cnvs.length; i++ ) {
+    cnvs[i].width = cnvs_width;     // event.target.innerWidth-30;
+    cnvs[i].height = 200;     // event.target.innerWidth-30;
+  }
+  canvas_width = cnvs_width;
+  draw_tabulature();
+}
+
 
 var calculate_note_space = function(data) {
   console.log("bpm:"+data.bpm+", beat:"+data.basic_beat );
@@ -63,11 +121,26 @@ var chord_name_table = [
 ];
 
 
+var draw_tab_lines = function(ctx) {
+  ctx.fillStyle = "white";
+  ctx.fillRect(0,0,canvas_width,canvas_height);
+  ctx.lineWidth = "2px";
+  ctx.fillStyle = "black";
+  ctx.moveTo(10,tab_line_A_y);    ctx.lineTo(canvas_width-20, tab_line_A_y);
+  ctx.moveTo(10,tab_line_E_y);    ctx.lineTo(canvas_width-20, tab_line_E_y);
+  ctx.moveTo(10,tab_line_C_y);    ctx.lineTo(canvas_width-20, tab_line_C_y);
+  ctx.moveTo(10,tab_line_G_y);    ctx.lineTo(canvas_width-20, tab_line_G_y);
+  ctx.stroke();
+  ctx.font = '18px NotoSansCJKKR';
+  // 'TAB' 표시 
+  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, tab_line_A_y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+}
+
 var draw_notes = function(ctx, data) {
   console.log("song_data.length = "+ data.notes.length );
   var xpos;
   for (var i=0; i<data.notes.length; i++) {
-    // console.log("index="+i+", chord="+data.notes[i].chord );
+    // console.log("index="+i+", chord="+data.notes[i].chord + ": " + data.notes[i].tab );
     xpos = draw_start_x+ (data.notes[i].timestamp/624) *note_space;
     if (xpos >= canvas_width)
       break;
@@ -80,6 +153,9 @@ var draw_a_note = function(ctx, data, xpos) {
   var g, c, e, a;             // 플랫 정보
   var f_g, f_c, f_e, f_a;     // finger 정보 
   var c_g, c_c, c_e, c_a;     // 숫자의 색상 (y좌표) 컬러 값 (1=검지=green, 2=중지=Magenta, 3=약지=CYAN, 4=새끼=짙은파랑)
+
+
+  // console.log("chord="+data.chord + ": " + data.tab );
 
   data.tab.forEach(element => {
     switch(element.substr(0,1) ) {
@@ -108,6 +184,7 @@ var draw_a_note = function(ctx, data, xpos) {
 
   if (data.chord) {         // 코드를 표시
     var chord_index = chord_name_table.indexOf(data.chord);
+    console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
     ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
   }
   // if (data.stroke) {         // 스트로크를 표시
@@ -139,48 +216,6 @@ var draw_a_note = function(ctx, data, xpos) {
   }
 }
 
-
-window.onload = function main() {
-
-  ////  bitmap resources ready.
-  note_icon = document.getElementById("uke_note");
-  total_chord_table = document.getElementById("whole_chords");
-
-  ////  loading *.uke JSON data
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-          song_data = JSON.parse(this.responseText);
-          console.log("--> parsing Song file" );
-          draw_tabulature();
-    }
-  };
-  console.log("request Song file" );
-  // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json", true);
-  xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json", true);
-  // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json", true);
-  // xmlhttp.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json", true);
-  xmlhttp.send();
-
-  ////  Drawing Tabulature
-  resize_canvas( window.innerWidth-30);
-}
-
-window.addEventListener("resize", window_resized);
-
-function window_resized(event) {
-  resize_canvas (event.target.innerWidth-30 );
-}
-
-function resize_canvas(cnvs_width) {
-  var cnvs = document.getElementsByClassName("tabulature");
-  for (var i = 0; i<cnvs.length; i++ ) {
-    cnvs[i].width = cnvs_width;     // event.target.innerWidth-30;
-    cnvs[i].height = 200;     // event.target.innerWidth-30;
-  }
-  canvas_width = cnvs_width;
-  draw_tabulature();
-}
 
 function draw_tabulature() {
   var cnvs = document.getElementsByClassName("tabulature");

@@ -22,7 +22,7 @@
 	{
 	  "timestamp":2496,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A0"],
+	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "technic":"|"
 	},
@@ -59,7 +59,7 @@
 	{
 	  "timestamp":4992,
 	  "chord":"Dm",
-	  "tab":["G2","C2","E1  "],
+	  "tab":["G2","C2","E1"],
 	  "note":["A4","D4","F4"],
 	  "technic":"|"
 	},
@@ -90,7 +90,7 @@
 	{
 	  "timestamp":6864,
 	  "chord":"E7",
-	  "tab":["G1  ","C2","E0","A2"],
+	  "tab":["G1","C2","E0","A2"],
 	  "note":["G#4","D4","E4","B4"]
 	},
 	{
@@ -115,7 +115,7 @@
 	{
 	  "timestamp":8736,
 	  "chord":"G7sus4",
-	  "tab":["G0","C2","E1  ","A3"],
+	  "tab":["G0","C2","E1","A3"],
 	  "note":["G4","D4","F4","C5"]
 	},
 	{
@@ -138,7 +138,7 @@
 	},
 	{
 	  "timestamp":9984,
-	  "chord":"C  ",
+	  "chord":"C",
 	  "tab":["G0","C0","E0"],
 	  "note":["G4","C4","E4"],
 	  "technic":"|"
@@ -158,7 +158,7 @@
 	{
 	  "timestamp":10920,
 	  "chord":"",
-	  "tab":["E1  "],
+	  "tab":["E1"],
 	  "note":["F4"]
 	},
 	{
@@ -261,7 +261,7 @@
 	{
 	  "timestamp":14976,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A0"],
+	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "technic":"|"
 	},
@@ -286,7 +286,7 @@
 	{
 	  "timestamp":15912,
 	  "chord":"",
-	  "tab":["E1  "],
+	  "tab":["E1"],
 	  "note":["F4"]
 	},
 	{
@@ -328,7 +328,7 @@
 	{
 	  "timestamp":17472,
 	  "chord":"Dm7",
-	  "tab":["G2","C2","E1  ","A3"],
+	  "tab":["G2","C2","E1","A3"],
 	  "note":["A4","D4","F4","C5"],
 	  "technic":"|"
 	},
@@ -353,7 +353,7 @@
 	{
 	  "timestamp":18720,
 	  "chord":"G7",
-	  "tab":["G0","C2","E1  ","A2"],
+	  "tab":["G0","C2","E1","A2"],
 	  "note":["G4","D4","F4","B4"]
 	},
 	{
@@ -382,7 +382,7 @@
 	},
 	{
 	  "timestamp":19968,
-	  "chord":"C  ",
+	  "chord":"C",
 	  "tab":["G0","C0","E0"],
 	  "note":["G4","C4","E4"],
 	  "technic":"|"
@@ -402,7 +402,7 @@
 	{
 	  "timestamp":20904,
 	  "chord":"",
-	  "tab":["E1  "],
+	  "tab":["E1"],
 	  "note":["F4"]
 	},
 	{
@@ -414,7 +414,7 @@
 	{
 	  "timestamp":21216,
 	  "chord":"G",
-	  "tab":["G0","C2","E3  ","A2"],
+	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"]
 	},
 	{
@@ -505,7 +505,7 @@
 	{
 	  "timestamp":24960,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A0"],
+	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "technic":"|"
 	},
@@ -524,7 +524,7 @@
 	{
 	  "timestamp":25896,
 	  "chord":"",
-	  "tab":["E1  "],
+	  "tab":["E1"],
 	  "note":["F4"]
 	},
 	{
@@ -560,7 +560,7 @@
 	{
 	  "timestamp":27456,
 	  "chord":"Dm7",
-	  "tab":["G2","C2","E1  ","A3"],
+	  "tab":["G2","C2","E1","A3"],
 	  "note":["A4","D4","F4","C5"],
 	  "technic":"|"
 	},
@@ -585,13 +585,13 @@
 	{
 	  "timestamp":28704,
 	  "chord":"G7",
-	  "tab":["G0","C2","E1  ","A2"],
+	  "tab":["G0","C2","E1","A2"],
 	  "note":["G4","D4","F4","B4"]
 	},
 	{
 	  "timestamp":29328,
 	  "chord":"E7",
-	  "tab":["G1  ","C2","E0","A3"],
+	  "tab":["G1","C2","E0","A3"],
 	  "note":["G#4","D4","E4","C5"]
 	},
 	{
@@ -615,7 +615,7 @@
 	{
 	  "timestamp":29952,
 	  "chord":"Am",
-	  "tab":["G2  ","C0","E0","A0"],
+	  "tab":["G2","C0","E0","A0"],
 	  "note":["A4","C4","E4","A4"],
 	  "technic":"|"
 	},
@@ -737,7 +737,7 @@
 	{
 	  "timestamp":34944,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A0"],
+	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "technic":"|"
 	},
@@ -798,7 +798,7 @@
 	{
 	  "timestamp":37440,
 	  "chord":"Dm7",
-	  "tab":["G2","C2","E1  ","A3"],
+	  "tab":["G2","C2","E1","A3"],
 	  "note":["A4","D4","F4","C5"],
 	  "technic":"|"
 	},
@@ -823,7 +823,7 @@
 	{
 	  "timestamp":38688,
 	  "chord":"G7",
-	  "tab":["G0","C2","E1  ","A2"],
+	  "tab":["G0","C2","E1","A2"],
 	  "note":["G4","D4","F4","B4"]
 	},
 	{
@@ -852,8 +852,8 @@
 	},
 	{
 	  "timestamp":39936,
-	  "chord":"F  ",
-	  "tab":["G2  ","C0","E1","A3"],
+	  "chord":"F",
+	  "tab":["G2","C0","E1","A3"],
 	  "note":["A4","C4","F4","C5"],
 	  "technic":"|"
 	},
@@ -975,7 +975,7 @@
 	{
 	  "timestamp":44928,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A3"],
+	  "tab":["G2","C0","E1","A3"],
 	  "note":["A4","C4","F4","C5"],
 	  "technic":"|"
 	},
@@ -1072,7 +1072,7 @@
 	},
 	{
 	  "timestamp":49920,
-	  "chord":"C  ",
+	  "chord":"C",
 	  "tab":["G0","C0","E0","A3"],
 	  "note":["G4","C4","E4","C5"],
 	  "technic":"|"
@@ -1133,8 +1133,8 @@
 	},
 	{
 	  "timestamp":52416,
-	  "chord":"F  ",
-	  "tab":["G2  ","C0","E1","A3"],
+	  "chord":"F",
+	  "tab":["G2","C0","E1","A3"],
 	  "note":["A4","C4","F4","C5"],
 	  "technic":"|"
 	},
@@ -1256,7 +1256,7 @@
 	{
 	  "timestamp":57408,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A3"],
+	  "tab":["G2","C0","E1","A3"],
 	  "note":["A4","C4","F4","C5"],
 	  "technic":"|"
 	},
@@ -1373,7 +1373,7 @@
 	{
 	  "timestamp":64896,
 	  "chord":"F",
-	  "tab":["G2","C0","E1  ","A0"],
+	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "technic":"|"
 	},
@@ -1410,7 +1410,7 @@
 	{
 	  "timestamp":67392,
 	  "chord":"Dm7",
-	  "tab":["G2","C2","E1  "],
+	  "tab":["G2","C2","E1"],
 	  "note":["A4","D4","F4"],
 	  "technic":"|"
 	},
@@ -1428,7 +1428,7 @@
 	},
 	{
 	  "timestamp":68640,
-	  "chord":"G  ",
+	  "chord":"G",
 	  "tab":["G0","C2","E3"],
 	  "note":["G4","D4","G4"]
 	},
@@ -1440,8 +1440,8 @@
 	},
 	{
 	  "timestamp":69264,
-	  "chord":"E7  ",
-	  "tab":["G1  ","C2","E0","A2"],
+	  "chord":"E7",
+	  "tab":["G1","C2","E0","A2"],
 	  "note":["G#4","D4","E4","B4"]
 	},
 	{
@@ -1453,7 +1453,7 @@
 	{
 	  "timestamp":69888,
 	  "chord":"Am",
-	  "tab":["C9  ","E8","A7"],
+	  "tab":["C9","E8","A7"],
 	  "note":["A4","C5","E5"],
 	  "technic":"|"
 	},
@@ -1477,11 +1477,11 @@
 	  "technic":"|"
 	}  ],
 
-  "title":" 때로는 옛 이야기를 – 붉은 돼지 ",
+  "title":" 때로는 옛 이야기를 – 붉은 돼지",
   "author":"��모",
   "author_note":"",
-  "category":" Finger Style ",
-  "comment":" 붉은 돼지 (Porco Rosso) Ending OST ",
+  "category":" Finger Style",
+  "comment":" 붉은 돼지 (Porco Rosso) Ending OST",
   "create_date":"----/--/--",
   "source":"Track17_SomeTimesOldStory_porco.mp3",
   "thumbnail":"UkuleleGhibriCollection.jpg",

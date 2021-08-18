@@ -2,10 +2,11 @@
   "notes":[
 	{
 	  "timestamp":0,
-	  "chord":"D7  ",
-	  "tab":["G2  ","C0","E2  ","A0"],
+	  "chord":"D7",
+	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "stroke":" D  "
+	  "stroke":" D",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":624,
@@ -45,7 +46,8 @@
 	  "timestamp":2496,
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
-	  "note":["A4","D4","F#4","C5"]
+	  "note":["A4","D4","F#4","C5"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":3120,
@@ -76,7 +78,8 @@
 	  "timestamp":4992,
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":5616,
@@ -124,7 +127,8 @@
 	  "timestamp":7800,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":8424,
@@ -157,7 +161,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"랑"
+	  "lyric":"랑",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":10920,
@@ -190,7 +195,8 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"란"
+	  "lyric":"란",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":13416,
@@ -232,7 +238,8 @@
 	  "chord":"C",
 	  "tab":["G0","C0","E3","A3"],
 	  "note":["G4","C4","G4","C5"],
-	  "lyric":"왔"
+	  "lyric":"왔",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":15912,
@@ -282,7 +289,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"가"
+	  "lyric":"가",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":18720,
@@ -312,10 +320,11 @@
 	},
 	{
 	  "timestamp":20592,
-	  "chord":"D7  ",
-	  "tab":["G2  ","C0","E2  ","A0"],
+	  "chord":"D7",
+	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "lyric":"프"
+	  "lyric":"프",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":21216,
@@ -349,7 +358,8 @@
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
-	  "lyric":"가"
+	  "lyric":"가",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":23712,
@@ -382,7 +392,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"것"
+	  "lyric":"것",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":26208,
@@ -430,7 +441,8 @@
 	  "timestamp":28392,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":29016,
@@ -463,7 +475,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"라"
+	  "lyric":"라",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":31512,
@@ -496,7 +509,8 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"에"
+	  "lyric":"에",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":34008,
@@ -531,7 +545,8 @@
 	  "chord":"C",
 	  "tab":["G0","C0","E3","A3"],
 	  "note":["G4","C4","G4","C5"],
-	  "lyric":"기"
+	  "lyric":"기",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":36504,
@@ -581,7 +596,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"도"
+	  "lyric":"도",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":39312,
@@ -611,10 +627,11 @@
 	},
 	{
 	  "timestamp":41184,
-	  "chord":"D7  ",
-	  "tab":["G2  ","C0","E2  ","A0"],
+	  "chord":"D7",
+	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "lyric":"래"
+	  "lyric":"래",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":41808,
@@ -649,7 +666,8 @@
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
-	  "lyric":"겨"
+	  "lyric":"겨",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":44304,
@@ -684,7 +702,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"도"
+	  "lyric":"도",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":46800,
@@ -734,7 +753,8 @@
 	  "timestamp":48984,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":49608,
@@ -769,7 +789,8 @@
 	  "chord":"C",
 	  "tab":["C7","E8","A7"],
 	  "note":["G4","C5","E5"],
-	  "lyric":"도"
+	  "lyric":"도",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":52104,
@@ -804,7 +825,8 @@
 	  "chord":"",
 	  "tab":["A10"],
 	  "note":["G5"],
-	  "lyric":"부"
+	  "lyric":"부",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":54912,
@@ -832,7 +854,8 @@
 	  "chord":"G",
 	  "tab":["C2","E3","A5"],
 	  "note":["D4","G4","D5"],
-	  "lyric":"이"
+	  "lyric":"이",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":57096,
@@ -867,7 +890,8 @@
 	  "chord":"",
 	  "tab":["C2","E3","A5"],
 	  "note":["D4","G4","D5"],
-	  "lyric":"간"
+	  "lyric":"간",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":59280,
@@ -899,7 +923,8 @@
 	  "chord":"C",
 	  "tab":["C7","E8","A7"],
 	  "note":["G4","C5","E5"],
-	  "lyric":"아"
+	  "lyric":"아",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":62088,
@@ -931,7 +956,8 @@
 	  "chord":"",
 	  "tab":["A10"],
 	  "note":["G5"],
-	  "lyric":"버"
+	  "lyric":"버",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":64896,
@@ -959,7 +985,8 @@
 	  "chord":"G",
 	  "tab":["C2","E3","A5"],
 	  "note":["D4","G4","D5"],
-	  "lyric":"람"
+	  "lyric":"람",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":67080,
@@ -1012,7 +1039,8 @@
 	  "chord":"D7",
 	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "lyric":"랑"
+	  "lyric":"랑",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":69888,
@@ -1045,7 +1073,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"와"
+	  "lyric":"와",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":72384,
@@ -1082,7 +1111,8 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"타"
+	  "lyric":"타",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":74880,
@@ -1116,7 +1146,8 @@
 	  "chord":"C",
 	  "tab":["G0","C0","E3","A3"],
 	  "note":["G4","C4","G4","C5"],
-	  "lyric":"놓"
+	  "lyric":"놓",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":77376,
@@ -1167,7 +1198,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"아"
+	  "lyric":"아",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":80184,
@@ -1196,10 +1228,11 @@
 	},
 	{
 	  "timestamp":82056,
-	  "chord":"D7  ",
-	  "tab":["G2  ","C0","E2  ","A0"],
+	  "chord":"D7",
+	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "lyric":"여"
+	  "lyric":"여",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":82680,
@@ -1231,7 +1264,8 @@
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
-	  "lyric":"웁"
+	  "lyric":"웁",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":85176,
@@ -1263,7 +1297,8 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"다"
+	  "lyric":"다",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":87672,
@@ -1305,7 +1340,8 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"   "
+	  "lyric":" ",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":90480,
@@ -1335,7 +1371,8 @@
 	  "timestamp":92352,
 	  "chord":"C",
 	  "tab":["C0","E0"],
-	  "note":["C4","E4"]
+	  "note":["C4","E4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":92976,
@@ -1359,7 +1396,8 @@
 	  "timestamp":94848,
 	  "chord":"",
 	  "tab":["C4","E3","A3"],
-	  "note":["E4","G4","C5"]
+	  "note":["E4","G4","C5"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":95160,
@@ -1389,7 +1427,8 @@
 	  "timestamp":97344,
 	  "chord":"G",
 	  "tab":["G0","C2","E3"],
-	  "note":["G4","D4","G4"]
+	  "note":["G4","D4","G4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":97656,
@@ -1437,7 +1476,8 @@
 	  "timestamp":99840,
 	  "chord":"",
 	  "tab":["C2","E3","A2"],
-	  "note":["D4","G4","B4"]
+	  "note":["D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":100152,
@@ -1465,10 +1505,11 @@
 	},
 	{
 	  "timestamp":102336,
-	  "chord":"D7  ",
-	  "tab":["G2  ","C0","E2  ","A0"],
+	  "chord":"D7",
+	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "lyric":"여"
+	  "lyric":"여",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":102960,
@@ -1500,7 +1541,8 @@
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
-	  "lyric":"웁"
+	  "lyric":"웁",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":105456,
@@ -1529,10 +1571,11 @@
 	},
 	{
 	  "timestamp":107328,
-	  "chord":"G  ",
+	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
-	  "lyric":"다"
+	  "lyric":"다",
+	  "technic":"|"
 	},
 	{
 	  "timestamp":107952,
@@ -1578,7 +1621,8 @@
 	  "timestamp":110136,
 	  "chord":"",
 	  "tab":["C2","E3","A2"],
-	  "note":["D4","G4","B4"]
+	  "note":["D4","G4","B4"],
+	  "technic":"|"
 	},
 	{
 	  "timestamp":110448,
@@ -1605,11 +1649,11 @@
 	  "note":["D4"]
 	}  ],
 
-  "title":" 하와이 연정 ",
-  "author":"��모",
+  "title":" 하와이 연정",
+  "author":"��모",
   "author_note":"",
   "category":"Finger",
-  "comment":" 하와이 연정-패티킴 유튜브 UkuleleHolicTV ",
+  "comment":" 하와이 연정-패티킴 유튜브 UkuleleHolicTV",
   "create_date":"----/--/--",
   "source":"",
   "thumbnail":"HawaiianLoveSong.png",
