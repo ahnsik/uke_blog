@@ -21,17 +21,17 @@ var drawing_start = 0;      // 캔버스에 그려질 TAB 악보의 시작점. -
 
 var draw_start_x = 40;
 var chord_icon_y = 48;
-var stroke_icon_y = 60;
+var stroke_icon_y = 136;
 var tab_line_A_y = 80;
 var tab_line_E_y = 96;
 var tab_line_C_y = 112;
 var tab_line_G_y = 128;
-var lyric_text_y = 160;
+var lyric_text_y = 164;
 var note_space = 36;
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들
 var total_chord_table;  // 코드 테이블을 모아 둔 비트맵
 
-var song_data = null;    // 우쿨렐레 TAB 악보를 저장할 JSON 객체. 
+var song_data = null;   // 우쿨렐레 TAB 악보를 저장할 JSON 객체. 
 
 window.onload = function main() {
 
@@ -137,16 +137,18 @@ var draw_tab_lines = function(ctx) {
 }
 
 var draw_notes = function(ctx, data) {
-  console.log("song_data.length = "+ data.notes.length );
+  console.log("song_data. start_index = "+ note_drew + " / " + data.notes.length );
   var xpos;
-  for (var i=0; i<data.notes.length; i++) {
+  var count = 0;
+  for (var i=note_drew; i<data.notes.length; i++) {
     // console.log("index="+i+", chord="+data.notes[i].chord + ": " + data.notes[i].tab );
     xpos = draw_start_x+ (data.notes[i].timestamp/624) *note_space;
     if (xpos >= canvas_width)
       break;
     draw_a_note(ctx, data.notes[i], xpos );
+    count++;
   }
-
+  return count;
 }
 
 var draw_a_note = function(ctx, data, xpos) {
@@ -187,9 +189,19 @@ var draw_a_note = function(ctx, data, xpos) {
     console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
     ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
   }
-  // if (data.stroke) {         // 스트로크를 표시
-  //   ctx.fillText( data.chord, xpos, stroke_icon_y );
-  // }
+  if (data.stroke) {         // 스트로크를 표시
+    // ctx.fillRect(xpos,stroke_icon_y,14,26);
+    if ( data.stroke.indexOf('D') >= 0 ) {
+      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, stroke_icon_y,  14,26);
+    } else if ( data.stroke.indexOf('U') >= 0 ) {
+      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, stroke_icon_y,  14,26);
+    } 
+    if ( data.stroke.indexOf('H') >= 0 ) {
+      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, stroke_icon_y+8,  14,8);
+    } else if ( data.stroke.indexOf('P') >= 0 ) {
+      ctx.drawImage(note_icon, 354, 92, 14,8,  xpos+8, stroke_icon_y+8,  14,8);
+    }
+  }
 
 
   if (g != undefined ) {
@@ -217,23 +229,42 @@ var draw_a_note = function(ctx, data, xpos) {
 }
 
 
+var note_drew = 0;
+
 function draw_tabulature() {
-  var cnvs = document.getElementsByClassName("tabulature");
-  canvas_width = cnvs[0].width;
-  canvas_height = cnvs[0].height;
-  var ctx = cnvs[0].getContext("2d");
-  ctx.textBaseline = 'top';
-  ctx.font = '18px NotoSansCJKKR';
-  ctx.fillStyle = 'white';
-  ctx.clearRect(0, 0, canvas_width, canvas_height);
-  ctx.fillStyle = 'black';
+  var cnvs_group = document.getElementById("tab_canvas");
 
-  if (song_data == null )
-    return;
-  console.log("song_data="+song_data.title );
-  calculate_note_space(song_data);
+  var cnvs = cnvs_group.getElementsByClassName("tabulature");
+  // 우선 기존에 붙어 있던 canvas 들이 있으면 몽땅 다 제거 해 놓고..
+  for (var i=0; cnvs.length > 0; i++) {
+    // console.log("removing..."+cnvs[0]+", remain:"+cnvs.length );
+    cnvs[0].remove();
+  }
 
-  draw_tab_lines(ctx);
-  draw_notes(ctx, song_data);
+  // note_drew = 0;
+  // while( note_drew < song_data.length ) {
+    // 새로운 캔버스를 만들어 추가한다.
+    cnvs = document.createElement("canvas");
+    cnvs.classList.add("tabulature");
+    cnvs.width = canvas_width;
+    cnvs.height = canvas_height = 200;
+    cnvs_group.appendChild(cnvs);
+    var ctx = cnvs.getContext("2d");
+    ctx.textBaseline = 'top';
+    ctx.font = '18px NotoSansCJKKR';
+    ctx.fillStyle = 'white';
+    ctx.clearRect(0, 0, canvas_width, canvas_height);
+    ctx.fillStyle = 'black';
+
+    if (song_data == null )
+      return;
+    console.log("song_data="+song_data.title );
+    calculate_note_space(song_data);
+
+    draw_tab_lines(ctx);
+    note_drew += draw_notes(ctx, song_data);
+  // }
+
+
 }
 

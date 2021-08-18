@@ -5,7 +5,7 @@
 	  "chord":"D7",
 	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "stroke":" D",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -27,7 +27,7 @@
 	  "chord":"",
 	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "stroke":"U"
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":1872,
@@ -47,6 +47,7 @@
 	  "chord":"",
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -79,6 +80,7 @@
 	  "chord":"G",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -92,13 +94,15 @@
 	  "timestamp":5928,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":6240,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":6864,
@@ -128,6 +132,7 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -141,13 +146,15 @@
 	  "timestamp":8736,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":9360,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":9672,
@@ -162,6 +169,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"랑",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -175,13 +183,15 @@
 	  "timestamp":11232,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":11856,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":12168,
@@ -196,6 +206,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"란",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -239,6 +250,7 @@
 	  "tab":["G0","C0","E3","A3"],
 	  "note":["G4","C4","G4","C5"],
 	  "lyric":"왔",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -252,13 +264,15 @@
 	  "timestamp":16224,
 	  "chord":"",
 	  "tab":["G0","C0","E3","A3"],
-	  "note":["G4","C4","G4","C5"]
+	  "note":["G4","C4","G4","C5"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":16536,
 	  "chord":"",
 	  "tab":["G0","C0","E3","A3"],
-	  "note":["G4","C4","G4","C5"]
+	  "note":["G4","C4","G4","C5"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":17160,
@@ -290,6 +304,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"가",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -303,13 +318,15 @@
 	  "timestamp":19032,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":19656,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":19968,
@@ -324,6 +341,7 @@
 	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
 	  "lyric":"프",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -337,14 +355,15 @@
 	  "timestamp":21528,
 	  "chord":"",
 	  "tab":["G2","C0","E2","A0"],
-	  "note":["A4","C4","F#4","A4"]
+	  "note":["A4","C4","F#4","A4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":22152,
 	  "chord":"",
 	  "tab":["G2","C0","E2","A0"],
 	  "note":["A4","C4","F#4","A4"],
-	  "stroke":"H"
+	  "stroke":"DH"
 	},
 	{
 	  "timestamp":22464,
@@ -359,6 +378,7 @@
 	  "tab":["G2","C2","E2","A3"],
 	  "note":["A4","D4","F#4","C5"],
 	  "lyric":"가",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -393,6 +413,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"것",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -406,13 +427,15 @@
 	  "timestamp":26520,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":26832,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":27456,
@@ -442,6 +465,7 @@
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -455,13 +479,15 @@
 	  "timestamp":29328,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":29952,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":30264,
@@ -476,6 +502,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"라",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -489,13 +516,15 @@
 	  "timestamp":31824,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":32448,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":32760,
@@ -510,6 +539,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"에",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -546,6 +576,7 @@
 	  "tab":["G0","C0","E3","A3"],
 	  "note":["G4","C4","G4","C5"],
 	  "lyric":"기",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -559,13 +590,15 @@
 	  "timestamp":36816,
 	  "chord":"",
 	  "tab":["G0","C0","E3","A3"],
-	  "note":["G4","C4","G4","C5"]
+	  "note":["G4","C4","G4","C5"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":37128,
 	  "chord":"",
 	  "tab":["G0","C0","E3","A3"],
-	  "note":["G4","C4","G4","C5"]
+	  "note":["G4","C4","G4","C5"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":37752,
@@ -597,6 +630,7 @@
 	  "tab":["G0","C2","E3","A2"],
 	  "note":["G4","D4","G4","B4"],
 	  "lyric":"도",
+	  "stroke":"D",
 	  "technic":"|"
 	},
 	{
@@ -610,13 +644,15 @@
 	  "timestamp":39624,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"U"
 	},
 	{
 	  "timestamp":40248,
 	  "chord":"",
 	  "tab":["G0","C2","E3","A2"],
-	  "note":["G4","D4","G4","B4"]
+	  "note":["G4","D4","G4","B4"],
+	  "stroke":"D"
 	},
 	{
 	  "timestamp":40560,
