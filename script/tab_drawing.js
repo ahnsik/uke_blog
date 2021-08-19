@@ -14,32 +14,33 @@ var file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
   "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json"
 ];
+var CHORD_ICON_Y = 48;
+var STROKE_ICON_Y = 136;
+var TAB_LINE_A_Y = 80;
+var TAB_LINE_E_Y = 96;
+var TAB_LINE_C_Y = 112;
+var TAB_LINE_G_Y = 128;
+var LYRIC_TEXT_Y = 164;
+var START_XPOS = 40;
+var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 
 
 var canvas_width = 0, canvas_height = 0;
-var drawing_start = 0;      // 캔버스에 그려질 TAB 악보의 시작점. - 각 마디/라인 마다 캔버스를 분리해서 그릴 경우.
+var note_drew = 0;
+var last_timestamp = 0;
 
-var draw_start_x = 40;
-var chord_icon_y = 48;
-var stroke_icon_y = 136;
-var tab_line_A_y = 80;
-var tab_line_E_y = 96;
-var tab_line_C_y = 112;
-var tab_line_G_y = 128;
-var lyric_text_y = 164;
-var note_space = 36;
-var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들
-var total_chord_table;  // 코드 테이블을 모아 둔 비트맵
+var note_space = 36;    // - 8분음표 기준 or 16분음표 기준, or etc..
 
-var song_data = null;   // 우쿨렐레 TAB 악보를 저장할 JSON 객체. 
+var song_data = null;   // 우쿨렐레 TAB 악보를 불러 올 JSON 객체. 
+
 
 window.onload = function main() {
-
   ////  bitmap resources ready.
   note_icon = document.getElementById("uke_note");
   total_chord_table = document.getElementById("whole_chords");
 
-  selector = document.getElementById("song_data");
+  ////  악보 데이터를 고를 수 있도록 selector 준비.
+  selector = document.getElementById("song_list");
   for (var i=0; i<song_list.length; i++) {
     var item = document.createElement("option");
     item.text = song_list[i]; 
@@ -50,25 +51,22 @@ window.onload = function main() {
     console.log("Song file - Changed : " + file_list[selector.selectedIndex] );
     xmlhttp.open("GET", file_list[selector.selectedIndex], true);
     xmlhttp.send();
-    ////  Drawing Tabulature
-    resize_canvas( window.innerWidth-30);
   }
 
   ////  loading *.uke JSON data
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-          song_data = JSON.parse(this.responseText);
-          console.log("--> parsing Song file" );
-          draw_tabulature();
+      song_data = JSON.parse(this.responseText);
+      // console.log("--> parsing Song file:" + JSON.stringify(song_data)  );
+
+      ////  Drawing Tabulature
+      resize_canvas( window.innerWidth-30);
     }
   };
-  console.log("request Song file" );
+  console.log("request initial Song file" );
   xmlhttp.open("GET", file_list[0], true);
   xmlhttp.send();
-
-  ////  Drawing Tabulature
-  resize_canvas( window.innerWidth-30);
 }
 
 window.addEventListener("resize", window_resized);
@@ -84,6 +82,8 @@ function resize_canvas(cnvs_width) {
     cnvs[i].height = 200;     // event.target.innerWidth-30;
   }
   canvas_width = cnvs_width;
+
+  console.log("Ready to draw .." );
   draw_tabulature();
 }
 
@@ -105,6 +105,7 @@ var calculate_note_space = function(data) {
   }
 */
 }
+
 var chord_name_table = [
   "C",   "Cm",   "C7",  "Cmaj7",  "Cm7",  "Cdim",  "Cm7b5",  "Caug",  "Csus4",  "C6",  "C9",  "Cmaj9",  "Cmmaj7",  "Cadd9",
   "C#",  "C#m",  "C#7", "C#maj7", "C#m7", "C#dim", "C#m7b5", "C#aug", "C#sus4", "C#6", "C#9", "C#maj9", "C#mmaj7", "C#add9",
@@ -119,45 +120,45 @@ var chord_name_table = [
   "A#",  "A#m",  "A#7", "A#maj7", "A#m7", "A#dim", "A#m7b5", "A#aug", "A#sus4", "A#6", "A#9", "A#maj9", "A#mmaj7", "A#add9",
   "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
 ];
+var total_chord_table;  // 코드 테이블을 모아 둔 비트맵
 
-
+////  TAB 악보의 바탕 (4줄) 그리기.
 var draw_tab_lines = function(ctx) {
   ctx.fillStyle = "white";
   ctx.fillRect(0,0,canvas_width,canvas_height);
   ctx.lineWidth = "2px";
   ctx.fillStyle = "black";
-  ctx.moveTo(10,tab_line_A_y);    ctx.lineTo(canvas_width-20, tab_line_A_y);
-  ctx.moveTo(10,tab_line_E_y);    ctx.lineTo(canvas_width-20, tab_line_E_y);
-  ctx.moveTo(10,tab_line_C_y);    ctx.lineTo(canvas_width-20, tab_line_C_y);
-  ctx.moveTo(10,tab_line_G_y);    ctx.lineTo(canvas_width-20, tab_line_G_y);
+  ctx.moveTo(10,TAB_LINE_A_Y);    ctx.lineTo(canvas_width-20, TAB_LINE_A_Y);
+  ctx.moveTo(10,TAB_LINE_E_Y);    ctx.lineTo(canvas_width-20, TAB_LINE_E_Y);
+  ctx.moveTo(10,TAB_LINE_C_Y);    ctx.lineTo(canvas_width-20, TAB_LINE_C_Y);
+  ctx.moveTo(10,TAB_LINE_G_Y);    ctx.lineTo(canvas_width-20, TAB_LINE_G_Y);
   ctx.stroke();
-  ctx.font = '18px NotoSansCJKKR';
+  ctx.font = '18px NotoSansCJKKR';    // font 설정 - 주로 가사 표시할 때 사용될 폰트.
   // 'TAB' 표시 
-  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, tab_line_A_y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
 }
 
-var draw_notes = function(ctx, data) {
-  console.log("song_data. start_index = "+ note_drew + " / " + data.notes.length );
+////   JSON데이터(배열)로 악표 표시
+var draw_notes = function(ctx, data, start_idx) {
   var xpos;
   var count = 0;
-  for (var i=note_drew; i<data.notes.length; i++) {
-    // console.log("index="+i+", chord="+data.notes[i].chord + ": " + data.notes[i].tab );
-    xpos = draw_start_x+ (data.notes[i].timestamp/624) *note_space;
-    if (xpos >= canvas_width)
+  for (var i=start_idx; i<data.length; i++) {
+    xpos = START_XPOS + ((data[i].timestamp-last_timestamp)/480) *note_space;           //// 악보 내에 note 간의 간격 = 480,
+    if (xpos >= canvas_width) {
       break;
-    draw_a_note(ctx, data.notes[i], xpos );
-    count++;
+    }
+    draw_a_note(ctx, data[i], xpos );
+    count+=1;
   }
+  last_timestamp = data[i-1].timestamp;
   return count;
 }
 
+////   1개의 화음을 표시
 var draw_a_note = function(ctx, data, xpos) {
   var g, c, e, a;             // 플랫 정보
   var f_g, f_c, f_e, f_a;     // finger 정보 
   var c_g, c_c, c_e, c_a;     // 숫자의 색상 (y좌표) 컬러 값 (1=검지=green, 2=중지=Magenta, 3=약지=CYAN, 4=새끼=짙은파랑)
-
-
-  // console.log("chord="+data.chord + ": " + data.tab );
 
   data.tab.forEach(element => {
     switch(element.substr(0,1) ) {
@@ -184,65 +185,74 @@ var draw_a_note = function(ctx, data, xpos) {
     }
   });
 
-  if (data.chord) {         // 코드를 표시
-    var chord_index = chord_name_table.indexOf(data.chord);
-    console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
-    ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
-  }
-  if (data.stroke) {         // 스트로크를 표시
-    // ctx.fillRect(xpos,stroke_icon_y,14,26);
-    if ( data.stroke.indexOf('D') >= 0 ) {
-      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, stroke_icon_y,  14,26);
-    } else if ( data.stroke.indexOf('U') >= 0 ) {
-      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, stroke_icon_y,  14,26);
-    } 
-    if ( data.stroke.indexOf('H') >= 0 ) {
-      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, stroke_icon_y+8,  14,8);
-    } else if ( data.stroke.indexOf('P') >= 0 ) {
-      ctx.drawImage(note_icon, 354, 92, 14,8,  xpos+8, stroke_icon_y+8,  14,8);
-    }
-  }
-
-
-  if (g != undefined ) {
-    ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, tab_line_G_y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
-  }
-  if (c != undefined ) {
-    ctx.drawImage(note_icon, c*18, c_c, 15, 12,   xpos, tab_line_C_y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
-  }
-  if (e != undefined ) {
-    ctx.drawImage(note_icon, e*18, c_e, 15, 12,   xpos, tab_line_E_y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
-  }
-  if (a != undefined ) {
-    ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, tab_line_A_y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
-  }
-
-  if (data.lyric) {
-    ctx.fillText( data.lyric, xpos, lyric_text_y );
-  }
-
+  // 마디 구분 표시
   if (data.technic) {
     if (data.technic.indexOf("|") >= 0) {   // 마디 표시
-      ctx.fillRect(xpos-2, tab_line_A_y, 1, (tab_line_G_y-tab_line_A_y) );
+      ctx.fillRect(xpos-2, TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
     }
   }
+
+  // 코드 표시 (아이콘)
+  if (data.chord) {         // 코드를 표시
+    var chord_index = chord_name_table.indexOf(data.chord);
+    // console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
+    ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
+  }
+  // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
+  if (data.stroke) {         // 스트로크를 표시
+    if ( data.stroke.indexOf('D') >= 0 ) {
+      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+    } else if ( data.stroke.indexOf('U') >= 0 ) {
+      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+    } 
+    if ( data.stroke.indexOf('H') >= 0 ) {
+      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    } else if ( data.stroke.indexOf('P') >= 0 ) {
+      ctx.drawImage(note_icon, 354, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    }
+  }
+  // 화음 및 음표에 따른 연주 플랫 정보를 표시. 
+  if (g != undefined ) {
+    ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, TAB_LINE_G_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (c != undefined ) {
+    ctx.drawImage(note_icon, c*18, c_c, 15, 12,   xpos, TAB_LINE_C_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (e != undefined ) {
+    ctx.drawImage(note_icon, e*18, c_e, 15, 12,   xpos, TAB_LINE_E_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (a != undefined ) {
+    ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, TAB_LINE_A_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  // 가사를 표시
+  if (data.lyric) {
+    ctx.fillText( data.lyric, xpos, LYRIC_TEXT_Y );
+  }
+
 }
 
-
-var note_drew = 0;
-
+////   전체 악보를 표시. 처음부터 끝까지.
 function draw_tabulature() {
   var cnvs_group = document.getElementById("tab_canvas");
 
   var cnvs = cnvs_group.getElementsByClassName("tabulature");
   // 우선 기존에 붙어 있던 canvas 들이 있으면 몽땅 다 제거 해 놓고..
   for (var i=0; cnvs.length > 0; i++) {
-    // console.log("removing..."+cnvs[0]+", remain:"+cnvs.length );
     cnvs[0].remove();
   }
+  // 캔버스도 초기화 했으므로 모든 시작점도 초기화.
+  note_drew = 0;        // 그려진 음표(note)의 수.
+  last_timestamp = 0;
+  // drawing_start = 0;    // 캔버스에 그려질 TAB 악보의 시작점. - 각 마디/라인 마다 캔버스를 분리해서 그릴 경우.
 
-  // note_drew = 0;
-  // while( note_drew < song_data.length ) {
+  // console.log("Drawing...: " + JSON.stringify(song_data) );
+  if ( (song_data == undefined)||(song_data == null) ) {
+    return;
+  }
+
+
+  while( note_drew < song_data.notes.length ) {
+    // console.log("note_drew:"+note_drew+" < total num of notes:"+song_data.notes.length+" ..." );
     // 새로운 캔버스를 만들어 추가한다.
     cnvs = document.createElement("canvas");
     cnvs.classList.add("tabulature");
@@ -256,15 +266,14 @@ function draw_tabulature() {
     ctx.clearRect(0, 0, canvas_width, canvas_height);
     ctx.fillStyle = 'black';
 
-    if (song_data == null )
-      return;
-    console.log("song_data="+song_data.title );
-    calculate_note_space(song_data);
+    // console.log("song_data="+song_data.title );
+    // calculate_note_space(song_data);
 
-    draw_tab_lines(ctx);
-    note_drew += draw_notes(ctx, song_data);
-  // }
-
+    draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
+    note_drew += draw_notes(ctx, song_data.notes, note_drew);
+    // console.log(" drawn notes = " + note_drew );
+  }
+  console.log("end of while .. note_drew:"+note_drew+" < song_data.length:"+song_data.notes.length+" ...: " );
 
 }
 
