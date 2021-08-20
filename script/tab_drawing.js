@@ -6,13 +6,31 @@ var song_list = [
   "하와이 연정 - 패티킴",
   "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
   "때로는 옛 이야기를 - 붉은 돼지 OST",
-  "세계의 약속 - 하울의 움직이는 성 OST"
+  "세계의 약속 - 하울의 움직이는 성 OST",
+  "El Condor Pasa - 핑거스타일",
+  "El Condor Pasa - 멜로디",
+  "Kiss the Rain - 이루마",
+  "코쿠리코 언덕에서 - 지브리OST",
+  "코쿠리코 언덕에서",
+  "인생의 회전목마 - 하울의 움직이는 성 OST",
+  "비와 당신",
+  "바다가 보이는 마을 - 마녀의 택급편",
+  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
 ];
 var file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
   "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
   "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json"
+  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
 ];
 var CHORD_ICON_Y = 48;
 var STROKE_ICON_Y = 136;
@@ -39,12 +57,23 @@ window.onload = function main() {
   note_icon = document.getElementById("uke_note");
   total_chord_table = document.getElementById("whole_chords");
 
+  let initialNumber = getParameterByName("play");
+  if ( ! initialNumber ) {
+    initialNumber = 0;
+  }
+  console.log("request initial Song file index:" + initialNumber );
+
+
   ////  악보 데이터를 고를 수 있도록 selector 준비.
   selector = document.getElementById("song_list");
+  if (initialNumber >= song_list.length)    // index overflow 방지.
+    initialNumber = 0;
   for (var i=0; i<song_list.length; i++) {
     var item = document.createElement("option");
-    item.text = song_list[i]; 
+    item.text = song_list[i];
     item.value = file_list[i];
+    if (i == initialNumber) 
+      item.selected="selected";
     selector.appendChild(item);
   }
   selector.onchange = function() {
@@ -64,8 +93,8 @@ window.onload = function main() {
       resize_canvas( window.innerWidth-30);
     }
   };
-  console.log("request initial Song file" );
-  xmlhttp.open("GET", file_list[0], true);
+
+  xmlhttp.open("GET", file_list[initialNumber], true);
   xmlhttp.send();
 }
 
@@ -87,24 +116,30 @@ function resize_canvas(cnvs_width) {
   draw_tabulature();
 }
 
-
-var calculate_note_space = function(data) {
-  console.log("bpm:"+data.bpm+", beat:"+data.basic_beat );
-/*  switch(data.basic_beat) {
-    case "2/4":
-      bpm = 
-      break;
-    case "3/4":
-      break;
-    case "4/4":
-      break;
-    case "6/8":
-      break;
-    default:
-      break;
-  }
-*/
+function getParameterByName(name) {
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
+
+// var calculate_note_space = function(data) {
+//   console.log("bpm:"+data.bpm+", beat:"+data.basic_beat );
+// /*  switch(data.basic_beat) {
+//     case "2/4":
+//       bpm = 
+//       break;
+//     case "3/4":
+//       break;
+//     case "4/4":
+//       break;
+//     case "6/8":
+//       break;
+//     default:
+//       break;
+//   }
+// */
+// }
 
 var chord_name_table = [
   "C",   "Cm",   "C7",  "Cmaj7",  "Cm7",  "Cdim",  "Cm7b5",  "Caug",  "Csus4",  "C6",  "C9",  "Cmaj9",  "Cmmaj7",  "Cadd9",
@@ -187,9 +222,12 @@ var draw_a_note = function(ctx, data, xpos) {
 
   // 마디 구분 표시
   if (data.technic) {
-    if (data.technic.indexOf("|") >= 0) {   // 마디 표시
+    if (data.technic.indexOf('|') >= 0) {   // 마디 표시
       ctx.fillRect(xpos-2, TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
     }
+    // if ( data.technic.indexOf('3') >= 0 ) {     // 셋 잇단음표를 표시
+    //   ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    // }
   }
 
   // 코드 표시 (아이콘)
@@ -200,15 +238,21 @@ var draw_a_note = function(ctx, data, xpos) {
   }
   // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
   if (data.stroke) {         // 스트로크를 표시
+    // console.log("stroke: " + data.stroke );
     if ( data.stroke.indexOf('D') >= 0 ) {
       ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
     } else if ( data.stroke.indexOf('U') >= 0 ) {
       ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
     } 
     if ( data.stroke.indexOf('H') >= 0 ) {
-      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+8, STROKE_ICON_Y,  11,15);
     } else if ( data.stroke.indexOf('P') >= 0 ) {
-      ctx.drawImage(note_icon, 354, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+8, STROKE_ICON_Y,  11,15);
+    } else if (data.stroke.indexOf('s') >= 0 ) {    // 슬라이드를 표시
+      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    }
+    if ( data.stroke.indexOf('~') >= 0 ) {
+      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, STROKE_ICON_Y-64,  9,63);
     }
   }
   // 화음 및 음표에 따른 연주 플랫 정보를 표시. 
@@ -265,9 +309,6 @@ function draw_tabulature() {
     ctx.fillStyle = 'white';
     ctx.clearRect(0, 0, canvas_width, canvas_height);
     ctx.fillStyle = 'black';
-
-    // console.log("song_data="+song_data.title );
-    // calculate_note_space(song_data);
 
     draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
     note_drew += draw_notes(ctx, song_data.notes, note_drew);
