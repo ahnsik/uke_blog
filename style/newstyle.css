@@ -1,0 +1,200 @@
+/*
+  Ahnsik 홈페이지의 기본 스타일 쉬트
+  - PC 브라우저 스타일
+  by Ahnsik.Choi
+*/
+
+/* 기본 문서 */
+* {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+li { list-style: none; }
+a { text-decoration: none; }
+body {
+  font-family: "SeoulNamsan";
+  color: #58666e;
+  background-color: #f0f3f4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjus: 100%;  /* iphone font size 변경 방지 */
+  line-height: 150%;
+}
+h1, h2, h3, h4, h5, h6, p {
+  margin: 10px 5px;
+}
+h1 { font-size: 1.8em; }
+
+/* Document Title or navigation bar */
+header {
+  top: 0;
+  margin: 3px 10px;
+}
+
+.info {
+  margin: 7px;
+  padding: 5px, 30px;
+  background-color: #EED;
+  border-radius: 10px;
+}
+#song_title {
+  font-size: xx-large;
+}
+.beat_setting {
+  margin: 7px;
+  padding: 5px, 30px;
+  background-color: #EED;
+  border-radius: 10px;
+}
+.control_panel {
+  margin: 7px;
+  padding: 10px;
+  background-color: #EED;
+  border-radius: 10px;
+  line-height: 100%;
+}
+
+.ctrl_btn {
+  margin: 0px 1px 1px 0px;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: #EED;
+}
+.ctrl_btn:hover {
+  margin: 0px 1px 1px 0px;
+  background-color: #FFD;
+}
+.ctrl_btn:active {
+  margin: 1px 0px 0px 1px;
+  background-color: #DDC;
+}
+
+#thumbnail {
+  position: relative;
+  float: left;
+  margin: 6px;
+}
+
+#song_selector {
+  margin-top: 30px;
+  margin-left: 20px;
+  width: 100%;
+  height: 50px;
+}
+
+#bpm {
+  width: 60px;
+}
+#offset {
+  width: 80px;
+}
+#beat {
+  width: 60px;
+}
+
+.space {
+  margin: 0px 10px;
+}
+
+select,input {
+  font-size: 16px;
+}
+
+.dialog {
+  display: block;
+  width: 16em;
+  height: 22em;
+  background-color: rgba(192, 223, 250, 0.95);
+  border-radius: 20px;
+  border: rgb(192, 223, 250) 1px solid;
+  box-shadow: 0px 15px 35px 5px rgba(68, 66, 66, 0.856), 0 2px 0 rgba(228, 169, 169, 0.158);
+  padding: 10px;
+  margin: 30px;
+  align-items: center;
+  overflow: hidden;   /* Scroll Bar 표시 안되게.  */
+  left: 250px;
+  top: 200px;
+  position: fixed;
+  z-index: 2000;
+	transition-duration: 0.5s;
+}
+.dialog.closed {
+	transition-duration: 0.5s;
+  height: 0;
+  opacity: 0;
+  /* display: none; */
+  /* border: rgb(168, 134, 134) 2px solid; */
+  z-index: -1;
+}
+.dialog .label {
+  width: 8em;
+  height: 1.4em;
+  align-items: right;
+}
+.dialog input {
+  width: 6em;
+  height: 1.4em;
+}
+
+.dlg_title {
+  background-color: rgb(193, 233, 183);
+  padding: 3px;
+  margin: 8px;
+  font-size: 32px;
+}
+
+.dialog.focus {
+  border: #4346ff 3px dotted;
+}
+
+@media ( max-width: 768px ) {
+  /* 모바일 브라우저 용 - 휴대폰 - max-width: 768px 는 0 ~ 768 까지 */
+  body {
+    color: #58666e;
+    background-color: #dfeff5;
+  }
+}
+
+@media ( min-width: 769px ) {
+  /* PC 브라우저 용 - FHD - min-width: 769px 는 769 ~ 부터 */
+  body {
+    color: #58666e;
+    background-color: #d4f5f0;
+  }
+}
+
+/* footer */
+footer {
+  /* footer를 aside위에 올리기 위해 사용(부유객체) */
+  /* position: fixed; */
+  font-family: 'Helvetica';
+  position: absolute;
+  height: 36px;
+  width: 100%;
+  padding: 0 12px;
+  line-height: 40px;
+  color: #888;
+  border-top: 1px solid #dee5e7;
+  background-color: #EEE;
+}
+
+#finger_guide {
+  position: fixed;
+  float: right;
+  right: 10px;
+  top: 15px;
+  width: 88px;
+  overflow: scroll;
+  text-align: right;
+}
+
+canvas {
+  margin: 12px;
+  /* width: 960px; 
+  height: 160px; */
+  background-color: #EEE;
+}
+
+/* @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
+h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 }
+.thin       { font-weight: 100 } */

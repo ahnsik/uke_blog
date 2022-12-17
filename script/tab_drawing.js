@@ -7,14 +7,15 @@ var song_list = [
   "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
   "때로는 옛 이야기를 - 붉은 돼지 OST",
   "세계의 약속 - 하울의 움직이는 성 OST",
+  "비행기 구름 - 바람이 분다 OST", 
   "El Condor Pasa - 핑거스타일",
   "El Condor Pasa - 멜로디",
   "Kiss the Rain - 이루마",
   "코쿠리코 언덕에서 - 지브리OST",
-  "코쿠리코 언덕에서",
   "인생의 회전목마 - 하울의 움직이는 성 OST",
   "비와 당신",
   "바다가 보이는 마을 - 마녀의 택급편",
+  "Somewhere over the rainbow - IZ",
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
 ];
 var file_list = [
@@ -22,14 +23,15 @@ var file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
   "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
   "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
   "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
   "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
   "http://ccash.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
   "http://ccash.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko.json",
   "http://ccash.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
   "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
   "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
   "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
 ];
 var CHORD_ICON_Y = 48;
@@ -88,6 +90,10 @@ window.onload = function main() {
     if (this.readyState == 4 && this.status == 200) {
       song_data = JSON.parse(this.responseText);
       // console.log("--> parsing Song file:" + JSON.stringify(song_data)  );
+      let title = document.getElementById("song_title");
+      let category = document.getElementById("song_category");
+      title.innerHTML = song_data.title;
+      category.innerHTML = song_data.category;
 
       ////  Drawing Tabulature
       resize_canvas( window.innerWidth-30);
@@ -245,9 +251,9 @@ var draw_a_note = function(ctx, data, xpos) {
       ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
     } 
     if ( data.stroke.indexOf('H') >= 0 ) {
-      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+8, STROKE_ICON_Y,  11,15);
+      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
     } else if ( data.stroke.indexOf('P') >= 0 ) {
-      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+8, STROKE_ICON_Y,  11,15);
+      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
     } else if (data.stroke.indexOf('s') >= 0 ) {    // 슬라이드를 표시
       ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
     }

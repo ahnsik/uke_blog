@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <!-- <link rel="shortcut icon" href="./favicon.ico"> -->
+    <meta charset="utf-8" lang="kr">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style/ukeblog.css" />
+    <title> TAB악보 MP3 Sync tool </title>
+    <style>
+      canvas {
+        margin: 12px;
+        /* width: 960px; 
+        height: 160px; */
+        background-color: #EEE;
+        border-style: solid 1px dark-grey;
+      }
+      #song_title {
+        font-size: xx-large;
+      }
+      @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
+      /* h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 } */
+      .thin       { font-weight: 100 }
+    </style>
+  </head>
+  <body>
+    <h1>TAB(ukulele) - MP3 Syncronize Tool </h1>
+    <span id="song_selector">Select Song:<select id="song_list">
+      <!-- <option>세계의 약속 - 하울의 움직이는 성 </option>
+      <option selected="selected">하와이 연정 - 패티킴</option>
+      <option>언제나 몇번이나 - 센과 치히로의 행방불명</option>
+      <option>때로는 옛 이야기를 - 센과 치히로의 행방불명</option> -->
+    </select> </span> </br>
+    <audio id="playing_audio"></audio>
+    <button id="play_song" onclick="play_song();">PLAY</button>
+    <button id="pause_song" onclick="pause_song();">PAUSE</button>
+    <button id="stop_song" onclick="stop_song();">STOP</button>
+
+    <!-- <h1>Lots of Information will be drawing... </h1>
+    <h1>  UKE 악보를 그려주는 웹앱을 만들고 있습니다. 폰트를 테스트하고 있습니다. </h1>... </h1> -->
+    <p>제목: <span id="song_title"></span>,  분류: <span id="song_category"> </span></p>
+
+    <div id="tab_canvas">
+      <canvas class="tabulature" >캔버스기능이 필요함</canvas>
+    </div>
+
+    <div id="mp3">
+        <canvas class="mp3_wave" >캔버스기능이 필요함</canvas>
+    </div>
+
+    <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
+    <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
+
+    <script src="./script/mp3_sync.js" type="text/javascript" charset="utf-8"/> </script>
+
+  </body>
+</html>
+

@@ -10,9 +10,12 @@
       canvas {
         margin: 12px;
         /* width: 960px; 
-        height: 400px; */
+        height: 160px; */
         background-color: #EEE;
         border-style: solid 1px dark-grey;
+      }
+      #song_title {
+        font-size: xx-large;
       }
       @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
       /* h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 } */
@@ -32,6 +35,8 @@
     <h1>  UKE 악보를 그려주는 웹앱을 만들고 있습니다. 폰트를 테스트하고 있습니다. </h1>... </h1> -->
     <p>제목: <span id="song_title"></span>,  분류: <span id="song_category"> </span></p>
     
+    <img id="finger_guide" src="./common/finger_guide.png"/>
+
     <div id="tab_canvas">
       <canvas class="tabulature" >캔버스기능이 필요함</canvas>
     </div>

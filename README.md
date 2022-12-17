@@ -30,6 +30,8 @@
       – 5 Years Time
       – Sentimental Heart
    * Melody 연습 코스
+   * 아르페지오 코스 
+      - 호텔 캘리포니아 : https://www.youtube.com/watch?v=as6w_webWl4
    * Finger Style 연습 코스
    * 상급자 (중급자) 코스
      (http://ukulelehunt.com/2010/02/24/improver-ukulele-lessons/ )

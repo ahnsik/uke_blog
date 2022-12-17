@@ -98,6 +98,10 @@ a { text-decoration: none; }
     color: rgba(0, 0, 0, 0.8);
   }
 
+  .control_button {
+    display: inline-block;
+  }
+
   /* contents */
   /* clearfix */
   #content-wrap:after {
@@ -281,4 +285,15 @@ footer {
   color: #888;
   border-top: 1px solid #dee5e7;
   background-color: #EEE;
+}
+
+
+#finger_guide {
+  position: fixed;
+  float: right;
+  right: 10px;
+  top: 15px;
+  width: 88px;
+  overflow: scroll;
+  text-align: right;
 }

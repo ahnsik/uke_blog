@@ -1,0 +1,754 @@
+/* ================================
+    우쿨렐레 악보에 MP3 싱크 맞추는 프로그램.
+================================ */
+
+var song_list = [
+  "하와이 연정 - 패티킴",
+  "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
+  "때로는 옛 이야기를 - 붉은 돼지 OST",
+  "세계의 약속 - 하울의 움직이는 성 OST",
+  "비행기 구름 - 바람이 분다 OST", 
+  "El Condor Pasa - 핑거스타일",
+  "El Condor Pasa - 멜로디",
+  "Kiss the Rain - 이루마",
+  "코쿠리코 언덕에서 - 지브리OST",
+  "인생의 회전목마 - 하울의 움직이는 성 OST",
+  "비와 당신",
+  "바다가 보이는 마을 - 마녀의 택급편",
+  "Somewhere over the rainbow - IZ",
+  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
+
+  "60 BPM 4/4박자 드럼비트 (48000Hz)",
+  "60 BPM 3/4박자 모노 드럼비트 (8000Hz)",
+  "61 BPM 4/4박자 메트로놈 8비트 (8000Hz)",
+  "62 BPM 4/4박자 심플락 그루브 (8000Hz)",
+  "63 BPM 4/4박자 메트로놈 (8000Hz)",
+  "63 BPM 4/4박자 펑키드럼 (48000Hz)",
+  "80 BPM 4/4박자 드럼비트 (16000Hz)",
+  "90 BPM 3/4박자 드럼비트 (8000Hz)",
+];
+var file_list = [
+  "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
+
+
+  "http://ccash.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json"
+
+];
+
+
+const CHORD_ICON_Y = 48;
+const STROKE_ICON_Y = 136;
+const TAB_LINE_A_Y = 80;
+const TAB_LINE_E_Y = 96;
+const TAB_LINE_C_Y = 112;
+const TAB_LINE_G_Y = 128;
+const LYRIC_TEXT_Y = 164;
+const START_XPOS = 60;
+const CANVAS_FONT_BIGGER = '32px SeoulNamsan canvas';
+const CANVAS_FONT_BIG = '26px SeoulNamsan canvas';
+const CANVAS_FONT_BASIC = '20px SeoulNamsan canvas';
+const CANVAS_FONT_SMALL = '16px SeoulNamsan canvas';
+const CANVAS_FONT_SMALLER = '12px SeoulNamsan canvas';
+const CANVAS_FONT_TINY = '9px SeoulNamsan canvas';
+
+const H_WAVEFORM = 0;
+const H_TECHNIC = 48;
+const H_NOTES = 96;
+const H_CHORD = 26;
+const H_LIRIC = 26;
+const H_TOTAL = (H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC);
+
+var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
+var chord_icon;         // 코드 테이블을 모아 둔 비트맵
+
+var canvas_width = 0, canvas_height = 0;
+var note_drew = 0;
+var last_timestamp = 0;
+
+var edit_mode = 8;          // default 는 8분음표로 편집.
+// var note_space = 36;    // - 8분음표 기준 or 16분음표 기준, or etc..
+
+var song_data = null;   // 우쿨렐레 TAB 악보를 불러 올 JSON 객체. 
+var drawInterval;
+var animationHandler;
+
+var wavePosition = 0;
+var array_l = [];
+// var array_r = [];
+var audioTag;
+
+
+window.onload = function main() {
+  ////  비트맵 리소스 로드.  bitmap resources ready.
+  note_icon = document.getElementById("uke_note");
+  chord_icon = document.getElementById("whole_chords");
+
+  //// URL로 부터 parameter 를 읽어 와서 곡을 선택할 수 있게 함. - 현재는 play 파라메터 뿐.
+  let initialSelect = getParameterByName("play");
+  if ( !initialSelect ) {
+    initialSelect = 0;
+  }
+  console.log("request initial Song file index:" + initialSelect );
+
+  ////  악보 데이터를 고를 수 있도록 selector 준비.
+  selector = document.getElementById("song_list");
+  if (initialSelect >= song_list.length)    // index overflow 방지.
+    initialSelect = 0;
+  for (var i=0; i<song_list.length; i++) {
+    var item = document.createElement("option");
+    item.text = song_list[i];
+    item.value = file_list[i];
+    if (i == initialSelect) 
+      item.selected="selected";
+    selector.appendChild(item);
+  }
+  selector.onchange = function() {
+    console.log("Song file - Changed : " + file_list[selector.selectedIndex] );
+    wavePosition = 0;
+    xmlhttp.open("GET", file_list[selector.selectedIndex], true);
+    xmlhttp.send();
+  }
+
+  ////  loading *.uke JSON data
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      song_data = JSON.parse(this.responseText);
+      // console.log("--> parsing Song file:" + JSON.stringify(song_data)  );
+            /*     JSON 구조:
+            "title":" 언제나 몇번이라도 - 센과치히로의 행방불명OST",
+            "author":"UKE파일작성자",
+            "author_note":"사용안함",
+            "category":"Melody",
+            "comment":" 출처: 스튜디오지브리 콜렉션 – '센과 치히로의 행방불명' OST",
+            "create_date":"----/--/--",
+            "source":"itsumonandodemo.mp3",
+            "thumbnail":"itsumonandodemo.jpg",
+            "start_offset":"0",
+            "basic_beat":"3/4",
+            "bpm":" 96.0"
+            */
+      let title = document.getElementById("song_title");
+      let category = document.getElementById("song_category");
+      let comments = document.getElementById("comments");
+      let dom_bpm = document.getElementById("bpm");
+      let dom_offset = document.getElementById("offset");
+      title.innerHTML = song_data.title;
+      //category.innerHTML = song_data.category;
+      comments.innerHTML = song_data.comment;
+      dom_bpm.value = parseFloat(song_data.bpm);
+      // dom_bpm.setAttribute("value", song_data.bpm );
+    console.log("[][] BPM value set:" + dom_bpm.value + " (from:" + song_data.bpm + ")"  );
+      dom_offset.value = wavePosition = parseInt(song_data.start_offset);
+      
+      changeThumnail(song_data.thumbnail);
+      console.log("썸네일:" + thumbnail.src  );
+      audioTag = document.getElementById("playing_audio");
+      if (song_data.source.length > 0) {
+        console.log("음원파일:" + song_data.source + "("+song_data.source.length+")"+", loaded="+array_l.length );
+        request_mp3(song_data.source);
+      } else {
+        console.error("clear array_l. loaded="+array_l.length );
+        array_l = [];
+      }
+      //  Drawing Tabulature
+      resize_canvas( window.innerWidth-40);
+    }
+  };
+  xmlhttp.open("GET", file_list[initialSelect], true);
+  xmlhttp.send();
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+      results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+  
+window.addEventListener("resize", window_resized);
+function window_resized(event) {
+  resize_canvas (event.target.innerWidth-40 );
+}
+
+///////////////////////////////////////////////////////////////
+//// 본격적인 Drawing 함수들의 시작.
+///////////////////////////////////////////////////////////////
+
+function resize_canvas(cnvs_width) {
+  canvas_width = cnvs_width;
+  canvas_height = 400;
+  let edit_area = document.getElementById("edit_area");
+  edit_area.width = cnvs_width;     // event.target.innerWidth-30;
+  edit_area.height = canvas_height;
+  // draw_tabulature();
+  draw_editor();
+}
+
+
+var chord_name_table = [
+  "C",   "Cm",   "C7",  "Cmaj7",  "Cm7",  "Cdim",  "Cm7b5",  "Caug",  "Csus4",  "C6",  "C9",  "Cmaj9",  "Cmmaj7",  "Cadd9",
+  "C#",  "C#m",  "C#7", "C#maj7", "C#m7", "C#dim", "C#m7b5", "C#aug", "C#sus4", "C#6", "C#9", "C#maj9", "C#mmaj7", "C#add9",
+  "D",   "Dm",   "D7",  "Dmaj7",  "Dm7",  "Ddim",  "Dm7b5",  "Daug",  "Dsus4",  "D6",  "D9",  "Dmaj9",  "Dmmaj7",  "Dadd9",
+  "D#",  "D#m",  "D#7", "D#maj7", "D#m7", "D#dim", "D#m7b5", "D#aug", "D#sus4", "D#6", "D#9", "D#maj9", "D#mmaj7", "D#add9",
+  "E",   "Em",   "E7",  "Emaj7",  "Em7",  "Edim",  "Em7b5",  "Eaug",  "Esus4",  "E6",  "E9",  "Emaj9",  "Emmaj7",  "Eadd9",
+  "F",   "Fm",   "F7",  "Fmaj7",  "Fm7",  "Fdim",  "Fm7b5",  "Faug",  "Fsus4",  "F6",  "F9",  "Fmaj9",  "Fmmaj7",  "Fadd9",
+  "F#",  "F#m",  "F#7", "F#maj7", "F#m7", "F#dim", "F#m7b5", "F#aug", "F#sus4", "F#6", "F#9", "F#maj9", "F#mmaj7", "F#add9",
+  "G",   "Gm",   "G7",  "Gmaj7",  "Gm7",  "Gdim",  "Gm7b5",  "Gaug",  "Gsus4",  "G6",  "G9",  "Gmaj9",  "Gmmaj7",  "Gadd9",
+  "G#",  "G#m",  "G#7", "G#maj7", "G#m7", "G#dim", "G#m7b5", "G#aug", "G#sus4", "G#6", "G#9", "G#maj9", "G#mmaj7", "G#add9",
+  "A",   "Am",   "A7",  "Amaj7",  "Am7",  "Adim",  "Am7b5",  "Aaug",  "Asus4",  "A6",  "A9",  "Amaj9",  "Ammaj7",  "Aadd9",
+  "A#",  "A#m",  "A#7", "A#maj7", "A#m7", "A#dim", "A#m7b5", "A#aug", "A#sus4", "A#6", "A#9", "A#maj9", "A#mmaj7", "A#add9",
+  "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
+];
+
+////  TAB 악보의 바탕 (4줄) 그리기.
+var draw_tab_lines = function(ctx, ypos) {
+  ctx.lineWidth = "2px";
+  ctx.fillStyle = "black";
+  ctx.moveTo(10,ypos+TAB_LINE_A_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_A_Y);
+  ctx.moveTo(10,ypos+TAB_LINE_E_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_E_Y);
+  ctx.moveTo(10,ypos+TAB_LINE_C_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_C_Y);
+  ctx.moveTo(10,ypos+TAB_LINE_G_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_G_Y);
+  ctx.stroke();
+  ctx.font = CANVAS_FONT_BASIC;    // font 설정 - 주로 가사 표시할 때 사용될 폰트.
+  // 'TAB' 표시 
+  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+}
+
+////   JSON데이터(배열)로 악표 표시
+var draw_notes = function(ctx, data, start_idx) {
+  var xpos;
+  var count = 0;
+  for (var i=start_idx; i<data.length; i++) {
+    xpos = START_XPOS + ((data[i].timestamp-last_timestamp)/480) *note_space;           //// 악보 내에 note 간의 간격 = 480,
+    if (xpos >= canvas_width) {
+      break;
+    }
+    draw_a_note(ctx, data[i], xpos );
+    count+=1;
+  }
+  last_timestamp = data[i-1].timestamp;
+  return count;
+}
+
+////   1개의 화음을 표시
+var draw_a_note = function(ctx, data, xpos) {
+  var g, c, e, a;             // 플랫 정보
+  var f_g, f_c, f_e, f_a;     // finger 정보 
+  var c_g, c_c, c_e, c_a;     // 숫자의 색상 (y좌표) 컬러 값 (1=검지=green, 2=중지=Magenta, 3=약지=CYAN, 4=새끼=짙은파랑)
+
+  data.tab.forEach(element => {
+    switch(element.substr(0,1) ) {
+      case "G":
+        f_g = element.substr(-1);
+        g = ( f_g >= 'a' ) ? element.substr(1,element.length-2) : element.substr(1);
+        c_g = (f_g=='i')? 46 : (f_g=='m')? 31 : (f_g=='a')? 16 : (f_g=='c')? 61 : 1 ;
+        break;
+      case "C":
+        f_c = element.substr(-1);
+        c = ( f_c >= 'a' ) ? element.substr(1,element.length-2) : element.substr(1);
+        c_c = (f_c=='i')? 46 : (f_c=='m')? 31 : (f_c=='a')? 16 : (f_c=='c')? 61 : 1 ; 
+        break;
+      case "E":
+        f_e = element.substr(-1);
+        e = ( f_e >= 'a' ) ? element.substr(1,element.length-2) : element.substr(1);
+        c_e = (f_e=='i')? 46 : (f_e=='m')? 31 : (f_e=='a')? 16 : (f_e=='c')? 61 : 1 ; 
+        break;
+      case "A":
+        f_a = element.substr(-1);
+        a = ( f_a >= 'a' ) ? element.substr(1,element.length-2) : element.substr(1);
+        c_a = (f_a=='i')? 46 : (f_a=='m')? 31 : (f_a=='a')? 16 : (f_a=='c')? 61 : 1 ; 
+        break;
+    }
+  });
+
+  // 마디 구분 표시
+  if (data.technic) {
+    if (data.technic.indexOf('|') >= 0) {   // 마디 표시
+      ctx.fillRect(xpos-2, TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
+    }
+    // if ( data.technic.indexOf('3') >= 0 ) {     // 셋 잇단음표를 표시
+    //   ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    // }
+  }
+
+  // 코드 표시 (아이콘)
+  if (data.chord) {         // 코드를 표시
+    var chord_index = chord_name_table.indexOf(data.chord);
+    // console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
+    ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
+  }
+  // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
+  if (data.stroke) {         // 스트로크를 표시
+    // console.log("stroke: " + data.stroke );
+    if ( data.stroke.indexOf('D') >= 0 ) {
+      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+    } else if ( data.stroke.indexOf('U') >= 0 ) {
+      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+    } 
+    if ( data.stroke.indexOf('H') >= 0 ) {
+      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
+    } else if ( data.stroke.indexOf('P') >= 0 ) {
+      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
+    } else if (data.stroke.indexOf('s') >= 0 ) {    // 슬라이드를 표시
+      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    }
+    if ( data.stroke.indexOf('~') >= 0 ) {
+      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, STROKE_ICON_Y-64,  9,63);
+    }
+  }
+  // 화음 및 음표에 따른 연주 플랫 정보를 표시. 
+  if (g != undefined ) {
+    ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, TAB_LINE_G_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (c != undefined ) {
+    ctx.drawImage(note_icon, c*18, c_c, 15, 12,   xpos, TAB_LINE_C_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (e != undefined ) {
+    ctx.drawImage(note_icon, e*18, c_e, 15, 12,   xpos, TAB_LINE_E_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  if (a != undefined ) {
+    ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, TAB_LINE_A_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+  }
+  // 가사를 표시
+  if (data.lyric) {
+    ctx.fillText( data.lyric, xpos, LYRIC_TEXT_Y );
+  }
+
+}
+
+
+
+var g_sampleRate = 0;         // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
+var g_totalSec = 0;         // 음악 전체의 길이 (msec단위)
+var g_numSmp_pixel = 16;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
+var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기
+
+// var pixels_for_sec = g_sampleRate / g_numSmp_pixel;  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
+
+async function mp3Decode(mp3Buffer) {
+  console.log("(MP3)mp3Buffer length:"+mp3Buffer.length);
+  const ac = new AudioContext();
+  const audioBuf =  await ac.decodeAudioData(mp3Buffer);
+  console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
+  g_sampleRate = audioBuf.sampleRate;
+  g_totalSec = audioBuf.duration;
+  var float32Array_l = audioBuf.getChannelData(0);
+  // var float32Array_r = audioBuf.getChannelData(1);
+  const chunkSize = 100;
+  let i=0;
+  const length = float32Array_l.length;
+  array_l = [];   // 버퍼 클리어
+  // array_r = [];   // 버퍼 클리어
+  while(i<length) {
+    array_l.push( float32Array_l.slice(i, i+chunkSize).reduce(function(total,value) {
+      return Math.max(total, Math.abs(value));
+    }));
+    i+=chunkSize;
+  }
+  console.log("End of decode:"+mp3Buffer.length);
+  resize_canvas( window.innerWidth-40);
+}
+
+function request_mp3(filename) {
+  if (filename) {     // mp3 데이터가 있는 경우에만 표시.
+    ////  loading *.MP3 data :   refer : https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
+    array_l = [];
+    // array_r = [];
+    audioTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+filename;
+    if (!filename || filename.length == 0) {// (filename === "") {
+      console.log("음원파일을 지정하지 않았습니다..");
+      return;
+    } else {
+      console.log("음원파일 = " + filename);
+    }
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/"+filename, true);
+    oReq.responseType = "arraybuffer";
+    oReq.onload = function() {
+      console.log("xmlhttpReq... sftp://ccash.gonetis.com:/home/ahnsik/ukulele/"+filename);
+      if (this.readyState != 4 || this.status != 200) {
+        console.log("... readyState=" + this.readyState + ", status="+this.status );
+        return;
+      }
+      let waveBuffer = oReq.response; // Note: not oReq.responseText
+      console.log("start decode MP3");
+      let decodedBuffer = mp3Decode(waveBuffer);
+      if (array_l) {
+        console.log("[][] starting MP3 draw...");
+      }
+    };
+    oReq.send(null);
+    console.log("--> request_end:" + filename );
+  }
+
+}
+
+
+var draw_start_index = 0;   // 화면 스크롤에 따른 draw 개시 sample index
+var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
+var bpm;
+var offset;
+
+var draw_editor = () => {
+  bpm = document.getElementById("bpm").value;
+  offset = document.getElementById("offset").value;
+
+  let canvas=document.getElementById("edit_area");
+  canvas.width = canvas_width;
+  canvas.height = canvas_height;
+  let ctx = canvas.getContext("2d");
+  ctx.textBaseline = 'top';
+  ctx.font = CANVAS_FONT_BASIC;   //'36px SeoulNamsan canvas';
+  ctx.fillStyle = 'white';
+  ctx.clearRect(0, 0, canvas_width, canvas_height);
+  ctx.fillStyle = 'black';
+  ctx.imageSmoothingEnabled= true;
+
+  calc_note_size();
+
+  draw_tab_bg(ctx, 190);
+  draw_waveform(ctx, 10, 180);
+
+  draw_offset_slider(ctx, 0);   // 옵셋 조정 막대
+  draw_ruler(ctx, 10);   // 상단 : 줄자
+  draw_ruler(ctx, canvas_height-12);   // 상단 : 줄자
+
+
+  // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
+  ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
+  ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 90, 820);
+  ctx.font = CANVAS_FONT_SMALLER; //'26px SeoulNamsan canvas';
+  ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 140, 820);
+}
+
+var draw_offset_slider = (ctx, ypos) => {
+  let color_backup = ctx.fillStyle;
+  let font_backup = ctx.font;
+
+  ctx.fillStyle = '#CCC';
+  ctx.fillRect(START_XPOS, ypos, canvas_width, 2);
+  ctx.fillStyle = '#DDD';
+  ctx.fillRect(START_XPOS, ypos+2, canvas_width, 6);
+  ctx.fillStyle = '#CCC';
+  ctx.fillRect(START_XPOS, ypos+8, canvas_width, 4);
+  ctx.fillStyle = '#888';
+  ctx.font = CANVAS_FONT_TINY;
+  ctx.fillText("offset_slider:", 0, 0, START_XPOS);
+
+  ctx.font = font_backup;
+  ctx.fillStyle = color_backup;
+}
+
+var draw_ruler = (ctx, ypos) => {
+  let color_backup = ctx.fillStyle;
+  let font_backup = ctx.font;
+  ctx.fillStyle = '#888';
+  ctx.font = CANVAS_FONT_TINY;
+
+  let quaver_bar = 0;
+  for (var i=0; i<(canvas_width-START_XPOS); i+=grid_width )  {
+    if (quaver_bar % 8 == 0) {
+      ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
+      ctx.fillText("0:00.000", START_XPOS+i+2, ypos);
+    } else {
+      ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
+    }
+    quaver_bar++;
+  }
+  ctx.fillText("playing time:", 0, ypos, START_XPOS);
+  ctx.font = font_backup;
+  ctx.fillStyle = color_backup;
+}
+
+var draw_waveform = (ctx, ypos, height) => {
+  let color_backup = ctx.fillStyle;
+  let font_backup = ctx.font;
+  ctx.fillStyle = '#888';
+  ctx.font = CANVAS_FONT_TINY;
+
+  let quaver_bar = 0;
+  for (var i=0; i<(canvas_width-START_XPOS); i+=grid_width )  {
+    if (quaver_bar % 8 == 0) {
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i, ypos, 1, height);
+      ctx.fillStyle = '#CCE';
+      ctx.fillRect(START_XPOS+i+1, ypos, grid_width, height);
+    } else {
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i, ypos, 1, height);
+      ctx.fillStyle = '#DDF';
+      ctx.fillRect(START_XPOS+i+1, ypos, grid_width, height);
+    }
+    quaver_bar++;
+  }
+  if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
+    new_mp3Draw(ctx, ypos, array_l);
+  }
+  ctx.font = font_backup;
+  ctx.fillStyle = color_backup;
+};
+
+function new_mp3Draw(ctx, ypos, wavBuffer) {
+  let min, max, value;
+
+  console.log("current_playing="+audioTag.currentTime+"("+g_sampleRate+")" +", index="+(audioTag.currentTime*g_sampleRate) );
+  console.log("wavePosition="+wavePosition + " (offset)" );
+
+  let current_playing_index = audioTag.currentTime*g_sampleRate/100;
+  // let pixels_for_a_sec = g_sampleRate / (g_numSmp_pixel*32);  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
+
+  for (var i = 0; i< (canvas_width-START_XPOS); i++) {
+    min=100; max=0;
+    for (var j=0; j<g_numSmp_pixel; j++) {
+      value = wavBuffer[i*g_numSmp_pixel+j +wavePosition] * H_WAVEFORM;
+      if ( value >= max)
+        max = value;
+      if ( value <= min)
+        min = value;
+    }
+
+    // console.log("> index="+(i*g_numSmp_pixel+wavePosition) + ", current_msec="+ audioTag.currentTime + ", ...playing index:" + current_playing_index );
+    if ( (i*g_numSmp_pixel +wavePosition) < current_playing_index ) { //(audioTag.currentTime*g_sampleRate)/(g_numSmp_pixel*8) ) {
+      ctx.strokeStyle = "darkgray";
+    } else {
+      if ( ( parseInt((i*g_numSmp_pixel +wavePosition) / (g_sampleRate/100)) % 2) == 0 ) {   // total_sample_갯수 / sample_rate = playing_sec 
+        // console.log("b");
+        ctx.strokeStyle = "blue";
+      } else {
+        // console.log("G");
+        ctx.strokeStyle = "green";
+      }
+    }
+    ctx.beginPath();
+    ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 - min );
+    ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
+    ctx.stroke();
+    //ctx.fillRect(i, 100-min*100, 1, (max-min)*100 );
+  }
+}
+
+
+var draw_tab_bg = (ctx, ypos) => {
+  let color_backup = ctx.fillStyle;
+  let font_backup = ctx.font;
+  ctx.fillStyle = '#888';
+  ctx.font = CANVAS_FONT_TINY;
+
+  let quaver_bar = 0;
+  for (var i=0; i<(canvas_width-START_XPOS); i+=note_size_in_pixel)  {
+    if (quaver_bar % 8 == 0) {
+      // grid 눈금
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM);
+      // lyric - highlight
+      ctx.fillStyle = '#ECC';
+      ctx.fillRect(START_XPOS+i+1, ypos, note_size_in_pixel, H_LIRIC);
+      // chord - highlight
+      ctx.fillStyle = '#EEC';
+      ctx.fillRect(START_XPOS+i+1, ypos+26, note_size_in_pixel, H_CHORD);
+      // tab notes - highlight
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i+1, ypos+26+26, note_size_in_pixel, H_NOTES);
+      // techinics - highlight
+      ctx.fillStyle = '#CEC';
+      ctx.fillRect(START_XPOS+i+1, ypos+26+26+96, note_size_in_pixel, H_TECHNIC);
+    } else {
+      // grid 눈금
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM);
+      // lyric
+      ctx.fillStyle = '#FDD';
+      ctx.fillRect(START_XPOS+i+1, ypos, note_size_in_pixel, H_LIRIC);
+      // chord
+      ctx.fillStyle = '#FFD';
+      ctx.fillRect(START_XPOS+i+1, ypos+26, note_size_in_pixel, H_CHORD);
+      // tab notes
+      ctx.fillStyle = '#DDD';
+      ctx.fillRect(START_XPOS+i+1, ypos+26+26, note_size_in_pixel, H_NOTES);
+      // techinics
+      ctx.fillStyle = '#DFD';
+      ctx.fillRect(START_XPOS+i+1, ypos+26+26+96, note_size_in_pixel, H_TECHNIC);
+    }
+    quaver_bar++;
+  }
+  ctx.font = font_backup;
+  ctx.fillStyle = color_backup;
+};
+
+
+
+
+
+
+var play_handler = null;
+
+var play_song = function() {
+  audioTag.play();
+
+  if (play_handler==null) {
+    play_handler = setInterval( function() {
+      resize_canvas( window.innerWidth-40);
+      // TODO: need to call mp3Draw(redraw waveform)
+      if (audioTag.ended) {
+        stop_song();
+      }
+    }, 50);
+    console.log("Play : Set Interval. :" + play_handler);
+  } else {
+    console.log("Handler aleady set.");
+  }
+}
+
+var pause_song = function() {
+  audioTag.pause();
+  clearInterval(play_handler);
+  play_handler = null;
+  console.log("Pause: Clear Interval. :" + play_handler);
+  draw_editor();
+  // resize_canvas( window.innerWidth-40);
+}
+
+var stop_song = function() {
+  audioTag.pause();
+  audioTag.currentTime = 0;
+  clearInterval(play_handler);
+  play_handler = null;
+  console.log("Stopped. - Clear Interval. :" + play_handler);
+  draw_editor();
+  // resize_canvas( window.innerWidth-40);
+}
+
+var zoom_in = function () {
+  if (g_numSmp_pixel > 1) {
+    g_numSmp_pixel = g_numSmp_pixel/2;
+    // TODO: need to call mp3Draw(redraw waveform)
+    // pixels_for_sec = 
+    draw_editor();
+    // resize_canvas( window.innerWidth-40);
+  }
+}
+
+var zoom_out = function () {
+  if (g_numSmp_pixel < 64 ) {
+    g_numSmp_pixel = g_numSmp_pixel*2;
+    // pixels_for_sec = 
+    // TODO: need to call mp3Draw(redraw waveform)
+    draw_editor();
+    // resize_canvas( window.innerWidth-40);
+  }
+}
+
+/*  BPM, 
+  - 기준: 60 bpm, 4/4박자 를 가정했을 때,  1초당 sample 수는 sampleRate 이므로, 
+    --> 8분음표(note) 단위하나(=numSmp_quaver)의 크기는..  sample_rate / 2 만큼의 sample갯수이어야 한다. (1초=8분음표2개)
+    --> numSmp_quaver = g_sampleRate/2  가 된다.
+    --> 그럼, qauver 당 pixel 수는 numSmp_quaver / g_numSmp_pixel  가 된다. 
+       ==> note_size_in_pixel = (g_sampleRate/2) / g_numSmp_pixel
+
+var g_sampleRate = 0;     // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
+var g_totalSec = 100  
+var g_numSmp_pixel = 16;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
+var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기
+
+*/
+
+var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
+  //  numSmp_for_quaver(?) * numSmp_pixel = sampleRate / 2 ;;  1초에 8분음표 2개로 가정함(60bpm,).
+  let _bpm = document.getElementById("bpm").value;
+  let _quavermode = (document.getElementById("quaver_mode").selectedIndex == 0)?2:4;    // 8음표2개 or 16분음표4개
+  let _sign = document.getElementById("signature").value;
+
+  // 초당8분음표샘플수 = g_sampleRate / 2;   // 60bpm일때
+  // 초당8분음표샘플수 = (g_sampleRate/2) * bpm / 60;   // 80bpm일때
+  // 1초너비 = (g_sampleRate/g_numSmp_pixel) 개의 픽셀.
+  // 8분음표1개의픽셀 = 1초너비/초당8분음표샘플수 = (g_sampleRate/g_numSmp_pixel) / ((g_sampleRate/2) * bpm / 60) ; 
+  //           ==>  (bpm * 초당8분음표갯수) / g_numSmp_pixel;
+  
+  // note_size_in_pixel = (g_sampleRate/2) / g_numSmp_pixel ;
+  note_size_in_pixel = bpm*_quavermode / g_numSmp_pixel;   // 60과 2는, 60bpm일때 8분음표2개 라는 뜻.
+}
+
+var quaver_changed = () => {
+  let value = document.getElementById("quaver_mode").selectedIndex;
+  // console.log("편집음표:" + document.getElementById("quaver_mode").value + "(" + value + ")" );
+  if (value==0) {
+    edit_mode = 8;
+  } else {
+    edit_mode = 16;
+  }
+  calc_note_size();
+  draw_editor();
+}
+
+var bpm_changed = () => {
+  let value = document.getElementById("bpm").value;
+  console.log("BPM:" + value);
+  calc_note_size();
+  draw_editor();
+}
+
+var offset_changed = () => {
+  let value = document.getElementById("offset").value;
+  console.log("playing offset:" + value);
+  wavePosition = value;
+  // wavePosition = document.getElementById("offset").value;
+  calc_note_size();
+  draw_editor();
+}
+
+var signature_changed = () => {
+  let value = document.getElementById("signature").value;
+  console.log("Signature:" + value);
+  calc_note_size();
+  draw_editor();
+}
+
+async function uploadFile() {
+  var uploadfiles = document.getElementById("loadMP3");
+
+  let formData = new FormData();
+  formData.append("file", uploadfiles.files[0]);
+  await fetch('/uke_blog/upload.php', {
+    method: "POST", 
+    body: formData
+  });
+  alert('The file has been uploaded successfully.');
+}
+
+var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
+  var imgTag = document.getElementById("thumbnail");
+  imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
+}
+
+async function ThumbUploadFile() {
+  var uploadfiles = document.getElementById("loadThumbnail");
+
+  let formData = new FormData();
+  formData.append("file", uploadfiles.files[0]);
+  await fetch('/uke_blog/upload.php', {
+    method: "POST", 
+    body: formData
+  });
+  alert('The file has been uploaded successfully.');
+}
