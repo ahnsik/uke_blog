@@ -470,10 +470,14 @@ var draw_ruler = (ctx, ypos) => {
   ctx.font = CANVAS_FONT_TINY;
 
   let quaver_bar = 0;
+  let grid_time;
+  let time_string;
   for (var i=0; i<(canvas_width-START_XPOS); i+=note_size_in_pixel )  {
     if (quaver_bar % signature_divider == 0) {
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
-      ctx.fillText("0:00.000", START_XPOS+i+2, ypos);
+      grid_time = (100000*(i*g_numSmp_pixel+wavePosition))/g_sampleRate;
+      time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
+      ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
       ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
     }
@@ -517,8 +521,8 @@ var draw_waveform = (ctx, ypos, height) => {
 function new_mp3Draw(ctx, ypos, wavBuffer) {
   let min, max, value;
 
-  console.log("current_playing="+audioTag.currentTime+"("+g_sampleRate+")" +", index="+(audioTag.currentTime*g_sampleRate) );
-  console.log("wavePosition="+wavePosition + " (offset)" );
+  // console.log("current_playing="+audioTag.currentTime+"("+g_sampleRate+")" +", index="+(audioTag.currentTime*g_sampleRate) );
+  // console.log("wavePosition="+wavePosition + " (offset)" );
 
   let current_playing_index = audioTag.currentTime*g_sampleRate/100;
   // let pixels_for_a_sec = g_sampleRate / (g_numSmp_pixel*32);  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
