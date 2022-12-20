@@ -477,8 +477,10 @@ var draw_ruler = (ctx, ypos) => {
   for (var i=0; i<(canvas_width-START_XPOS); i+=note_size_in_pixel )  {
     if (quaver_bar % signature_divider == 0) {
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
-      grid_time = (100000*(i*g_numSmp_pixel+wavePosition))/g_sampleRate;
+      grid_time = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition) / parseInt(g_sampleRate);
+      // grid_time = (100000*(i*g_numSmp_pixel+wavePosition))/g_sampleRate;
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
+      console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
       ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
