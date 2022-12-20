@@ -71,7 +71,7 @@ const CANVAS_FONT_SMALL = '16px SeoulNamsan canvas';
 const CANVAS_FONT_SMALLER = '12px SeoulNamsan canvas';
 const CANVAS_FONT_TINY = '9px SeoulNamsan canvas';
 
-const H_WAVEFORM = 0;
+const H_WAVEFORM = 100;
 const H_TECHNIC = 48;
 const H_NOTES = 96;
 const H_CHORD = 26;
@@ -93,7 +93,7 @@ var drawInterval;
 var animationHandler;
 
 var wavePosition = 0;
-var array_l = [];
+var array_l = [];       // float32 로 되어 있음.. TODO: 이걸 fixed int 로 바꾸면 어떨까..?
 // var array_r = [];
 var audioTag;
 
@@ -511,6 +511,7 @@ var draw_waveform = (ctx, ypos, height) => {
     quaver_bar++;
   }
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
+    // console.log("check to drawing...??" + array_l + ",//" + array_l.length );
     new_mp3Draw(ctx, ypos, array_l);
   }
 
@@ -549,6 +550,7 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
         ctx.strokeStyle = "green";
       }
     }
+    // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 - min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
