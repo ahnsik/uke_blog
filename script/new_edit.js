@@ -377,6 +377,7 @@ async function mp3Decode(mp3Buffer) {
 }
 
 function request_mp3(filename) {
+  stop_song();
   if (filename) {     // mp3 데이터가 있는 경우에만 표시.
     ////  loading *.MP3 data :   refer : https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     array_l = [];
@@ -615,6 +616,28 @@ var draw_tab_bg = (ctx, ypos) => {
 var play_handler = null;
 
 var play_song = function() {
+  if (play_handler==null) {
+    audioTag.play();
+    document.getElementById("play_song").src = "common/pause.svg" ;
+    play_handler = setInterval( function() {
+      draw_editor();
+      // TODO: need to call mp3Draw(redraw waveform)
+      if (audioTag.ended) {
+        stop_song();
+      }
+    }, 50);
+    console.log("Play : Set Interval. :" + play_handler);
+  } else {
+    audioTag.pause();
+    document.getElementById("play_song").src = "common/play.svg" ;
+    clearInterval(play_handler);
+    play_handler = null;
+    console.log("Pause: Clear Interval. :" + play_handler);
+    draw_editor();
+  }
+}
+/*
+var play_song = function() {
   audioTag.play();
 
   if (play_handler==null) {
@@ -639,10 +662,11 @@ var pause_song = function() {
   draw_editor();
   // resize_canvas( window.innerWidth-40);
 }
-
+*/
 var stop_song = function() {
   audioTag.pause();
   audioTag.currentTime = 0;
+  document.getElementById("play_song").src = "common/play.svg" ;
   clearInterval(play_handler);
   play_handler = null;
   console.log("Stopped. - Clear Interval. :" + play_handler);
