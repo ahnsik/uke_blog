@@ -346,14 +346,14 @@ var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지�
 var signature_divider = 8;    // default 는 4/4 박자, 8분음표
 
 var draw_start_index = 0;   // 화면 스크롤에 따른 draw 개시 sample index
-var bpm;
-var offset;
+var g_bpm;
+var g_offset;
 
 
 // var pixels_for_sec = g_sampleRate / g_numSmp_pixel;  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
 
 async function mp3Decode(mp3Buffer) {
-  console.log("(MP3)mp3Buffer length:"+mp3Buffer.length);
+  // console.log("(MP3)mp3Buffer length:"+mp3Buffer.length);
   const ac = new AudioContext();
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
@@ -372,8 +372,9 @@ async function mp3Decode(mp3Buffer) {
     }));
     i+=chunkSize;
   }
-  console.log("End of decode:"+mp3Buffer.length);
-  resize_canvas( window.innerWidth-40);
+  console.log("End of decode:"+array_l.length);
+  draw_editor();
+  // resize_canvas( window.innerWidth-40);
 }
 
 function request_mp3(filename) {
@@ -415,8 +416,8 @@ function request_mp3(filename) {
 
 
 var draw_editor = () => {
-  // bpm = document.getElementById("bpm").value;
-  offset = document.getElementById("offset").value;
+  // g_bpm = document.getElementById("bpm").value;
+  g_offset = document.getElementById("offset").value;
 
   let canvas=document.getElementById("edit_area");
   canvas.width = canvas_width;
@@ -521,33 +522,29 @@ var draw_waveform = (ctx, ypos, height) => {
 };
 
 function new_mp3Draw(ctx, ypos, wavBuffer) {
-  let min, max, value;
-
-  // console.log("current_playing="+audioTag.currentTime+"("+g_sampleRate+")" +", index="+(audioTag.currentTime*g_sampleRate) );
-  // console.log("wavePosition="+wavePosition + " (offset)" );
+  let min, max, temp_offset, value;
 
   let current_playing_index = audioTag.currentTime*g_sampleRate/100;
-  // let pixels_for_a_sec = g_sampleRate / (g_numSmp_pixel*32);  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
+  let numIndx_for_a_sec = g_sampleRate/100;
 
   for (var i = 0; i< (canvas_width-START_XPOS); i++) {
     min=100; max=0;
+    temp_offset = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition);
     for (var j=0; j<g_numSmp_pixel; j++) {
-      value = wavBuffer[i*g_numSmp_pixel+j +wavePosition] * H_WAVEFORM;
+      value = wavBuffer[temp_offset +j ] * H_WAVEFORM;
       if ( value >= max)
-        max = value;
+        max = parseInt(value);
       if ( value <= min)
-        min = value;
+        min = parseInt(value);
     }
 
-    // console.log("> index="+(i*g_numSmp_pixel+wavePosition) + ", current_msec="+ audioTag.currentTime + ", ...playing index:" + current_playing_index );
-    if ( (i*g_numSmp_pixel +wavePosition) < current_playing_index ) { //(audioTag.currentTime*g_sampleRate)/(g_numSmp_pixel*8) ) {
+    if ( temp_offset < current_playing_index ) { 
       ctx.strokeStyle = "darkgray";
     } else {
-      if ( ( parseInt((i*g_numSmp_pixel +wavePosition) / (g_sampleRate/100)) % 2) == 0 ) {   // total_sample_갯수 / sample_rate = playing_sec 
-        // console.log("b");
+      // console.log("temp_offset="+temp_offset +",numIndx_for_a_sec="+numIndx_for_a_sec );
+      if ( ( parseInt(temp_offset/numIndx_for_a_sec) % 2) == 0 ) {
         ctx.strokeStyle = "blue";
       } else {
-        // console.log("G");
         ctx.strokeStyle = "green";
       }
     }
@@ -626,13 +623,13 @@ var play_song = function() {
         stop_song();
       }
     }, 50);
-    console.log("Play : Set Interval. :" + play_handler);
+    // console.log("Play : Set Interval. :" + play_handler);
   } else {
     audioTag.pause();
     document.getElementById("play_song").src = "common/play.svg" ;
     clearInterval(play_handler);
     play_handler = null;
-    console.log("Pause: Clear Interval. :" + play_handler);
+    // console.log("Pause: Clear Interval. :" + play_handler);
     draw_editor();
   }
 }
@@ -677,20 +674,16 @@ var stop_song = function() {
 var zoom_in = function () {
   if (g_numSmp_pixel > 1) {
     g_numSmp_pixel = g_numSmp_pixel/2;
-    // TODO: need to call mp3Draw(redraw waveform)
-    // pixels_for_sec = 
+    document.getElementById("offset").step = g_numSmp_pixel;
     draw_editor();
-    // resize_canvas( window.innerWidth-40);
   }
 }
 
 var zoom_out = function () {
   if (g_numSmp_pixel < 64 ) {
     g_numSmp_pixel = g_numSmp_pixel*2;
-    // pixels_for_sec = 
-    // TODO: need to call mp3Draw(redraw waveform)
+    document.getElementById("offset").step = g_numSmp_pixel;
     draw_editor();
-    // resize_canvas( window.innerWidth-40);
   }
 }
 
@@ -751,16 +744,16 @@ var quaver_changed = () => {
 }
 
 var bpm_changed = () => {
-  let value = document.getElementById("bpm").value;
-  console.log("BPM:" + value);
+  g_bpm = document.getElementById("bpm").value;
+  console.log("BPM:" + g_bpm);
   calc_note_size();
   draw_editor();
 }
 
 var offset_changed = () => {
-  let value = document.getElementById("offset").value;
-  console.log("playing offset:" + value);
-  wavePosition = value;
+  g_offset = document.getElementById("offset").value;
+  console.log("playing offset:" + g_offset);
+  wavePosition = g_offset;
   // wavePosition = document.getElementById("offset").value;
   calc_note_size();
   draw_editor();
