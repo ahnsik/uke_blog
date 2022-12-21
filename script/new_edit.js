@@ -201,6 +201,9 @@ function resize_canvas(cnvs_width) {
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
   edit_area.height = canvas_height;
+  edit_area.onmousedown = edit_mouseDown;
+  edit_area.onmousemove = edit_mouseMove;
+  edit_area.onmouseup = edit_mouseUp;
   // draw_tabulature();
   draw_editor();
 }
@@ -480,7 +483,7 @@ var draw_ruler = (ctx, ypos) => {
       grid_time = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition) / parseInt(g_sampleRate);
       // grid_time = (100000*(i*g_numSmp_pixel+wavePosition))/g_sampleRate;
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
-      console.log("grid_time="+grid_time+".toString="+time_string );
+      // console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
       ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
@@ -531,7 +534,7 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
 
   for (var i = 0; i< (canvas_width-START_XPOS); i++) {
     min=100; max=0;
-    temp_offset = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition);
+    temp_offset = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition+g_offset);
     for (var j=0; j<g_numSmp_pixel; j++) {
       value = wavBuffer[temp_offset +j ] * H_WAVEFORM;
       if ( value >= max)
@@ -755,7 +758,7 @@ var bpm_changed = () => {
 var offset_changed = () => {
   g_offset = document.getElementById("offset").value;
   console.log("playing offset:" + g_offset);
-  wavePosition = g_offset;
+  // wavePosition = g_offset;
   // wavePosition = document.getElementById("offset").value;
   calc_note_size();
   draw_editor();
@@ -767,6 +770,37 @@ var signature_changed = () => {
   calc_note_size();
   draw_editor();
 }
+
+
+var last_posX=0, last_posY=0;
+var scroll_x = 0, prev_position=0;
+var isClicked = false;
+var edit_mouseDown = (e) => {
+  last_posX = e.clientX;
+  last_posY = e.clientY;
+  scroll_x = 0;
+  prev_position = wavePosition;
+  isClicked = true;
+  e.preventDefault();
+}
+var edit_mouseMove = (e) => {
+  if (isClicked) {
+    scroll_x = (last_posX - e.clientX)*g_numSmp_pixel;
+    wavePosition = prev_position+scroll_x;
+  }
+  e.preventDefault();
+  draw_editor();
+}
+var edit_mouseUp = (e) => {
+  last_posX = 0;
+  last_posY = 0;
+  wavePosition = prev_position+scroll_x;
+  isClicked = false;
+  e.preventDefault();
+  draw_editor();
+}
+
+
 
 async function uploadFile() {
   var uploadfiles = document.getElementById("loadMP3");
