@@ -2,7 +2,16 @@
     우쿨렐레 악보에 MP3 싱크 맞추는 프로그램.
 ================================ */
 
-var song_list = [
+const song_list = [
+  "60 BPM 4/4박자 드럼비트 (48000Hz)",
+  "60 BPM 3/4박자 모노 드럼비트 (8000Hz)",
+  "61 BPM 4/4박자 메트로놈 8비트 (8000Hz)",
+  "62 BPM 4/4박자 심플락 그루브 (8000Hz)",
+  "63 BPM 4/4박자 메트로놈 (8000Hz)",
+  "63 BPM 4/4박자 펑키드럼 (48000Hz)",
+  "80 BPM 4/4박자 드럼비트 (16000Hz)",
+  "90 BPM 3/4박자 드럼비트 (8000Hz)",
+
   "하와이 연정 - 패티킴",
   "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
   "때로는 옛 이야기를 - 붉은 돼지 OST",
@@ -16,18 +25,18 @@ var song_list = [
   "비와 당신",
   "바다가 보이는 마을 - 마녀의 택급편",
   "Somewhere over the rainbow - IZ",
-  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
-
-  "60 BPM 4/4박자 드럼비트 (48000Hz)",
-  "60 BPM 3/4박자 모노 드럼비트 (8000Hz)",
-  "61 BPM 4/4박자 메트로놈 8비트 (8000Hz)",
-  "62 BPM 4/4박자 심플락 그루브 (8000Hz)",
-  "63 BPM 4/4박자 메트로놈 (8000Hz)",
-  "63 BPM 4/4박자 펑키드럼 (48000Hz)",
-  "80 BPM 4/4박자 드럼비트 (16000Hz)",
-  "90 BPM 3/4박자 드럼비트 (8000Hz)",
+  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
 ];
-var file_list = [
+const file_list = [
+  "http://ccash.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
+  "http://ccash.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json",
+
   "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
   "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
   "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
@@ -41,18 +50,7 @@ var file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
   "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
   "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
-
-
-  "http://ccash.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json"
-
+  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
 ];
 
 
@@ -349,9 +347,9 @@ var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지�
 var signature_divider = 8;    // default 는 4/4 박자, 8분음표
 
 var draw_start_index = 0;   // 화면 스크롤에 따른 draw 개시 sample index
-var g_bpm;
-var g_offset;
-
+var g_bpm = 60;
+var g_offset = 0;
+var g_numSmp_quaver = g_sampleRate / (g_bpm/30);
 
 // var pixels_for_sec = g_sampleRate / g_numSmp_pixel;  // 1초마다 wave 파형의 색상을 바꿔서 시간을 표시하기 위함. 단순 그 목적임.
 
@@ -420,7 +418,7 @@ function request_mp3(filename) {
 
 var draw_editor = () => {
   // g_bpm = document.getElementById("bpm").value;
-  g_offset = document.getElementById("offset").value;
+  // g_offset = document.getElementById("offset").value;
 
   let canvas=document.getElementById("edit_area");
   canvas.width = canvas_width;
@@ -502,7 +500,6 @@ var draw_waveform = (ctx, ypos, height) => {
   ctx.font = CANVAS_FONT_TINY;
 
   let quaver_bar = 0;
-//for (var i=0; i<(canvas_width-START_XPOS); i+=grid_width )  {
   for (var i=0; i<(canvas_width-START_XPOS); i+=note_size_in_pixel)  {
     if (quaver_bar % signature_divider == 0) {
       ctx.fillStyle = '#CCC';
@@ -531,10 +528,16 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
 
   let current_playing_index = audioTag.currentTime*g_sampleRate/100;
   let numIndx_for_a_sec = g_sampleRate/100;
+  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30))/100;
+    /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
+       8분음표 길이는  1/(bpm*2/60)초,
+       8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
+    */
+  // g_numSmp_quaver = g_sampleRate / (g_bpm/30);
 
   for (var i = 0; i< (canvas_width-START_XPOS); i++) {
     min=100; max=0;
-    temp_offset = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition+g_offset);
+    temp_offset = parseInt(i*g_numSmp_pixel)+parseInt(wavePosition)+parseInt(g_offset);
     for (var j=0; j<g_numSmp_pixel; j++) {
       value = wavBuffer[temp_offset +j ] * H_WAVEFORM;
       if ( value >= max)
@@ -542,6 +545,13 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
       if ( value <= min)
         min = parseInt(value);
     }
+
+// if ( (parseInt(temp_offset/numIndx_for_a_quaver) % 2 )===0) {
+if ( (parseInt(temp_offset) % parseInt(numIndx_for_a_quaver))===0) {
+  console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_quaver/g_numSmp_pixel) + ", g_numSmp_pixel=" + parseInt(g_numSmp_pixel) );
+  ctx.fillStyle = "red";
+  ctx.fillRect(START_XPOS+i, ypos, 1, 200 );
+}
 
     if ( temp_offset < current_playing_index ) { 
       ctx.strokeStyle = "darkgray";
@@ -555,10 +565,17 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
     }
     // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
+    // ctx.moveTo( START_XPOS+ i+0.5, -H_WAVEFORM );
+    // ctx.lineTo( START_XPOS+ i+0.5, H_WAVEFORM );
+
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 - min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
+
+    // ctx.moveTo( START_XPOS+ i+0.5, ypos-H_WAVEFORM-1 );
+    // ctx.lineTo( START_XPOS+ i+0.5, ypos-H_WAVEFORM );
     ctx.stroke();
     //ctx.fillRect(i, 100-min*100, 1, (max-min)*100 );
+    
   }
 }
 
@@ -679,7 +696,8 @@ var stop_song = function() {
 var zoom_in = function () {
   if (g_numSmp_pixel > 1) {
     g_numSmp_pixel = g_numSmp_pixel/2;
-    document.getElementById("offset").step = g_numSmp_pixel;
+    let dom_offset = document.getElementById("offset");
+    dom_offset.step = g_numSmp_pixel;
     draw_editor();
   }
 }
@@ -687,7 +705,8 @@ var zoom_in = function () {
 var zoom_out = function () {
   if (g_numSmp_pixel < 64 ) {
     g_numSmp_pixel = g_numSmp_pixel*2;
-    document.getElementById("offset").step = g_numSmp_pixel;
+    let dom_offset = document.getElementById("offset");
+    dom_offset.step = g_numSmp_pixel;
     draw_editor();
   }
 }
@@ -709,7 +728,7 @@ var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지�
 var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
   //  numSmp_for_quaver(?) * numSmp_pixel = sampleRate / 2 ;;  1초에 8분음표 2개로 가정함(60bpm,).
   let _bpm = document.getElementById("bpm").value;
-  let _quavermode = (document.getElementById("quaver_mode").selectedIndex == 0)?2:4;    // 8음표2개 or 16분음표4개
+  let edit_mode = (document.getElementById("quaver_mode").selectedIndex == 0)?2:4;    // 8음표2개 or 16분음표4개
   let _sign = document.getElementById("signature").value;
 
   // 초당8분음표샘플수 = g_sampleRate / 2;   // 60bpm일때
@@ -718,22 +737,26 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   // 8분음표1개의픽셀 = 1초너비/초당8분음표샘플수 = (g_sampleRate/g_numSmp_pixel) / ((g_sampleRate/2) * bpm / 60) ; 
   //           ==>  (bpm * 초당8분음표갯수) / g_numSmp_pixel;
   // note_size_in_pixel = (g_sampleRate/2) / g_numSmp_pixel ;
-  note_size_in_pixel = _bpm / (g_numSmp_pixel*_quavermode);
+  note_size_in_pixel = _bpm / (g_numSmp_pixel*edit_mode);
   switch(_sign) {
     case "2/4":
-      signature_divider = _quavermode * 2;
+      signature_divider = edit_mode * 2;
       break;
     case "3/4":
-      signature_divider = _quavermode * 3;
+      signature_divider = edit_mode * 3;
       break;
     case "6/8":
-      signature_divider = _quavermode * 6;
+      signature_divider = edit_mode * 6;
       break;
     case "4/4":
-      signature_divider = _quavermode * 4;
+      signature_divider = edit_mode * 4;
+      break;
     default:
+      signature_divider = edit_mode * parseInt(_sign.split('/')[0]);
+      console.log("_sign="+_sign+ ", split[0]="+parseInt(_sign.split('/')[0])+ ", divider=" + signature_divider );
       break;
   }
+  g_numSmp_quaver = g_sampleRate / (g_bpm/30);
 }
 
 var quaver_changed = () => {
@@ -757,9 +780,7 @@ var bpm_changed = () => {
 
 var offset_changed = () => {
   g_offset = document.getElementById("offset").value;
-  console.log("playing offset:" + g_offset);
-  // wavePosition = g_offset;
-  // wavePosition = document.getElementById("offset").value;
+  // console.log("playing offset:" + g_offset+", wavePosition="+wavePosition);
   calc_note_size();
   draw_editor();
 }
