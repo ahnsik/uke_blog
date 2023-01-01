@@ -76,6 +76,8 @@ const H_CHORD = 26;
 const H_LIRIC = 26;
 const H_TOTAL = (H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC);
 
+const mp3SmplRes = 10;    // MP3 decode 할 때의 chunkSize  - decode 된 Sample들을 array 에 복사할 때의 skip size
+
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 var chord_icon;         // 코드 테이블을 모아 둔 비트맵
 
@@ -342,7 +344,7 @@ var draw_a_note = function(ctx, data, xpos) {
 
 var g_sampleRate = 0;         // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
 var g_totalSec = 0;         // 음악 전체의 길이 (msec단위)
-var g_numSmp_pixel = 8;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
+var g_numSmp_pixel = 32;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
 var note_size_in_pixel;     // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
 var signature_divider = 8;    // default 는 4/4 박자, 8분음표
 
@@ -362,16 +364,15 @@ async function mp3Decode(mp3Buffer) {
   g_totalSec = audioBuf.duration;
   var float32Array_l = audioBuf.getChannelData(0);
   // var float32Array_r = audioBuf.getChannelData(1);
-  const chunkSize = 100;
   let i=0;
   const length = float32Array_l.length;
   array_l = [];   // 버퍼 클리어
   // array_r = [];   // 버퍼 클리어
   while(i<length) {
-    array_l.push( float32Array_l.slice(i, i+chunkSize).reduce(function(total,value) {
+    array_l.push( float32Array_l.slice(i, i+mp3SmplRes).reduce(function(total,value) {
       return Math.max(total, Math.abs(value));
     }));
-    i+=chunkSize;
+    i+=mp3SmplRes;
   }
   console.log("End of decode:"+array_l.length);
   draw_editor();
@@ -417,9 +418,6 @@ function request_mp3(filename) {
 
 
 var draw_editor = () => {
-  // g_bpm = document.getElementById("bpm").value;
-  // g_offset = document.getElementById("offset").value;
-
   let canvas=document.getElementById("edit_area");
   canvas.width = canvas_width;
   canvas.height = canvas_height;
@@ -433,7 +431,6 @@ var draw_editor = () => {
 
   calc_note_size();
 
-  draw_tab_bg(ctx, 190);
   draw_waveform(ctx, 10, 180);
 
   draw_offset_slider(ctx, 0);   // 옵셋 조정 막대
@@ -500,20 +497,6 @@ var draw_waveform = (ctx, ypos, height) => {
   ctx.font = CANVAS_FONT_TINY;
 
   let quaver_bar = 0;
-  for (var i=0; i<(canvas_width-START_XPOS); i+=note_size_in_pixel)  {
-    if (quaver_bar % signature_divider == 0) {
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, height);
-      ctx.fillStyle = '#CCE';
-      ctx.fillRect(START_XPOS+i+1, ypos, note_size_in_pixel-1, height);
-    } else {
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, height);
-      ctx.fillStyle = '#DDF';
-      ctx.fillRect(START_XPOS+i+1, ypos, note_size_in_pixel-1, height);
-    }
-    quaver_bar++;
-  }
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
     // console.log("check to drawing...??" + array_l + ",//" + array_l.length );
     new_mp3Draw(ctx, ypos, array_l);
@@ -526,9 +509,9 @@ var draw_waveform = (ctx, ypos, height) => {
 function new_mp3Draw(ctx, ypos, wavBuffer) {
   let min, max, temp_offset, value;
 
-  let current_playing_index = audioTag.currentTime*g_sampleRate/100;
-  let numIndx_for_a_sec = g_sampleRate/100;
-  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30))/100;
+  let current_playing_index = audioTag.currentTime*g_sampleRate/mp3SmplRes;
+  let numIndx_for_a_sec = g_sampleRate/mp3SmplRes;
+  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30))/mp3SmplRes;
     /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
        8분음표 길이는  1/(bpm*2/60)초,
        8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
@@ -550,7 +533,7 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
 if ( (parseInt(temp_offset) % parseInt(numIndx_for_a_quaver))===0) {
   console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_quaver/g_numSmp_pixel) + ", g_numSmp_pixel=" + parseInt(g_numSmp_pixel) );
   ctx.fillStyle = "red";
-  ctx.fillRect(START_XPOS+i, ypos, 1, 200 );
+  ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM );
 }
 
     if ( temp_offset < current_playing_index ) { 
@@ -565,16 +548,9 @@ if ( (parseInt(temp_offset) % parseInt(numIndx_for_a_quaver))===0) {
     }
     // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
-    // ctx.moveTo( START_XPOS+ i+0.5, -H_WAVEFORM );
-    // ctx.lineTo( START_XPOS+ i+0.5, H_WAVEFORM );
-
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 - min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
-
-    // ctx.moveTo( START_XPOS+ i+0.5, ypos-H_WAVEFORM-1 );
-    // ctx.lineTo( START_XPOS+ i+0.5, ypos-H_WAVEFORM );
     ctx.stroke();
-    //ctx.fillRect(i, 100-min*100, 1, (max-min)*100 );
     
   }
 }
@@ -694,7 +670,7 @@ var stop_song = function() {
 }
 
 var zoom_in = function () {
-  if (g_numSmp_pixel > 1) {
+  if (g_numSmp_pixel > 2) {
     g_numSmp_pixel = g_numSmp_pixel/2;
     let dom_offset = document.getElementById("offset");
     dom_offset.step = g_numSmp_pixel;
@@ -703,7 +679,7 @@ var zoom_in = function () {
 }
 
 var zoom_out = function () {
-  if (g_numSmp_pixel < 64 ) {
+  if (g_numSmp_pixel < 256 ) {
     g_numSmp_pixel = g_numSmp_pixel*2;
     let dom_offset = document.getElementById("offset");
     dom_offset.step = g_numSmp_pixel;
