@@ -76,7 +76,7 @@ const H_CHORD = 26;
 const H_LIRIC = 26;
 const H_TOTAL = (H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC);
 
-const WVFRM_RES = 10;    // MP3 decode 할 때의 chunkSize  - decode 된 Sample들을 array 에 복사할 때의 skip size
+// const WVFRM_RES = 10;    // MP3 decode 할 때의 chunkSize  - decode 된 Sample들을 array 에 복사할 때의 skip size
 
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 var chord_icon;         // 코드 테이블을 모아 둔 비트맵
@@ -324,7 +324,7 @@ var draw_a_note = function(ctx, data, xpos) {
 
 var g_sampleRate = 0;        // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
 var g_totalMsec = 0;         // 음악 전체의 길이 (msec단위)
-var g_numSmp_per_px = 32;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
+var g_numSmp_per_px = 256;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
 var g_numPx_per_quaver;      // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
 
 var signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8분음표
@@ -332,37 +332,14 @@ var signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8
 var g_bpm = 60;
 var g_offset = 0;
 
-//// MP3 데이터를 디코딩 하여 array_l 버퍼에 저장.
-async function mp3Decode(mp3Buffer) {
-  const ac = new AudioContext();
-  const audioBuf =  await ac.decodeAudioData(mp3Buffer);
-  console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
-  g_sampleRate = audioBuf.sampleRate;
-  g_totalMsec = audioBuf.duration;
-  let float32Array_l = audioBuf.getChannelData(0);
 
-  array_l = [];   // 버퍼 클리어
-  let i=0;
-  const length = float32Array_l.length;
-  while(i<length) {
-    array_l.push( float32Array_l.slice(i, i+WVFRM_RES).reduce(function(total,value) {
-      return Math.max(total, Math.abs(value));
-    }));
-    i+=WVFRM_RES;
-  }
-  console.log("End of decode:"+array_l.length);
-
-  draw_editor();
-}
-
+//// MP3 데이터를 로딩 하여 디코딩 요청.
 function request_mp3(filename) {
   stop_song();
-  if (filename) {     // mp3 데이터가 있는 경우에만 표시.
-    ////  loading *.MP3 data :   refer : https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
+  if (filename) {       //  loading *.MP3 data :   refer : https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     array_l = [];
-    // array_r = [];
     audioTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+filename;
-    if (!filename || filename.length == 0) {// (filename === "") {
+    if (!filename || filename.length == 0) {
       console.log("음원파일을 지정하지 않았습니다..");
       return;
     } else {
@@ -377,9 +354,9 @@ function request_mp3(filename) {
         console.log("... readyState=" + this.readyState + ", status="+this.status );
         return;
       }
-      let waveBuffer = oReq.response; // Note: not oReq.responseText
+      let mp3Buffer = oReq.response; // Note: not oReq.responseText
       console.log("start decode MP3");
-      let decodedBuffer = mp3Decode(waveBuffer);
+      mp3Decode(mp3Buffer);         // 디코딩 된 mp3 데이터는 0번채널을 array_l 라는 버퍼에 float32 데이터로 저장해 담아 둔다.
       if (array_l && array_l.length > 0) {
         console.log("[][] starting MP3 draw...");
       } else {
@@ -389,10 +366,22 @@ function request_mp3(filename) {
     oReq.send(null);
     console.log("--> request_end:" + filename );
   }
-
 }
 
+//// MP3 데이터를 디코딩 하여 array_l 버퍼에 저장.
+async function mp3Decode(mp3Buffer) {
+  const ac = new AudioContext();
+  const audioBuf =  await ac.decodeAudioData(mp3Buffer);
+  console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
+  g_sampleRate = audioBuf.sampleRate;
+  g_totalMsec = audioBuf.duration;
+  array_l = audioBuf.getChannelData(0);
+  draw_editor();
+}
 
+///////////////////////////////////////////////////////////////
+//// 편집화면영역(waveform, TAB, etc..)을 Drawing
+///////////////////////////////////////////////////////////////
 var draw_editor = () => {
   let canvas=document.getElementById("edit_area");
   canvas.width = canvas_width;
@@ -407,12 +396,11 @@ var draw_editor = () => {
 
   calc_note_size();
 
-  draw_waveform(ctx, 10, 180);
-
   draw_offset_slider(ctx, 0);   // 옵셋 조정 막대
   draw_ruler(ctx, 10);   // 상단 : 줄자
-  draw_ruler(ctx, canvas_height-12);   // 상단 : 줄자
+  draw_ruler(ctx, canvas_height-12);   // 하단 : 줄자
 
+  draw_waveform(ctx, 10, 180);
 
   // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
   ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
@@ -435,6 +423,11 @@ var draw_offset_slider = (ctx, ypos) => {
   ctx.font = CANVAS_FONT_TINY;
   ctx.fillText("offset_slider:", 0, 0, START_XPOS);
 
+  // // 커서 위치가 편집영역 안에 들어오게 되면 스크롤 가능 표시를 해 준다.
+  // if ( (cursor_ypos>ypos)&&(cursor_ypos<ypos+12) ) {
+  //   ctx.font = CANVAS_FONT_SMALLER; //'26px SeoulNamsan canvas';
+  //   ctx.fillText("◀ ▶", cursor_xpos, ypos, 8);
+  // }
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 }
@@ -445,27 +438,27 @@ var draw_ruler = (ctx, ypos) => {
   ctx.fillStyle = '#888';
   ctx.font = CANVAS_FONT_TINY;
 
-  let quaver_bar = 0;
   let grid_time;
   let time_string;
-  for (var i=0; i<(canvas_width-START_XPOS); i+=g_numPx_per_quaver )  {
-    if (quaver_bar % signature_divider == 0) {
+  for (var i=0; i<(canvas_width-START_XPOS); i++)  {
+    if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
+      console.log( "> " + (i*g_numSmp_per_px)/g_sampleRate + " != " + ((i+1)*g_numSmp_per_px)/g_sampleRate );
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
       grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
       // grid_time = (100000*(i*g_numSmp_per_px+scrollPosition))/g_sampleRate;
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
-      // console.log("grid_time="+grid_time+".toString="+time_string );
+      console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
       ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
     }
-    quaver_bar++;
   }
   ctx.fillText("playing time:", 0, ypos, START_XPOS);
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 }
 
+//// 디코딩 된 MP3 (waveform) 데이터를 캔버스에 Draw 한다. 
 var draw_waveform = (ctx, ypos, height) => {
   let color_backup = ctx.fillStyle;
   let font_backup = ctx.font;
@@ -474,29 +467,28 @@ var draw_waveform = (ctx, ypos, height) => {
 
   let quaver_bar = 0;
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
-    // console.log("check to drawing...??" + array_l + ",//" + array_l.length );
-    new_mp3Draw(ctx, ypos, array_l);
+    new_waveformDraw(ctx, ypos, array_l);
   }
 
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 };
 
-function new_mp3Draw(ctx, ypos, wavBuffer) {
-  let min, max, temp_offset, value;
+function new_waveformDraw(ctx, ypos, wavBuffer) {
+  let i, j, min, max, temp_offset, value;
 
-  let current_playing_index = audioTag.currentTime*g_sampleRate/WVFRM_RES;
-  let numIndx_for_a_sec = g_sampleRate/WVFRM_RES;
-  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30))/WVFRM_RES;
+  let current_playing_index = audioTag.currentTime*g_sampleRate;
+  let numIndx_for_a_sec = g_sampleRate;
+  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30));
     /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
        8분음표 길이는  1/(bpm*2/60)초,
        8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
     */
 
-  for (var i = 0; i< (canvas_width-START_XPOS); i++) {
-    min=100; max=0;
+  for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
+    min= 100; max= -100;
     temp_offset = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition)+parseInt(g_offset);
-    for (var j=0; j<g_numSmp_per_px; j++) {
+    for ( j=0; j<g_numSmp_per_px; j++) {
       value = wavBuffer[temp_offset +j ] * H_WAVEFORM;
       if ( value >= max)
         max = parseInt(value);
@@ -522,7 +514,7 @@ function new_mp3Draw(ctx, ypos, wavBuffer) {
     }
     // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
-    ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 - min );
+    ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 + min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
     ctx.stroke();
     
@@ -650,15 +642,17 @@ var zoom_in = function () {
     dom_offset.step = g_numSmp_per_px;
     draw_editor();
   }
+  console.log("g_numSmp_per_px :" + g_numSmp_per_px);
 }
 
 var zoom_out = function () {
-  if (g_numSmp_per_px < 256 ) {
+  if (g_numSmp_per_px < 2048 ) {
     g_numSmp_per_px = g_numSmp_per_px*2;
     let dom_offset = document.getElementById("offset");
     dom_offset.step = g_numSmp_per_px;
     draw_editor();
   }
+  console.log("g_numSmp_per_px :" + g_numSmp_per_px);
 }
 
 /*  BPM, 
@@ -687,8 +681,8 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   // 8분음표1개의픽셀 = 1초너비/초당8분음표샘플수 = (g_sampleRate/g_numSmp_per_px) / ((g_sampleRate/2) * bpm / 60) ; 
   //           ==>  (bpm * 초당8분음표갯수) / g_numSmp_per_px;
   // g_numPx_per_quaver = (g_sampleRate/2) / g_numSmp_per_px ;
-  g_numPx_per_quaver = (_bpm*WVFRM_RES) / (g_numSmp_per_px*edit_mode);
-  console.log("[][] check: g_numSmp_per_px="+g_numSmp_per_px+", g_numPx_per_quaver="+g_numPx_per_quaver);
+  g_numPx_per_quaver = (_bpm) / (g_numSmp_per_px*edit_mode);
+  // console.log("[][] check: g_numSmp_per_px="+g_numSmp_per_px+", g_numPx_per_quaver="+g_numPx_per_quaver);
 
   switch(_sign) {
     case "2/4":
