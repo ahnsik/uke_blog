@@ -152,6 +152,7 @@ window.onload = function main() {
         console.error("clear array_l. loaded="+array_l.length );
         array_l = [];
       }
+      change_speed(1.0);
       //  Drawing Tabulature
       resize_canvas( window.innerWidth-40);
     }
@@ -442,12 +443,12 @@ var draw_ruler = (ctx, ypos) => {
   let time_string;
   for (var i=0; i<(canvas_width-START_XPOS); i++)  {
     if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
-      console.log( "> " + (i*g_numSmp_per_px)/g_sampleRate + " != " + ((i+1)*g_numSmp_per_px)/g_sampleRate );
+      // console.log( "> " + (i*g_numSmp_per_px)/g_sampleRate + " not.equal " + ((i+1)*g_numSmp_per_px)/g_sampleRate );
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
       grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
       // grid_time = (100000*(i*g_numSmp_per_px+scrollPosition))/g_sampleRate;
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
-      console.log("grid_time="+grid_time+".toString="+time_string );
+      // console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
       ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
@@ -572,8 +573,9 @@ var draw_tab_bg = (ctx, ypos) => {
 
 
 var play_handler = null;
+var speed_multiplier = 1.0;
 
-var play_song = function() {
+var play_song = () => {
   if (play_handler==null) {
     audioTag.play();
     document.getElementById("play_song").src = "common/pause.svg" ;
@@ -593,8 +595,9 @@ var play_song = function() {
     // console.log("Pause: Clear Interval. :" + play_handler);
     draw_editor();
   }
-}
-var stop_song = function() {
+};
+
+var stop_song = () => {
   audioTag.pause();
   audioTag.currentTime = 0;
   document.getElementById("play_song").src = "common/play.svg" ;
@@ -603,6 +606,33 @@ var stop_song = function() {
   console.log("Stopped. - Clear Interval. :" + play_handler);
   draw_editor();
   // resize_canvas( window.innerWidth-40);
+}
+
+var change_speed = (speed) => {
+  console.log("change speed multiply:" + speed);
+  speed_multiplier = speed;
+
+  let btn_0_5 = document.getElementById("speed_0_5");  btn_0_5.src = "common/_slow0.5.svg";
+  let btn_0_75 = document.getElementById("speed_0_75");  btn_0_75.src = "common/_slow0.75.svg";
+  let btn_1_0 = document.getElementById("speed_1_0");  btn_1_0.src = "common/_ff1.0.svg";
+  let btn_1_25 = document.getElementById("speed_1_25");  btn_1_25.src = "common/_ff1.25.svg";
+  let btn_1_5 = document.getElementById("speed_1_5");  btn_1_5.src = "common/_ff1.5.svg";
+  let btn_2_0 = document.getElementById("speed_2_0");  btn_2_0.src = "common/_ff2.0.svg";
+  switch(speed) {
+    case 0.5:
+      btn_0_5.src = "common/slow0.5.svg";      break;
+    case 0.75:
+      btn_0_75.src = "common/slow0.75.svg";      break;
+    case 1.0:
+      btn_1_0.src = "common/ff1.0.svg";      break;
+    case 1.25:
+      btn_1_25.src = "common/ff1.25.svg";      break;
+    case 1.5:
+      btn_1_5.src = "common/ff1.5.svg";      break;
+    case 2.0:
+      btn_2_0.src = "common/ff2.0.svg";      break;
+  }
+  audioTag.playbackRate = speed_multiplier;
 }
 
 var zoom_in = function () {
