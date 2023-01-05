@@ -465,11 +465,9 @@ var draw_waveform = (ctx, ypos, height) => {
   ctx.fillStyle = '#888';
   ctx.font = CANVAS_FONT_TINY;
 
-  let quaver_bar = 0;
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
     new_waveformDraw(ctx, ypos, array_l);
   }
-
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 };
@@ -478,8 +476,8 @@ function new_waveformDraw(ctx, ypos, wavBuffer) {
   let i, j, min, max, temp_offset, value;
 
   let current_playing_index = audioTag.currentTime*g_sampleRate;
-  let numIndx_for_a_sec = g_sampleRate;
-  let numIndx_for_a_quaver = (g_sampleRate / (g_bpm/30));
+  let numSmp_for_a_sec = g_sampleRate;
+  let numSmp_for_a_quaver = (g_sampleRate / (g_bpm/30));
     /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
        8분음표 길이는  1/(bpm*2/60)초,
        8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
@@ -496,7 +494,7 @@ function new_waveformDraw(ctx, ypos, wavBuffer) {
         min = parseInt(value);
     }
 
-    // if ( (parseInt(temp_offset) % parseInt(numIndx_for_a_quaver))===0) {
+    // if ( (parseInt(temp_offset) % parseInt(numSmp_for_a_quaver))===0) {
     //   console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_quaver/g_numSmp_per_px) + ", g_numSmp_per_px=" + parseInt(g_numSmp_per_px) );
     //   ctx.fillStyle = "red";
     //   ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM );
@@ -505,8 +503,8 @@ function new_waveformDraw(ctx, ypos, wavBuffer) {
     if ( temp_offset < current_playing_index ) { 
       ctx.strokeStyle = "darkgray";
     } else {
-      // console.log("temp_offset="+temp_offset +",numIndx_for_a_sec="+numIndx_for_a_sec );
-      if ( ( parseInt(temp_offset/numIndx_for_a_sec) % 2) == 0 ) {
+      // console.log("temp_offset="+temp_offset +",numSmp_for_a_sec="+numSmp_for_a_sec );
+      if ( ( parseInt(temp_offset/numSmp_for_a_sec) % 2) == 0 ) {
         ctx.strokeStyle = "blue";
       } else {
         ctx.strokeStyle = "green";
@@ -521,7 +519,7 @@ function new_waveformDraw(ctx, ypos, wavBuffer) {
   }
 }
 
-
+/*
 var draw_tab_bg = (ctx, ypos) => {
   let color_backup = ctx.fillStyle;
   let font_backup = ctx.font;
@@ -568,8 +566,7 @@ var draw_tab_bg = (ctx, ypos) => {
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 };
-
-
+*/
 
 
 
@@ -597,33 +594,6 @@ var play_song = function() {
     draw_editor();
   }
 }
-/*
-var play_song = function() {
-  audioTag.play();
-
-  if (play_handler==null) {
-    play_handler = setInterval( function() {
-      resize_canvas( window.innerWidth-40);
-      // TODO: need to call mp3Draw(redraw waveform)
-      if (audioTag.ended) {
-        stop_song();
-      }
-    }, 50);
-    console.log("Play : Set Interval. :" + play_handler);
-  } else {
-    console.log("Handler aleady set.");
-  }
-}
-
-var pause_song = function() {
-  audioTag.pause();
-  clearInterval(play_handler);
-  play_handler = null;
-  console.log("Pause: Clear Interval. :" + play_handler);
-  draw_editor();
-  // resize_canvas( window.innerWidth-40);
-}
-*/
 var stop_song = function() {
   audioTag.pause();
   audioTag.currentTime = 0;
@@ -661,12 +631,6 @@ var zoom_out = function () {
     --> numSmp_quaver = g_sampleRate/2  가 된다.
     --> 그럼, qauver 당 pixel 수는 numSmp_quaver / g_numSmp_per_px  가 된다. 
        ==> g_numPx_per_quaver = (g_sampleRate/2) / g_numSmp_per_px
-
-var g_sampleRate = 0;     // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
-var g_totalMsec = 100  
-var g_numSmp_per_px = 16;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
-var g_numPx_per_quaver;     // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기
-
 */
 
 var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
