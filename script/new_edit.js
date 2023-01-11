@@ -87,8 +87,6 @@ const H_RULER = 12;
 const H_OFFSET_SLIDER = 10;
 const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC+H_RULER);
 
-// const WVFRM_RES = 10;    // MP3 decode 할 때의 chunkSize  - decode 된 Sample들을 array 에 복사할 때의 skip size
-
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 var chord_icon;         // 코드 테이블을 모아 둔 비트맵
 
@@ -469,10 +467,8 @@ var draw_ruler = (ctx, ypos) => {
   let time_string;
   for (var i=0; i<(canvas_width-START_XPOS); i++)  {
     if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
-      // console.log( "> " + (i*g_numSmp_per_px)/g_sampleRate + " not.equal " + ((i+1)*g_numSmp_per_px)/g_sampleRate );
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
       grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
-      // grid_time = (100000*(i*g_numSmp_per_px+scrollPosition))/g_sampleRate;
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
       // console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
@@ -493,37 +489,37 @@ var draw_waveform = (ctx, ypos, height) => {
   ctx.font = CANVAS_FONT_TINY;
 
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
-    new_waveformDraw(ctx, ypos, array_l);
+    waveformDraw(ctx, ypos, array_l);
   }
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 };
 
-var new_waveformDraw = (ctx, ypos, wavBuffer) => {
+var waveformDraw = (ctx, ypos, wavBuffer) => {
   let i, j, min, max, temp_offset, value;
   let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
+  let waveform_offset = g_offset * g_sampleRate/1000;
 
   let current_playing_index = audioTag.currentTime*g_sampleRate;
-  // let numSmp_for_a_sec = g_sampleRate;
-  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
-    /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
-       8분음표 길이는  1/(bpm*2/60)초,
-       8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
-    */
 
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
 
     min= wavefrom_size; max= -wavefrom_size;
-    temp_offset = (i*g_numSmp_per_px)+scrollPosition+g_offset;
+    temp_offset = (i*g_numSmp_per_px)+scrollPosition;
+    if ( (typeof(temp_offset)!="number") || 
+          (typeof(scrollPosition)!="number") ||
+          (typeof(waveform_offset) != "number") ) {
+      console.error ( "typeof temp_offset="+typeof(temp_offset)+ ", typeof scrollPosition="+typeof(scrollPosition)+ ",typeof g_offset="+typeof(waveform_offset) );
+    }
     for ( j=0; j<g_numSmp_per_px; j++) {
-      value = wavBuffer[temp_offset +j ];   // * wavefrom_size;
+      value = wavBuffer[temp_offset +waveform_offset +j ];
       if ( value >= max)
-        max = parseInt(value);
+        max = value;      //parseInt(value);
       if ( value <= min)
-        min = parseInt(value);
+        min = value;      //parseInt(value);
     }
 
-    if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+    if ( (temp_offset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
       // console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_per_quaver/g_numSmp_per_px) + ", g_numSmp_per_px=" + parseInt(g_numSmp_per_px) );
       ctx.fillStyle = QUAVER_GRID_COLOR;
     } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
@@ -533,7 +529,7 @@ var new_waveformDraw = (ctx, ypos, wavBuffer) => {
     }
     ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
 
-    if ( temp_offset < current_playing_index ) { 
+    if ( (temp_offset+waveform_offset) < current_playing_index ) { 
       ctx.strokeStyle = WAVEFORM_COLOR_PAST;
     } else {
       if ( ( parseInt(temp_offset/g_sampleRate) % 2) == 0 ) {   // 초단위 구분을 위한 색깔 변화
@@ -542,7 +538,6 @@ var new_waveformDraw = (ctx, ypos, wavBuffer) => {
         ctx.strokeStyle = WAVEFORM_COLOR_ODD;
       }
     }
-    // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100 + min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100 + max );
@@ -554,10 +549,6 @@ var new_waveformDraw = (ctx, ypos, wavBuffer) => {
 var draw_tab_notes = (ctx, ypos) => {
   let i, j, temp_offset;
 
-  /* Same with new_waveformDraw   */
-  // let numSmp_for_a_sec = g_sampleRate;
-  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;
-
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
     temp_offset = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition)+parseInt(g_offset);
 
@@ -566,85 +557,38 @@ var draw_tab_notes = (ctx, ypos) => {
       ctx.fillStyle = QUAVER_GRID_COLOR;
       ctx.fillRect(START_XPOS+i, ypos, 1, (H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC) );
     } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) {
-      // lyric - highlight
-      ctx.fillStyle = '#ECC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
-      // chord - highlight
-      ctx.fillStyle = '#EEC';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
-      // tab notes - highlight
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
-      // techinics - highlight
+      // // lyric - highlight
+      // ctx.fillStyle = '#ECC';
+      // ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
+      // // chord - highlight
+      // ctx.fillStyle = '#EEC';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
+      // // tab notes - highlight
+      // ctx.fillStyle = '#CCC';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
+      // // techinics - highlight
+      // ctx.fillStyle = '#CEC';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
       ctx.fillStyle = '#CEC';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
     } else {
-      // lyric
-      ctx.fillStyle = '#FDD';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
-      // chord
-      ctx.fillStyle = '#FFD';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
-      // tab notes
-      ctx.fillStyle = '#DDD';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
-      // techinics
+      // // lyric
+      // ctx.fillStyle = '#FDD';
+      // ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
+      // // chord
+      // ctx.fillStyle = '#FFD';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
+      // // tab notes
+      // ctx.fillStyle = '#DDD';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
+      // // techinics
+      // ctx.fillStyle = '#DFD';
+      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
       ctx.fillStyle = '#DFD';
-      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
     }
   }
 }
-
-
-/*
-var draw_tab_bg = (ctx, ypos) => {
-  let color_backup = ctx.fillStyle;
-  let font_backup = ctx.font;
-  ctx.fillStyle = '#888';
-  ctx.font = CANVAS_FONT_TINY;
-
-  let quaver_bar = 0;
-  for (var i=0; i<(canvas_width-START_XPOS); i+=g_numPx_per_quaver)  {
-    if (quaver_bar % signature_divider == 0) {
-      // grid 눈금
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM);
-      // lyric - highlight
-      ctx.fillStyle = '#ECC';
-      ctx.fillRect(START_XPOS+i+1, ypos, g_numPx_per_quaver, H_LIRIC);
-      // chord - highlight
-      ctx.fillStyle = '#EEC';
-      ctx.fillRect(START_XPOS+i+1, ypos+26, g_numPx_per_quaver, H_CHORD);
-      // tab notes - highlight
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i+1, ypos+26+26, g_numPx_per_quaver, H_NOTES);
-      // techinics - highlight
-      ctx.fillStyle = '#CEC';
-      ctx.fillRect(START_XPOS+i+1, ypos+26+26+96, g_numPx_per_quaver, H_TECHNIC);
-    } else {
-      // grid 눈금
-      ctx.fillStyle = '#CCC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM);
-      // lyric
-      ctx.fillStyle = '#FDD';
-      ctx.fillRect(START_XPOS+i+1, ypos, g_numPx_per_quaver, H_LIRIC);
-      // chord
-      ctx.fillStyle = '#FFD';
-      ctx.fillRect(START_XPOS+i+1, ypos+26, g_numPx_per_quaver, H_CHORD);
-      // tab notes
-      ctx.fillStyle = '#DDD';
-      ctx.fillRect(START_XPOS+i+1, ypos+26+26, g_numPx_per_quaver, H_NOTES);
-      // techinics
-      ctx.fillStyle = '#DFD';
-      ctx.fillRect(START_XPOS+i+1, ypos+26+26+96, g_numPx_per_quaver, H_TECHNIC);
-    }
-    quaver_bar++;
-  }
-  ctx.font = font_backup;
-  ctx.fillStyle = color_backup;
-};
-*/
-
 
 
 
@@ -657,18 +601,15 @@ var play_song = () => {
     document.getElementById("play_song").src = "common/pause.svg" ;
     play_handler = setInterval( function() {
       draw_editor();
-      // TODO: need to call mp3Draw(redraw waveform)
       if (audioTag.ended) {
         stop_song();
       }
     }, 50);
-    // console.log("Play : Set Interval. :" + play_handler);
   } else {
     audioTag.pause();
     document.getElementById("play_song").src = "common/play.svg" ;
     clearInterval(play_handler);
     play_handler = null;
-    // console.log("Pause: Clear Interval. :" + play_handler);
     draw_editor();
   }
 };
@@ -681,7 +622,6 @@ var stop_song = () => {
   play_handler = null;
   console.log("Stopped. - Clear Interval. :" + play_handler);
   draw_editor();
-  // resize_canvas( window.innerWidth-40);
 }
 
 var change_speed = (speed) => {
@@ -715,7 +655,7 @@ var zoom_in = function () {
   if (g_numSmp_per_px > 2) {
     g_numSmp_per_px = g_numSmp_per_px/2;
     let dom_offset = document.getElementById("offset");
-    dom_offset.step = g_numSmp_per_px;
+    dom_offset.step = parseInt(g_numSmp_per_px*1000/g_sampleRate);
     draw_editor();
   }
   console.log("g_numSmp_per_px :" + g_numSmp_per_px);
@@ -725,7 +665,7 @@ var zoom_out = function () {
   if (g_numSmp_per_px < 2048 ) {
     g_numSmp_per_px = g_numSmp_per_px*2;
     let dom_offset = document.getElementById("offset");
-    dom_offset.step = g_numSmp_per_px;
+    dom_offset.step = parseInt(g_numSmp_per_px*1000/g_sampleRate);
     draw_editor();
   }
   console.log("g_numSmp_per_px :" + g_numSmp_per_px);
@@ -737,16 +677,6 @@ var zoom_out = function () {
     --> numSmp_quaver = g_sampleRate/2  가 된다.
     --> 그럼, qauver 당 pixel 수는 numSmp_quaver / g_numSmp_per_px  가 된다. 
        ==> g_numPx_per_quaver = (g_sampleRate/2) / g_numSmp_per_px
-*/
-
-var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
-  //  numSmp_for_quaver(?) * numSmp_pixel = sampleRate / 2 ;;  1초에 8분음표 2개로 가정함(60bpm,).
-  g_bpm = document.getElementById("bpm").value;
-  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
-  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
-  g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
-
-  let _sign = document.getElementById("signature").value;
 
   // 초당8분음표샘플수 = g_sampleRate / 2;   // 60bpm일때
   // 초당8분음표샘플수 = (g_sampleRate/2) * bpm / 60;   // 80bpm일때
@@ -755,6 +685,14 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   //           ==>  (bpm * 초당8분음표갯수) / g_numSmp_per_px;
   // g_numPx_per_quaver = (g_sampleRate/2) / g_numSmp_per_px ;
   // console.log("[][] check: g_numSmp_per_px="+g_numSmp_per_px+", g_numPx_per_quaver="+g_numPx_per_quaver);
+*/
+
+var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
+  g_bpm = document.getElementById("bpm").value;
+  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+  g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;
+
+  let _sign = document.getElementById("signature").value;
 
   switch(_sign) {       // 1마디에 들어갈 음표 갯수
     case "2/4":
@@ -774,17 +712,9 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
       console.log("_sign="+_sign+ ", split[0]="+parseInt(_sign.split('/')[0])+ ", divider=" + signature_divider );
       break;
   }
-  // g_numSmp_quaver = g_sampleRate / (g_bpm/30);
 }
 
 var quaver_changed = () => {
-  // let value = document.getElementById("quaver_mode").selectedIndex;
-  // // console.log("편집음표:" + document.getElementById("quaver_mode").value + "(" + value + ")" );
-  // if (value==0) {
-  //   edit_mode = 8;
-  // } else {
-  //   edit_mode = 16;
-  // }
   calc_note_size();
   draw_editor();
 }
@@ -797,8 +727,8 @@ var bpm_changed = () => {
 }
 
 var offset_changed = () => {
-  g_offset = document.getElementById("offset").value;
-  // console.log("playing offset:" + g_offset+", scrollPosition="+scrollPosition);
+  g_offset = parseInt(document.getElementById("offset").value);
+  console.log("playing offset:" + g_offset+", scrollPosition="+scrollPosition);
   calc_note_size();
   draw_editor();
 }
@@ -840,6 +770,23 @@ var edit_mouseUp = (e) => {
 }
 
 
+var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
+  let imgTag = document.getElementById("thumbnail");
+  imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
+  document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
+}
+/*
+async function ThumbUploadFile() {
+  var uploadfiles = document.getElementById("loadThumbnail");
+
+  let formData = new FormData();
+  formData.append("file", uploadfiles.files[0]);
+  await fetch('/uke_blog/upload.php', {
+    method: "POST", 
+    body: formData
+  });
+  alert('The file has been uploaded successfully.');
+}
 
 async function uploadFile() {
   var uploadfiles = document.getElementById("loadMP3");
@@ -852,21 +799,4 @@ async function uploadFile() {
   });
   alert('The file has been uploaded successfully.');
 }
-
-var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
-  let imgTag = document.getElementById("thumbnail");
-  imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
-  document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
-}
-
-async function ThumbUploadFile() {
-  var uploadfiles = document.getElementById("loadThumbnail");
-
-  let formData = new FormData();
-  formData.append("file", uploadfiles.files[0]);
-  await fetch('/uke_blog/upload.php', {
-    method: "POST", 
-    body: formData
-  });
-  alert('The file has been uploaded successfully.');
-}
+*/
