@@ -69,12 +69,23 @@ const CANVAS_FONT_SMALL = '16px SeoulNamsan canvas';
 const CANVAS_FONT_SMALLER = '12px SeoulNamsan canvas';
 const CANVAS_FONT_TINY = '9px SeoulNamsan canvas';
 
-const H_WAVEFORM = 100;
+const WAVEFORM_COLOR_PAST = "darkgray";
+const WAVEFORM_COLOR_ODD = "blue";
+const WAVEFORM_COLOR_EVEN = "green";
+const QUAVER_GRID_COLOR = "#BBC";
+const QUAVER_BG_COLOR = "#CCD";
+const QUAVER_FIRST_COLOR = "#BBC";
+const LYRIC_BG_COLOR = "#FDD";
+const LYRIC_FIRST_COLOR = "#ECC";
+
+const H_WAVEFORM = 200;
 const H_TECHNIC = 48;
 const H_NOTES = 96;
 const H_CHORD = 26;
 const H_LIRIC = 26;
-const H_TOTAL = (H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC);
+const H_RULER = 12;
+const H_OFFSET_SLIDER = 10;
+const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC+H_RULER);
 
 // const WVFRM_RES = 10;    // MP3 decode 할 때의 chunkSize  - decode 된 Sample들을 array 에 복사할 때의 skip size
 
@@ -179,7 +190,7 @@ function window_resized(event) {
 
 function resize_canvas(cnvs_width) {
   canvas_width = cnvs_width;
-  canvas_height = 400;
+  canvas_height = 500;
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
   edit_area.height = canvas_height;
@@ -325,13 +336,14 @@ var draw_a_note = function(ctx, data, xpos) {
 
 var g_sampleRate = 0;        // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
 var g_totalMsec = 0;         // 음악 전체의 길이 (msec단위)
-var g_numSmp_per_px = 256;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
-var g_numPx_per_quaver;      // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
 
 var signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8분음표
-
+var g_edit_size = 8;         // 8=quaver(8분음표), 16=semi-quaver(16분음표)
 var g_bpm = 60;
 var g_offset = 0;
+var g_numSmp_per_px = 256;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
+
+var g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;      // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
 
 
 //// MP3 데이터를 로딩 하여 디코딩 요청.
@@ -376,7 +388,20 @@ async function mp3Decode(mp3Buffer) {
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
   g_sampleRate = audioBuf.sampleRate;
   g_totalMsec = audioBuf.duration;
-  array_l = audioBuf.getChannelData(0);
+  let float32Array_l = audioBuf.getChannelData(0);
+  let i=0;
+  let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
+  const length = float32Array_l.length;
+  array_l = [];
+  while(i<length) {
+    array_l.push( float32Array_l[i] * wavefrom_size );
+    // array_r.push( float32Array_r.slice(i, i+chunkSize).reduce(function(total,value) {
+    //   return Math.max(total, Math.abs(value));
+    // }));
+    i++;
+  }  
+
+
   draw_editor();
 }
 
@@ -398,10 +423,11 @@ var draw_editor = () => {
   calc_note_size();
 
   draw_offset_slider(ctx, 0);   // 옵셋 조정 막대
-  draw_ruler(ctx, 10);   // 상단 : 줄자
-  draw_ruler(ctx, canvas_height-12);   // 하단 : 줄자
+  draw_ruler(ctx, H_OFFSET_SLIDER);   // 상단 : 줄자
+  draw_ruler(ctx, canvas_height-H_RULER);   // 하단 : 줄자
 
-  draw_waveform(ctx, 10, 180);
+  draw_waveform(ctx, H_OFFSET_SLIDER+H_RULER, H_WAVEFORM);
+  draw_tab_notes(ctx, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM);
 
   // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
   ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
@@ -473,52 +499,102 @@ var draw_waveform = (ctx, ypos, height) => {
   ctx.fillStyle = color_backup;
 };
 
-function new_waveformDraw(ctx, ypos, wavBuffer) {
+var new_waveformDraw = (ctx, ypos, wavBuffer) => {
   let i, j, min, max, temp_offset, value;
+  let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
 
   let current_playing_index = audioTag.currentTime*g_sampleRate;
-  let numSmp_for_a_sec = g_sampleRate;
-  let numSmp_for_a_quaver = (g_sampleRate / (g_bpm/30));
+  // let numSmp_for_a_sec = g_sampleRate;
+  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
     /* 1초당 8분음표의 갯수는 bpm*2/60 개.. :  60bpm일때, 8분음표 2개, 80bpm일땐 8분음표가 8/3(2 + 1/3)개 etc.
        8분음표 길이는  1/(bpm*2/60)초,
        8분음표의 sample 갯수는,  sampleRate / (bpm*2/60) 개..
     */
 
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
-    min= 100; max= -100;
-    temp_offset = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition)+parseInt(g_offset);
+
+    min= wavefrom_size; max= -wavefrom_size;
+    temp_offset = (i*g_numSmp_per_px)+scrollPosition+g_offset;
     for ( j=0; j<g_numSmp_per_px; j++) {
-      value = wavBuffer[temp_offset +j ] * H_WAVEFORM;
+      value = wavBuffer[temp_offset +j ];   // * wavefrom_size;
       if ( value >= max)
         max = parseInt(value);
       if ( value <= min)
         min = parseInt(value);
     }
 
-    // if ( (parseInt(temp_offset) % parseInt(numSmp_for_a_quaver))===0) {
-    //   console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_quaver/g_numSmp_per_px) + ", g_numSmp_per_px=" + parseInt(g_numSmp_per_px) );
-    //   ctx.fillStyle = "red";
-    //   ctx.fillRect(START_XPOS+i, ypos, 1, H_WAVEFORM );
-    // }
+    if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+      // console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_per_quaver/g_numSmp_per_px) + ", g_numSmp_per_px=" + parseInt(g_numSmp_per_px) );
+      ctx.fillStyle = QUAVER_GRID_COLOR;
+    } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
+      ctx.fillStyle = QUAVER_FIRST_COLOR;
+    } else {
+      ctx.fillStyle = QUAVER_BG_COLOR;
+    }
+    ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
 
     if ( temp_offset < current_playing_index ) { 
-      ctx.strokeStyle = "darkgray";
+      ctx.strokeStyle = WAVEFORM_COLOR_PAST;
     } else {
-      // console.log("temp_offset="+temp_offset +",numSmp_for_a_sec="+numSmp_for_a_sec );
-      if ( ( parseInt(temp_offset/numSmp_for_a_sec) % 2) == 0 ) {
-        ctx.strokeStyle = "blue";
+      if ( ( parseInt(temp_offset/g_sampleRate) % 2) == 0 ) {   // 초단위 구분을 위한 색깔 변화
+        ctx.strokeStyle = WAVEFORM_COLOR_EVEN;
       } else {
-        ctx.strokeStyle = "green";
+        ctx.strokeStyle = WAVEFORM_COLOR_ODD;
       }
     }
     // console.log("drawing..."+(START_XPOS+ i)+": from " + (ypos+100-min) + " to " + (ypos+100+max) );
     ctx.beginPath();
-    ctx.moveTo( START_XPOS+ i+0.5, ypos+100.5 + min );
-    ctx.lineTo( START_XPOS+ i+0.5, ypos+100.5 + max );
+    ctx.moveTo( START_XPOS+ i+0.5, ypos+100 + min );
+    ctx.lineTo( START_XPOS+ i+0.5, ypos+100 + max );
     ctx.stroke();
-    
   }
 }
+
+
+var draw_tab_notes = (ctx, ypos) => {
+  let i, j, temp_offset;
+
+  /* Same with new_waveformDraw   */
+  // let numSmp_for_a_sec = g_sampleRate;
+  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;
+
+  for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
+    temp_offset = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition)+parseInt(g_offset);
+
+    if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {
+      // grid 눈금
+      ctx.fillStyle = QUAVER_GRID_COLOR;
+      ctx.fillRect(START_XPOS+i, ypos, 1, (H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC) );
+    } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) {
+      // lyric - highlight
+      ctx.fillStyle = '#ECC';
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
+      // chord - highlight
+      ctx.fillStyle = '#EEC';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
+      // tab notes - highlight
+      ctx.fillStyle = '#CCC';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
+      // techinics - highlight
+      ctx.fillStyle = '#CEC';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
+    } else {
+      // lyric
+      ctx.fillStyle = '#FDD';
+      ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
+      // chord
+      ctx.fillStyle = '#FFD';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
+      // tab notes
+      ctx.fillStyle = '#DDD';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
+      // techinics
+      ctx.fillStyle = '#DFD';
+      ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
+    }
+  }
+}
+
 
 /*
 var draw_tab_bg = (ctx, ypos) => {
@@ -665,8 +741,11 @@ var zoom_out = function () {
 
 var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
   //  numSmp_for_quaver(?) * numSmp_pixel = sampleRate / 2 ;;  1초에 8분음표 2개로 가정함(60bpm,).
-  let _bpm = document.getElementById("bpm").value;
-  let edit_mode = (document.getElementById("quaver_mode").selectedIndex == 0)?2:4;    // 8음표2개 or 16분음표4개
+  g_bpm = document.getElementById("bpm").value;
+  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+  // g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
+  g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;  //  (numSmp_for_a_sec / (g_bpm/30));
+
   let _sign = document.getElementById("signature").value;
 
   // 초당8분음표샘플수 = g_sampleRate / 2;   // 60bpm일때
@@ -675,24 +754,23 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   // 8분음표1개의픽셀 = 1초너비/초당8분음표샘플수 = (g_sampleRate/g_numSmp_per_px) / ((g_sampleRate/2) * bpm / 60) ; 
   //           ==>  (bpm * 초당8분음표갯수) / g_numSmp_per_px;
   // g_numPx_per_quaver = (g_sampleRate/2) / g_numSmp_per_px ;
-  g_numPx_per_quaver = (_bpm) / (g_numSmp_per_px*edit_mode);
   // console.log("[][] check: g_numSmp_per_px="+g_numSmp_per_px+", g_numPx_per_quaver="+g_numPx_per_quaver);
 
-  switch(_sign) {
+  switch(_sign) {       // 1마디에 들어갈 음표 갯수
     case "2/4":
-      signature_divider = edit_mode * 2;
+      signature_divider = g_edit_size / 2;   // (8분음표는 4개, 16분 음표는 8개)
       break;
     case "3/4":
-      signature_divider = edit_mode * 3;
+      signature_divider = g_edit_size*3 / 4;   // (8분음표는 6개, 16분 음표는 12개)
       break;
     case "6/8":
-      signature_divider = edit_mode * 6;
+      signature_divider = g_edit_size*6 / 8;   // (8분음표는 6개, 16분 음표는 12개)
       break;
     case "4/4":
-      signature_divider = edit_mode * 4;
+      signature_divider = g_edit_size;         // (8분음표는 8개, 16분 음표는 16개)
       break;
     default:
-      signature_divider = edit_mode * parseInt(_sign.split('/')[0]);
+      signature_divider = parseInt( g_edit_size * _sign.split('/')[0] / _sign.split('/')[1] );
       console.log("_sign="+_sign+ ", split[0]="+parseInt(_sign.split('/')[0])+ ", divider=" + signature_divider );
       break;
   }
