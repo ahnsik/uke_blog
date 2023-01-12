@@ -468,7 +468,6 @@ var draw_ruler = (ctx, ypos) => {
   let time_string;
   for (var i=0; i<(canvas_width-START_XPOS); i++)  {
     temp_index = (i*g_numSmp_per_px)+scrollPosition;
-    // index_withOffset = temp_index +waveform_offset;
     if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
     // if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
@@ -561,6 +560,12 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
       ctx.fillStyle = '#DFD';
       ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
     }
+    ctx.fillStyle = 'black';
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_A_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_E_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_C_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_G_Y, 1, 2);
+
     // WAVE 파형 그리기.
     if ( index_withOffset < current_playing_index ) { 
       ctx.strokeStyle = WAVEFORM_COLOR_PAST;
@@ -577,7 +582,7 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     ctx.stroke();
 
     // 악보 note 데이터 그리기 판단. 
-    if ( (index_withOffset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+    if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
       let notes = song_data.notes;
       for (j=0; j<notes.length; j++) {
         if ( (notes[j].timestamp > (temp_index*1000/g_sampleRate) ) && (notes[j].timestamp < ((temp_index+g_numSmp_per_quaver)*1000/g_sampleRate) ) ) {
@@ -591,9 +596,9 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
             ctx.fillStyle = CHORD_TEXT_COLOR;
             ctx.fillText("" + notes[j].chord, START_XPOS+ i+30, 260, 820);
           }
-          console.log( notes[j].tab );
+          // console.log( notes[j].tab );
 
-          
+
         }
       }
     }
@@ -714,7 +719,8 @@ var zoom_out = function () {
 */
 
 var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
-  g_bpm = document.getElementById("bpm").value;
+  g_bpm = parseInt(document.getElementById("bpm").value);
+  g_offset = parseInt(document.getElementById("offset").value);
   g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
   g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;
 
