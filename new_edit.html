@@ -40,9 +40,10 @@
           <option selected="selected">8분음표로 편집 </option>
           <option>16분음표로 편집</option>
         </select>, 
-        BPM: <input id="bpm" type="number" min="20" max="280" size="4" value="60" onchange="bpm_changed();"></input>, 
-        Playing Offset: <input id="offset" type="number" min="-2000" max="2000" step="10" size="8" value="1800" onchange="offset_changed();"></input>msec, 
+        <span class="space"></span>
         박자: <input id="signature" size="8" value="4/4" onchange="signature_changed();"></input> 
+        BPM: <input id="bpm" type="number" min="20" max="280" size="4" value="60" onchange="bpm_changed();"></input>, 
+        Playing Offset: <input id="offset" type="number" min="-2000" max="2000" step="10" size="8" value="0" onchange="offset_changed();"></input>msec, 
       </p>
     </div>
     <div class="control_panel">
@@ -50,9 +51,11 @@
       <img src="common/zoom-out.svg" id="zoomout" class="ctrl_btn" onclick="zoom_out();"></img>
       <span class="space"></span>
       <audio id="playing_audio"></audio>
+      <img src="common/goto_head.svg" id="goto_head" class="ctrl_btn" onclick="goto_head();"></img>
       <img src="common/play.svg" id="play_song" class="ctrl_btn" onclick="play_song();"></img>
       <!-- <img src="common/pause.svg" id="pause_song" class="ctrl_btn" onclick="pause_song();"></img> -->
       <img src="common/stop.svg" id="stop_song" class="ctrl_btn" onclick="stop_song();"></img>
+      <img src="common/rewind_10sec.svg" id="rew_10s" class="ctrl_btn" onclick="rewind_10sec();"></img>
       <span class="space"></span>
       <img src="common/_slow0.5.svg" id="speed_0_5" class="ctrl_btn" onclick="change_speed(0.5);"></img>
       <img src="common/_slow0.75.svg" id="speed_0_75" class="ctrl_btn" onclick="change_speed(0.75);"></img>

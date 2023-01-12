@@ -4,13 +4,15 @@
 	  "timestamp":1248,
 	  "chord":"",
 	  "tab":["C0"],
-	  "note":["C4"]
+	  "note":["C4"], 
+	  "lyric": "나"
 	},
 	{
 	  "timestamp":1560,
 	  "chord":"",
 	  "tab":["A0"],
-	  "note":["A4"]
+	  "note":["A4"], 
+	  "lyric": "미"
 	},
 	{
 	  "timestamp":1872,
@@ -18,13 +20,17 @@
 	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "stroke":"~",
-	  "technic":"|"
+	  "technic":"|", 
+	  "lyric": "다"
+
 	},
 	{
 	  "timestamp":3120,
 	  "chord":"",
 	  "tab":["A3"],
-	  "note":["C5"]
+	  "note":["C5"], 
+	  "lyric": "노"
+
 	},
 	{
 	  "timestamp":3432,
@@ -38,13 +44,17 @@
 	  "tab":["G2","C0","E1","A0"],
 	  "note":["A4","C4","F4","A4"],
 	  "stroke":"~",
-	  "technic":"|"
+	  "technic":"|", 
+	  "lyric": "오"
+
 	},
 	{
 	  "timestamp":4992,
 	  "chord":"",
 	  "tab":["A3"],
-	  "note":["C5"]
+	  "note":["C5"], 
+	  "lyric": "쿠"
+
 	},
 	{
 	  "timestamp":5616,
@@ -52,7 +62,8 @@
 	  "tab":["G2","C2","E1","A0"],
 	  "note":["A4","D4","F4","A4"],
 	  "stroke":"~",
-	  "technic":"|"
+	  "technic":"|", 
+	  "lyric": "니"
 	},
 	{
 	  "timestamp":7488,
@@ -812,7 +823,7 @@
   "create_date":"----/--/--",
   "source":"Track24_Promiss_HowlCastle.mp3",
   "thumbnail":"UkuleleGhibriCollection.jpg",
-  "start_offset":"0",
+  "start_offset":"838",
   "basic_beat":"3/4",
-  "bpm":"96.0"
+  "bpm":"90.0"
 }

@@ -78,6 +78,9 @@ const QUAVER_FIRST_COLOR = "#BBC";
 const LYRIC_BG_COLOR = "#FDD";
 const LYRIC_FIRST_COLOR = "#ECC";
 
+const CHORD_TEXT_COLOR = "#155";
+const LYRIC_TEXT_COLOR = "#344";
+
 const H_WAVEFORM = 200;
 const H_TECHNIC = 48;
 const H_NOTES = 96;
@@ -146,7 +149,10 @@ window.onload = function main() {
       console.log("[][] BPM value set:" + dom_bpm.value + " (from:" + song_data.bpm + ")"  );
       let dom_offset = document.getElementById("offset");
       dom_offset.value = parseInt(song_data.start_offset);
-      
+      let dom_beat = document.getElementById("signature");
+      dom_beat.value = song_data.basic_beat;
+      console.log("[][] 박자:" + song_data.basic_beat );
+
       scrollPosition = 0;
       // 앨범thumbnail 파일 표시 .
       changeThumnail(song_data.thumbnail);
@@ -161,6 +167,7 @@ window.onload = function main() {
         console.error("clear array_l. loaded="+array_l.length );
         array_l = [];
       }
+      calc_note_size();
       change_speed(1.0);
       //  Drawing Tabulature
       resize_canvas( window.innerWidth-40);
@@ -398,8 +405,6 @@ async function mp3Decode(mp3Buffer) {
     // }));
     i++;
   }  
-
-
   draw_editor();
 }
 
@@ -425,13 +430,7 @@ var draw_editor = () => {
   draw_ruler(ctx, canvas_height-H_RULER);   // 하단 : 줄자
 
   draw_waveform(ctx, H_OFFSET_SLIDER+H_RULER, H_WAVEFORM);
-  draw_tab_notes(ctx, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM);
 
-  // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
-  ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
-  ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 90, 820);
-  ctx.font = CANVAS_FONT_SMALLER; //'26px SeoulNamsan canvas';
-  ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 140, 820);
 }
 
 var draw_offset_slider = (ctx, ypos) => {
@@ -458,6 +457,8 @@ var draw_offset_slider = (ctx, ypos) => {
 }
 
 var draw_ruler = (ctx, ypos) => {
+  let temp_index; //, index_withOffset;
+
   let color_backup = ctx.fillStyle;
   let font_backup = ctx.font;
   ctx.fillStyle = '#888';
@@ -466,14 +467,17 @@ var draw_ruler = (ctx, ypos) => {
   let grid_time;
   let time_string;
   for (var i=0; i<(canvas_width-START_XPOS); i++)  {
-    if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
+    temp_index = (i*g_numSmp_per_px)+scrollPosition;
+    // index_withOffset = temp_index +waveform_offset;
+    if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+    // if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
       ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
       grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
       time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
       // console.log("grid_time="+grid_time+".toString="+time_string );
       ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
     } else {
-      ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
+      // ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
     }
   }
   ctx.fillText("playing time:", 0, ypos, START_XPOS);
@@ -490,49 +494,78 @@ var draw_waveform = (ctx, ypos, height) => {
 
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
     waveformDraw(ctx, ypos, array_l);
+  } else {
+    // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
+    ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
+    ctx.fillText("No waveform data.", 120, 90, 820);
+    // ctx.font = CANVAS_FONT_SMALLER; //'26px SeoulNamsan canvas';
+    // ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 140, 820);
   }
+
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
 };
 
 var waveformDraw = (ctx, ypos, wavBuffer) => {
-  let i, j, min, max, temp_offset, value;
+  let i, j, min, max, temp_index, index_withOffset, value;
   let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
-  let waveform_offset = g_offset * g_sampleRate/1000;
+  let waveform_offset = parseInt(g_offset * g_sampleRate/1000);
 
-  let current_playing_index = audioTag.currentTime*g_sampleRate;
+  let current_playing_index = audioTag.currentTime*g_sampleRate + waveform_offset;
+
+  if ( ! audioTag.paused ) {    // 재생 중인 동안에는, Playing Position 위치에 맞게 자동으로 scrolling..
+    let leftScrollLimit =  0;
+    let rightScrollLimit = ((canvas_width-START_XPOS)*g_numSmp_per_px*0.8);   // 화면 크기의 80%진행 위치
+    if ( (current_playing_index-scrollPosition) > rightScrollLimit ) {
+      scrollPosition = parseInt(current_playing_index - rightScrollLimit ) ;
+    }
+    if ( (current_playing_index-scrollPosition) < leftScrollLimit ) {
+      scrollPosition = parseInt(current_playing_index) ;
+    }
+  }
 
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
 
     min= wavefrom_size; max= -wavefrom_size;
-    temp_offset = (i*g_numSmp_per_px)+scrollPosition;
-    if ( (typeof(temp_offset)!="number") || 
+    temp_index = (i*g_numSmp_per_px)+scrollPosition;
+    index_withOffset = temp_index +waveform_offset;
+    if ( (typeof(temp_index)!="number") || 
           (typeof(scrollPosition)!="number") ||
           (typeof(waveform_offset) != "number") ) {
-      console.error ( "typeof temp_offset="+typeof(temp_offset)+ ", typeof scrollPosition="+typeof(scrollPosition)+ ",typeof g_offset="+typeof(waveform_offset) );
+      console.error ( "typeof temp_index="+typeof(temp_index)+ ", typeof scrollPosition="+typeof(scrollPosition)+ ",typeof g_offset="+typeof(waveform_offset) );
     }
+
+    // min-max 계산
     for ( j=0; j<g_numSmp_per_px; j++) {
-      value = wavBuffer[temp_offset +waveform_offset +j ];
+      value = wavBuffer[temp_index +j ];
       if ( value >= max)
         max = value;      //parseInt(value);
       if ( value <= min)
         min = value;      //parseInt(value);
     }
 
-    if ( (temp_offset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
-      // console.log("quaver check: i="+i+", offset="+temp_offset + ", quaver_smp="+parseInt(g_numSmp_per_quaver/g_numSmp_per_px) + ", g_numSmp_per_px=" + parseInt(g_numSmp_per_px) );
+    // 박자 구분 grid background 그리기
+    if ( (index_withOffset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
       ctx.fillStyle = QUAVER_GRID_COLOR;
-    } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      // ctx.fillStyle = QUAVER_GRID_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
+    } else if ( (parseInt(index_withOffset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
       ctx.fillStyle = QUAVER_FIRST_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      ctx.fillStyle = '#CEC';
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
     } else {
       ctx.fillStyle = QUAVER_BG_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      ctx.fillStyle = '#DFD';
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
     }
-    ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
-
-    if ( (temp_offset+waveform_offset) < current_playing_index ) { 
+    // WAVE 파형 그리기.
+    if ( index_withOffset < current_playing_index ) { 
       ctx.strokeStyle = WAVEFORM_COLOR_PAST;
     } else {
-      if ( ( parseInt(temp_offset/g_sampleRate) % 2) == 0 ) {   // 초단위 구분을 위한 색깔 변화
+      if ( ( parseInt(index_withOffset/g_sampleRate) % 2) == 0 ) {   // 초단위 구분을 위한 색깔 변화
         ctx.strokeStyle = WAVEFORM_COLOR_EVEN;
       } else {
         ctx.strokeStyle = WAVEFORM_COLOR_ODD;
@@ -542,51 +575,29 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100 + min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100 + max );
     ctx.stroke();
-  }
-}
 
+    // 악보 note 데이터 그리기 판단. 
+    if ( (index_withOffset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+      let notes = song_data.notes;
+      for (j=0; j<notes.length; j++) {
+        if ( (notes[j].timestamp > (temp_index*1000/g_sampleRate) ) && (notes[j].timestamp < ((temp_index+g_numSmp_per_quaver)*1000/g_sampleRate) ) ) {
+          if (notes[j].lyric) {
+            ctx.font = CANVAS_FONT_BASIC;
+            ctx.fillStyle = LYRIC_TEXT_COLOR;
+            ctx.fillText("" + notes[j].lyric, START_XPOS+ i+30, 230, 820);
+          }
+          if (notes[j].chord) {
+            ctx.font = CANVAS_FONT_BASIC;
+            ctx.fillStyle = CHORD_TEXT_COLOR;
+            ctx.fillText("" + notes[j].chord, START_XPOS+ i+30, 260, 820);
+          }
+          console.log( notes[j].tab );
 
-var draw_tab_notes = (ctx, ypos) => {
-  let i, j, temp_offset;
-
-  for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
-    temp_offset = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition)+parseInt(g_offset);
-
-    if ( (parseInt(temp_offset) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {
-      // grid 눈금
-      ctx.fillStyle = QUAVER_GRID_COLOR;
-      ctx.fillRect(START_XPOS+i, ypos, 1, (H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC) );
-    } else if ( (parseInt(temp_offset / g_numSmp_per_quaver) % signature_divider ) === 0 ) {
-      // // lyric - highlight
-      // ctx.fillStyle = '#ECC';
-      // ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
-      // // chord - highlight
-      // ctx.fillStyle = '#EEC';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
-      // // tab notes - highlight
-      // ctx.fillStyle = '#CCC';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
-      // // techinics - highlight
-      // ctx.fillStyle = '#CEC';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
-      ctx.fillStyle = '#CEC';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
-    } else {
-      // // lyric
-      // ctx.fillStyle = '#FDD';
-      // ctx.fillRect(START_XPOS+i, ypos, 1, H_LIRIC);
-      // // chord
-      // ctx.fillStyle = '#FFD';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC, 1, H_CHORD);
-      // // tab notes
-      // ctx.fillStyle = '#DDD';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD, 1, H_NOTES);
-      // // techinics
-      // ctx.fillStyle = '#DFD';
-      // ctx.fillRect(START_XPOS+i, ypos+H_LIRIC+H_CHORD+H_NOTES, 1, H_TECHNIC);
-      ctx.fillStyle = '#DFD';
-      ctx.fillRect(START_XPOS+i, ypos, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
+          
+        }
+      }
     }
+
   }
 }
 
@@ -596,7 +607,7 @@ var play_handler = null;
 var speed_multiplier = 1.0;
 
 var play_song = () => {
-  if (play_handler==null) {
+  if ( audioTag.paused ) {   ////  play_handler==null) {
     audioTag.play();
     document.getElementById("play_song").src = "common/pause.svg" ;
     play_handler = setInterval( function() {
@@ -620,7 +631,22 @@ var stop_song = () => {
   document.getElementById("play_song").src = "common/play.svg" ;
   clearInterval(play_handler);
   play_handler = null;
-  console.log("Stopped. - Clear Interval. :" + play_handler);
+  // console.log("Stopped. - Clear Interval. :" + play_handler);
+  draw_editor();
+}
+
+var goto_head = () => {
+  audioTag.currentTime = 0;
+  scrollPosition = 0;
+  draw_editor();
+}
+
+var rewind_10sec = () => {
+  if (audioTag.currentTime > 10) {
+    audioTag.currentTime = audioTag.currentTime-10;
+  } else {
+    audioTag.currentTime = 0;
+  }
   draw_editor();
 }
 
