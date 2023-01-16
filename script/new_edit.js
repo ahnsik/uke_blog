@@ -85,10 +85,10 @@ const H_WAVEFORM = 200;
 const H_TECHNIC = 48;
 const H_NOTES = 96;
 const H_CHORD = 26;
-const H_LIRIC = 26;
+const H_LYRIC = 26;
 const H_RULER = 12;
 const H_OFFSET_SLIDER = 10;
-const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LIRIC+H_RULER);
+const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LYRIC+H_RULER);
 
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 var chord_icon;         // 코드 테이블을 모아 둔 비트맵
@@ -206,7 +206,6 @@ function resize_canvas(cnvs_width) {
   draw_editor();
 }
 
-/*
 var chord_name_table = [
   "C",   "Cm",   "C7",  "Cmaj7",  "Cm7",  "Cdim",  "Cm7b5",  "Caug",  "Csus4",  "C6",  "C9",  "Cmaj9",  "Cmmaj7",  "Cadd9",
   "C#",  "C#m",  "C#7", "C#maj7", "C#m7", "C#dim", "C#m7b5", "C#aug", "C#sus4", "C#6", "C#9", "C#maj9", "C#mmaj7", "C#add9",
@@ -221,6 +220,8 @@ var chord_name_table = [
   "A#",  "A#m",  "A#7", "A#maj7", "A#m7", "A#dim", "A#m7b5", "A#aug", "A#sus4", "A#6", "A#9", "A#maj9", "A#mmaj7", "A#add9",
   "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
 ];
+
+/*
 
 ////  TAB 악보의 바탕 (4줄) 그리기.
 var draw_tab_lines = function(ctx, ypos) {
@@ -251,8 +252,10 @@ var draw_notes = function(ctx, data, start_idx) {
   return count;
 }
 
+*/
+
 ////   1개의 화음을 표시
-var draw_a_note = function(ctx, data, xpos) {
+var draw_a_note = function(ctx, data, xpos, ypos) {
   var g, c, e, a;             // 플랫 정보
   var f_g, f_c, f_e, f_a;     // finger 정보 
   var c_g, c_c, c_e, c_a;     // 숫자의 색상 (y좌표) 컬러 값 (1=검지=green, 2=중지=Magenta, 3=약지=CYAN, 4=새끼=짙은파랑)
@@ -285,59 +288,56 @@ var draw_a_note = function(ctx, data, xpos) {
   // 마디 구분 표시
   if (data.technic) {
     if (data.technic.indexOf('|') >= 0) {   // 마디 표시
-      ctx.fillRect(xpos-2, TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
+      ctx.fillRect(xpos-2, ypos+TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
     }
     // if ( data.technic.indexOf('3') >= 0 ) {     // 셋 잇단음표를 표시
-    //   ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+    //   ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, ypos+STROKE_ICON_Y+8,  14,8);
     // }
   }
 
   // 코드 표시 (아이콘)
-  if (data.chord) {         // 코드를 표시
-    var chord_index = chord_name_table.indexOf(data.chord);
-    // console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
-    ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
-  }
+  // if (data.chord) {         // 코드를 표시
+  //   var chord_index = chord_name_table.indexOf(data.chord);
+  //   ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, ypos+10,  49, 53);
+  // }
   // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
   if (data.stroke) {         // 스트로크를 표시
     // console.log("stroke: " + data.stroke );
     if ( data.stroke.indexOf('D') >= 0 ) {
-      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+      ctx.drawImage(note_icon, 339, 64, 14,26,  xpos, ypos+STROKE_ICON_Y,  14,26);
     } else if ( data.stroke.indexOf('U') >= 0 ) {
-      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, STROKE_ICON_Y,  14,26);
+      ctx.drawImage(note_icon, 354, 64, 14,26,  xpos, ypos+STROKE_ICON_Y,  14,26);
     } 
     if ( data.stroke.indexOf('H') >= 0 ) {
-      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
+      ctx.drawImage(note_icon, 369, 65, 11,15,  xpos+16, ypos+STROKE_ICON_Y,  11,15);
     } else if ( data.stroke.indexOf('P') >= 0 ) {
-      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+16, STROKE_ICON_Y,  11,15);
+      ctx.drawImage(note_icon, 382, 65, 11,15,  xpos+16, ypos+STROKE_ICON_Y,  11,15);
     } else if (data.stroke.indexOf('s') >= 0 ) {    // 슬라이드를 표시
-      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, STROKE_ICON_Y+8,  14,8);
+      ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, ypos+STROKE_ICON_Y+8,  14,8);
     }
     if ( data.stroke.indexOf('~') >= 0 ) {
-      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, STROKE_ICON_Y-64,  9,63);
+      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, ypos+STROKE_ICON_Y-64,  9,63);
     }
   }
   // 화음 및 음표에 따른 연주 플랫 정보를 표시. 
   if (g != undefined ) {
-    ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, TAB_LINE_G_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+    ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, ypos+TAB_LINE_G_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
   if (c != undefined ) {
-    ctx.drawImage(note_icon, c*18, c_c, 15, 12,   xpos, TAB_LINE_C_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+    ctx.drawImage(note_icon, c*18, c_c, 15, 12,   xpos, ypos+TAB_LINE_C_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
   if (e != undefined ) {
-    ctx.drawImage(note_icon, e*18, c_e, 15, 12,   xpos, TAB_LINE_E_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+    ctx.drawImage(note_icon, e*18, c_e, 15, 12,   xpos, ypos+TAB_LINE_E_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
   if (a != undefined ) {
-    ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, TAB_LINE_A_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
+    ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, ypos+TAB_LINE_A_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
-  // 가사를 표시
-  if (data.lyric) {
-    ctx.fillText( data.lyric, xpos, LYRIC_TEXT_Y );
-  }
+  // // 가사를 표시
+  // if (data.lyric) {
+  //   ctx.fillText( data.lyric, xpos, ypos+LYRIC_TEXT_Y );
+  // }
 
 }
-
-*/
 
 var g_sampleRate = 0;        // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
 var g_totalMsec = 0;         // 음악 전체의 길이 (msec단위)
@@ -431,6 +431,7 @@ var draw_editor = () => {
 
   draw_waveform(ctx, H_OFFSET_SLIDER+H_RULER, H_WAVEFORM);
 
+  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   START_XPOS-28, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
 }
 
 var draw_offset_slider = (ctx, ypos) => {
@@ -523,6 +524,36 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     }
   }
 
+  /* BG만 먼저 그려주고 */
+  for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
+    temp_index = (i*g_numSmp_per_px)+scrollPosition;
+    index_withOffset = temp_index +waveform_offset;
+    // 재생 중인 동안에는, Playing Position 위치에 맞게 자동으로 scrolling..
+    // 박자 구분 grid background 그리기
+    if ( (index_withOffset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+      ctx.fillStyle = QUAVER_GRID_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      // ctx.fillStyle = QUAVER_GRID_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+    } else if ( (parseInt(index_withOffset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
+      ctx.fillStyle = QUAVER_FIRST_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      ctx.fillStyle = '#CEC';
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+    } else {
+      ctx.fillStyle = QUAVER_BG_COLOR;
+      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
+      ctx.fillStyle = '#DFD';
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+    }
+    ctx.fillStyle = 'black';
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_E_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_C_Y, 1, 2);
+    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_G_Y, 1, 2);
+  }
+
+  /* 음파 Waveform 과 대이터를 나중에 그려 줘야 함. - 동시에 그리며느 그려진 글자가 지워지므로. */
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
 
     min= wavefrom_size; max= -wavefrom_size;
@@ -543,29 +574,6 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
         min = value;      //parseInt(value);
     }
 
-    // 박자 구분 grid background 그리기
-    if ( (index_withOffset % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
-      ctx.fillStyle = QUAVER_GRID_COLOR;
-      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
-      // ctx.fillStyle = QUAVER_GRID_COLOR;
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
-    } else if ( (parseInt(index_withOffset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
-      ctx.fillStyle = QUAVER_FIRST_COLOR;
-      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
-      ctx.fillStyle = '#CEC';
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
-    } else {
-      ctx.fillStyle = QUAVER_BG_COLOR;
-      ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
-      ctx.fillStyle = '#DFD';
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LIRIC+H_CHORD+H_NOTES);
-    }
-    ctx.fillStyle = 'black';
-    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_A_Y, 1, 2);
-    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_E_Y, 1, 2);
-    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_C_Y, 1, 2);
-    ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+TAB_LINE_G_Y, 1, 2);
-
     // WAVE 파형 그리기.
     if ( index_withOffset < current_playing_index ) { 
       ctx.strokeStyle = WAVEFORM_COLOR_PAST;
@@ -583,21 +591,24 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
 
     // 악보 note 데이터 그리기 판단. 
     if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+      ctx.font = CANVAS_FONT_BASIC;
       let notes = song_data.notes;
       for (j=0; j<notes.length; j++) {
         if ( (notes[j].timestamp > (temp_index*1000/g_sampleRate) ) && (notes[j].timestamp < ((temp_index+g_numSmp_per_quaver)*1000/g_sampleRate) ) ) {
           if (notes[j].lyric) {
-            ctx.font = CANVAS_FONT_BASIC;
             ctx.fillStyle = LYRIC_TEXT_COLOR;
-            ctx.fillText("" + notes[j].lyric, START_XPOS+ i+30, 230, 820);
+            ctx.fillText("" + notes[j].lyric, START_XPOS+ i+30.5, 230, 820);
           }
           if (notes[j].chord) {
-            ctx.font = CANVAS_FONT_BASIC;
-            ctx.fillStyle = CHORD_TEXT_COLOR;
-            ctx.fillText("" + notes[j].chord, START_XPOS+ i+30, 260, 820);
+            // ctx.fillStyle = CHORD_TEXT_COLOR;
+            // ctx.fillText("" + notes[j].chord, START_XPOS+ i+30, 260, 820);
+            let chord_index = chord_name_table.indexOf(notes[j].chord);
+            ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  START_XPOS+i+30, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER+H_LYRIC,  49, 53);
           }
-          // console.log( notes[j].tab );
-
+          if (notes[j].tab) {
+            ctx.fillStyle = CHORD_TEXT_COLOR;
+            draw_a_note(ctx, notes[j], START_XPOS+i+30.5, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER+H_CHORD );
+          }
 
         }
       }
