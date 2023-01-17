@@ -186,6 +186,21 @@ function getParameterByName(name) {
 
 window.addEventListener("resize", window_resized);
 function window_resized(event) {
+  // let dlg_wnd = document.getElementById("note_edit_window");
+  // // dlg_wnd.left = 10;
+  // console.log("dlg_wnd="+dlg_wnd.style.left );
+
+   dlg_wnd = document.getElementsByClassName("dialog");
+  console.log("num="+dlg_wnd.length);
+  for (let i=0; i<dlg_wnd.length; i++) {
+    let w = dlg_wnd[i].offsetWidth;
+    let h = dlg_wnd[i].offsetHeight;
+    dlg_wnd[i].style.left = (event.target.innerWidth-w)/2 + "px";
+    dlg_wnd[i].style.top = (event.target.innerHeight-h)/2 + "px";
+    console.log("i="+i+", width=" + w+", height=" + h );
+  }
+
+  console.log("resize window.." );
   resize_canvas (event.target.innerWidth-40 );
 }
 
@@ -868,6 +883,8 @@ var edit_mouseUp = (e) => {
       case "note_clicked":
       case "technic_clicked":
         // note 데이터 편집..
+        let dlg_wnd = document.getElementById("note_edit_window");
+        dlg_wnd.classList.remove("closed");
         break;
       // default:
       //   break;
