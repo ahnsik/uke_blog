@@ -195,7 +195,7 @@ function window_resized(event) {
 
 function resize_canvas(cnvs_width) {
   canvas_width = cnvs_width;
-  canvas_height = 500;
+  canvas_height = 430;
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
   edit_area.height = canvas_height;
@@ -417,10 +417,10 @@ var draw_editor = () => {
   canvas.height = canvas_height;
   let ctx = canvas.getContext("2d");
   ctx.textBaseline = 'top';
-  ctx.font = CANVAS_FONT_BASIC;   //'36px SeoulNamsan canvas';
+  // ctx.font = CANVAS_FONT_TINY;
   ctx.fillStyle = 'white';
   ctx.clearRect(0, 0, canvas_width, canvas_height);
-  ctx.fillStyle = 'black';
+  // ctx.fillStyle = 'black';
   ctx.imageSmoothingEnabled= true;
 
   calc_note_size();
@@ -431,7 +431,12 @@ var draw_editor = () => {
 
   draw_waveform(ctx, H_OFFSET_SLIDER+H_RULER, H_WAVEFORM);
 
+  ctx.fillStyle = '#888';
+  ctx.font = CANVAS_FONT_TINY;
+  ctx.fillText("lyric:", 30, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC/2, 120);
+  ctx.fillText("chord:", 26, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD/2, 120);
   ctx.drawImage(note_icon, 19*18, 0, 28, 63,   START_XPOS-28, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+  ctx.fillText("technic:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC/2, 120);
 }
 
 var draw_offset_slider = (ctx, ypos) => {
@@ -491,7 +496,7 @@ var draw_waveform = (ctx, ypos, height) => {
   let font_backup = ctx.font;
   ctx.fillStyle = '#888';
   ctx.font = CANVAS_FONT_TINY;
-
+  ctx.fillText("waveform:", 10, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM/2, 120);
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
     waveformDraw(ctx, ypos, array_l);
   } else {
@@ -787,18 +792,61 @@ var signature_changed = () => {
 var last_posX=0, last_posY=0;
 var scroll_x = 0, prev_position=0;
 var isClicked = false;
+var click_pos = null;
+
 var edit_mouseDown = (e) => {
-  last_posX = e.clientX;
-  last_posY = e.clientY;
+  let canvas = document.getElementById("edit_area");
+  const rect = canvas.getBoundingClientRect();
+  last_posX = e.clientX - rect.left;
+  last_posY = e.clientY - rect.top;
   scroll_x = 0;
   prev_position = scrollPosition;
   isClicked = true;
+  if (last_posY <= H_OFFSET_SLIDER) {
+    click_pos = "offset_slide";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER) {     // ((e.clientY > H_OFFSET_SLIDER)&&(e.clientY < H_OFFSET_SLIDER+H_RULER)) {
+    click_pos = "ruler_slide";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM) {
+    click_pos = "waveform_slide";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC) {
+    click_pos = "lyric_clicked";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD) {
+    click_pos = "chord_clicked";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES) {
+    click_pos = "note_clicked";
+  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC) {
+    click_pos = "technic_clicked";
+  } else {     // if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC) {
+    click_pos = "ruler_slide";
+  }
   e.preventDefault();
 }
 var edit_mouseMove = (e) => {
   if (isClicked) {
-    scroll_x = (last_posX - e.clientX)*g_numSmp_per_px;
-    scrollPosition = prev_position+scroll_x;
+    let canvas = document.getElementById("edit_area");
+    const rect = canvas.getBoundingClientRect();
+    let cursor_x = e.clientX - rect.left;
+    let cursor_y = e.clientY - rect.top;
+    scroll_x = (last_posX - cursor_x)*g_numSmp_per_px;
+    // console.log("Scroll function:"+ click_pos + ", clicked_ypos:"+cursor_y); 
+    switch(click_pos) {
+      case "ruler_slide":
+      case "waveform_slide":
+        scrollPosition = prev_position+scroll_x;
+        break;
+      // case "offset_slide":
+      //   let dom_offset = document.getElementById("offset");
+      //   dom_offset.value = parseInt(dom_offset.value)+scroll_x;
+      //   offset_changed();
+      //   break;
+      // case "lyric_clicked":
+      // case "chord_clicked":
+      // case "note_clicked":
+      // case "technic_clicked":
+      // default:
+      //   // note 데이터 편집..
+      //   break;
+    }
   }
   e.preventDefault();
   draw_editor();
@@ -806,7 +854,25 @@ var edit_mouseMove = (e) => {
 var edit_mouseUp = (e) => {
   last_posX = 0;
   last_posY = 0;
-  scrollPosition = prev_position+scroll_x;
+  // scrollPosition = prev_position+scroll_x;
+  if (isClicked) {
+    switch(click_pos) {
+      case "ruler_slide":
+      case "waveform_slide":
+        scrollPosition = prev_position+scroll_x;
+        break;
+      // case "offset_slide":
+      //   break;
+      case "lyric_clicked":
+      case "chord_clicked":
+      case "note_clicked":
+      case "technic_clicked":
+        // note 데이터 편집..
+        break;
+      // default:
+      //   break;
+    }
+  }
   isClicked = false;
   e.preventDefault();
   draw_editor();
