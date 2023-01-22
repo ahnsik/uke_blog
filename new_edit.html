@@ -73,7 +73,7 @@
 
     <div id="note_edit_window" class="dialog closed">
       <p class="dlg_title">NOTE EDIT</p>
-      <p><span class="label">time stamp</span><input id="timeStamp_input" type="number" value="0"/><span class="label">msec</span>  <br/>
+      <p><span class="label">time stamp</span><input id="timeStamp_input" type="number" value="0"/><span class="label unit">msec</span>  <br/>
         <span class="label">lyric</span><input id="lyric_input" type="text" value=""/>  <br/>
         <span class="label">chord</span><input id="chord_input" type="text" value=""/> <button id="auto">AUTO</button>  <br/>
         <span class="label">A</span><input id="a_input" type="text" value=""/>  <br/>
@@ -82,8 +82,8 @@
         <span class="label">G</span><input id="g_input" type="text" value=""/>
       </p>
       <p><span class="label">Technic</span><input id="technic_input" type="text" value=""/></p>
-      <p><input id="remove_note" type="checkbox">delete this note.</button> </p>
-      <p><button id="ok">지정</button> <button id="cancel">취소</button> </p>
+      <p id="delete_check"><input id="remove_note" type="checkbox">delete this note.</button> </p>
+      <p class="button_line"><button id="ok" onclick="btn_ok_click();">지정</button> <button id="cancel" onclick="btn_cancle_click();">취소</button> </p>
     </div>
 
     <div class="guide">

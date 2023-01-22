@@ -178,19 +178,15 @@ window.onload = function main() {
 }
 
 function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-      results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
 window.addEventListener("resize", window_resized);
 function window_resized(event) {
-  // let dlg_wnd = document.getElementById("note_edit_window");
-  // // dlg_wnd.left = 10;
-  // console.log("dlg_wnd="+dlg_wnd.style.left );
-
-   dlg_wnd = document.getElementsByClassName("dialog");
+  dlg_wnd = document.getElementsByClassName("dialog");
   console.log("num="+dlg_wnd.length);
   for (let i=0; i<dlg_wnd.length; i++) {
     let w = dlg_wnd[i].offsetWidth;
@@ -848,6 +844,7 @@ var edit_mouseMove = (e) => {
       case "ruler_slide":
       case "waveform_slide":
         scrollPosition = prev_position+scroll_x;
+        console.log("scrollPosition:"+ (scrollPosition*1000)/g_sampleRate ); 
         break;
       // case "offset_slide":
       //   let dom_offset = document.getElementById("offset");
@@ -871,6 +868,11 @@ var edit_mouseUp = (e) => {
   last_posY = 0;
   // scrollPosition = prev_position+scroll_x;
   if (isClicked) {
+    let canvas = document.getElementById("edit_area");
+    const rect = canvas.getBoundingClientRect();
+    let cursor_x = e.clientX - rect.left;
+    let cursor_y = e.clientY - rect.top;
+
     switch(click_pos) {
       case "ruler_slide":
       case "waveform_slide":
@@ -883,8 +885,10 @@ var edit_mouseUp = (e) => {
       case "note_clicked":
       case "technic_clicked":
         // note 데이터 편집..
-        let dlg_wnd = document.getElementById("note_edit_window");
-        dlg_wnd.classList.remove("closed");
+        if (cursor_x > START_XPOS) {
+          console.log("clicked xpos="+cursor_x+", clicked_ts:" + ((cursor_x-START_XPOS)*g_numSmp_per_px*1000)/g_sampleRate );
+          open_note_edit_dlg();
+        }
         break;
       // default:
       //   break;
@@ -894,7 +898,21 @@ var edit_mouseUp = (e) => {
   e.preventDefault();
   draw_editor();
 }
+var btn_cancle_click = () => {
+  close_note_edit_dlg();
+}
+var btn_ok_click = () => {
+  close_note_edit_dlg();
+}
 
+var open_note_edit_dlg = () => {
+  let dlg_wnd = document.getElementById("note_edit_window");
+  dlg_wnd.classList.remove("closed");
+}
+var close_note_edit_dlg = () => {
+  let dlg_wnd = document.getElementById("note_edit_window");
+  dlg_wnd.classList.add("closed");
+}
 
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   let imgTag = document.getElementById("thumbnail");

@@ -102,7 +102,7 @@ select,input {
 
 .dialog {
   display: block;
-  width: 16em;
+  width: 18em;
   height: 22em;
   background-color: rgba(192, 223, 250, 0.95);
   border-radius: 20px;
@@ -113,7 +113,7 @@ select,input {
   align-items: center;
   overflow: hidden;   /* Scroll Bar 표시 안되게.  */
   left: 250px;
-  top: 200px;
+  top: 120px;
   position: fixed;
   z-index: 2000;
 	transition-duration: 0.5s;
@@ -145,6 +145,36 @@ select,input {
 
 .dialog.focus {
   border: #4346ff 3px dotted;
+}
+
+button {
+  padding: 2px 7px;
+  border-radius: 10px;
+  /* font-size: 16px; */
+}
+
+#delete_check {
+  text-align: right;
+  display: block;
+}
+#remove_note {
+  width: 2em;
+}
+p.button_line {
+  text-align: center;
+  display: block;
+}
+
+.dialog .label {
+  display: inline-block;
+  width: 5.5em;
+  margin-right: 0.5em;
+  text-align: right;
+}
+
+span.label.unit {
+  width: 2em;
+  margin-left: 0.5em;
 }
 
 @media ( max-width: 768px ) {
