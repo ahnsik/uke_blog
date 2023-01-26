@@ -844,7 +844,7 @@ var edit_mouseMove = (e) => {
       case "ruler_slide":
       case "waveform_slide":
         scrollPosition = prev_position+scroll_x;
-        console.log("scrollPosition:"+ (scrollPosition*1000)/g_sampleRate ); 
+        // console.log("scrollPosition:"+ (scrollPosition*1000)/g_sampleRate ); 
         break;
       // case "offset_slide":
       //   let dom_offset = document.getElementById("offset");
@@ -886,8 +886,11 @@ var edit_mouseUp = (e) => {
       case "technic_clicked":
         // note 데이터 편집..
         if (cursor_x > START_XPOS) {
-          console.log("clicked xpos="+cursor_x+", clicked_ts:" + ((cursor_x-START_XPOS)*g_numSmp_per_px*1000)/g_sampleRate );
-          open_note_edit_dlg();
+          // console.log("clicked xpos="+cursor_x+", clicked_ts:" + (((cursor_x-START_XPOS)*g_numSmp_per_px*1000+scrollPosition*1000)/g_sampleRate+g_offset) + ", g_offset:" + g_offset );
+          let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
+          let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+          console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+          open_note_edit_dlg(clicked_ts);
         }
         break;
       // default:
