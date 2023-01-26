@@ -813,23 +813,6 @@ var edit_mouseDown = (e) => {
   scroll_x = 0;
   prev_position = scrollPosition;
   isClicked = true;
-  if (last_posY <= H_OFFSET_SLIDER) {
-    click_pos = "offset_slide";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER) {     // ((e.clientY > H_OFFSET_SLIDER)&&(e.clientY < H_OFFSET_SLIDER+H_RULER)) {
-    click_pos = "ruler_slide";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM) {
-    click_pos = "waveform_slide";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC) {
-    click_pos = "lyric_clicked";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD) {
-    click_pos = "chord_clicked";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES) {
-    click_pos = "note_clicked";
-  } else if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC) {
-    click_pos = "technic_clicked";
-  } else {     // if (last_posY <= H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC) {
-    click_pos = "ruler_slide";
-  }
   e.preventDefault();
 }
 var edit_mouseMove = (e) => {
@@ -839,26 +822,7 @@ var edit_mouseMove = (e) => {
     let cursor_x = e.clientX - rect.left;
     let cursor_y = e.clientY - rect.top;
     scroll_x = (last_posX - cursor_x)*g_numSmp_per_px;
-    // console.log("Scroll function:"+ click_pos + ", clicked_ypos:"+cursor_y); 
-    switch(click_pos) {
-      case "ruler_slide":
-      case "waveform_slide":
-        scrollPosition = prev_position+scroll_x;
-        // console.log("scrollPosition:"+ (scrollPosition*1000)/g_sampleRate ); 
-        break;
-      // case "offset_slide":
-      //   let dom_offset = document.getElementById("offset");
-      //   dom_offset.value = parseInt(dom_offset.value)+scroll_x;
-      //   offset_changed();
-      //   break;
-      // case "lyric_clicked":
-      // case "chord_clicked":
-      // case "note_clicked":
-      // case "technic_clicked":
-      // default:
-      //   // note 데이터 편집..
-      //   break;
-    }
+    scrollPosition = prev_position+scroll_x;
   }
   e.preventDefault();
   draw_editor();
@@ -866,36 +830,20 @@ var edit_mouseMove = (e) => {
 var edit_mouseUp = (e) => {
   last_posX = 0;
   last_posY = 0;
-  // scrollPosition = prev_position+scroll_x;
-  if (isClicked) {
+  if (scrollPosition === prev_position) {   // 스크롤 되지 않았음. note 편집.
     let canvas = document.getElementById("edit_area");
     const rect = canvas.getBoundingClientRect();
     let cursor_x = e.clientX - rect.left;
-    let cursor_y = e.clientY - rect.top;
-
-    switch(click_pos) {
-      case "ruler_slide":
-      case "waveform_slide":
-        scrollPosition = prev_position+scroll_x;
-        break;
-      // case "offset_slide":
-      //   break;
-      case "lyric_clicked":
-      case "chord_clicked":
-      case "note_clicked":
-      case "technic_clicked":
-        // note 데이터 편집..
-        if (cursor_x > START_XPOS) {
-          // console.log("clicked xpos="+cursor_x+", clicked_ts:" + (((cursor_x-START_XPOS)*g_numSmp_per_px*1000+scrollPosition*1000)/g_sampleRate+g_offset) + ", g_offset:" + g_offset );
-          let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
-          let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-          console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
-          open_note_edit_dlg(clicked_ts);
-        }
-        break;
-      // default:
-      //   break;
+    // let cursor_y = e.clientY - rect.top;
+    if (cursor_x > START_XPOS) {
+      // console.log("clicked xpos="+cursor_x+", clicked_ts:" + (((cursor_x-START_XPOS)*g_numSmp_per_px*1000+scrollPosition*1000)/g_sampleRate+g_offset) + ", g_offset:" + g_offset );
+      let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
+      let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+      console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+      open_note_edit_dlg(clicked_ts);
     }
+  } else {
+    scrollPosition = prev_position+scroll_x;
   }
   isClicked = false;
   e.preventDefault();
