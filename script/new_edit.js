@@ -56,11 +56,11 @@ const file_list = [
 
 const CHORD_ICON_Y = 48;
 const STROKE_ICON_Y = 136;
-const TAB_LINE_A_Y = 80;
-const TAB_LINE_E_Y = 96;
-const TAB_LINE_C_Y = 112;
-const TAB_LINE_G_Y = 128;
-const LYRIC_TEXT_Y = 164;
+const TAB_LINE_A_Y = 20;
+const TAB_LINE_E_Y = TAB_LINE_A_Y+16;
+const TAB_LINE_C_Y = TAB_LINE_E_Y+16;
+const TAB_LINE_G_Y = TAB_LINE_C_Y+16;
+// const LYRIC_TEXT_Y = 164;
 const START_XPOS = 60;
 const CANVAS_FONT_BIGGER = '32px SeoulNamsan canvas';
 const CANVAS_FONT_BIG = '26px SeoulNamsan canvas';
@@ -81,14 +81,14 @@ const LYRIC_FIRST_COLOR = "#ECC";
 const CHORD_TEXT_COLOR = "#155";
 const LYRIC_TEXT_COLOR = "#344";
 
-const H_WAVEFORM = 200;
-const H_TECHNIC = 48;
-const H_NOTES = 96;
-const H_CHORD = 26;
-const H_LYRIC = 26;
-const H_RULER = 12;
 const H_OFFSET_SLIDER = 10;
-const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_TECHNIC+H_NOTES+H_CHORD+H_LYRIC+H_RULER);
+const H_RULER = 12;
+const H_WAVEFORM = 200;
+const H_CHORD = 52;
+const H_NOTES = 84;
+const H_LYRIC = 26;
+const H_TECHNIC = 36;
+const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_TECHNIC+H_RULER);
 
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
 var chord_icon;         // 코드 테이블을 모아 둔 비트맵
@@ -192,7 +192,7 @@ function window_resized(event) {
     let w = dlg_wnd[i].offsetWidth;
     let h = dlg_wnd[i].offsetHeight;
     dlg_wnd[i].style.left = (event.target.innerWidth-w)/2 + "px";
-    dlg_wnd[i].style.top = (event.target.innerHeight-h)/2 + "px";
+    dlg_wnd[i].style.top = (event.target.innerHeight-h-80)/2 + "px";    // 80은 그냥 조정값.
     console.log("i="+i+", width=" + w+", height=" + h );
   }
 
@@ -206,13 +206,17 @@ function window_resized(event) {
 
 function resize_canvas(cnvs_width) {
   canvas_width = cnvs_width;
-  canvas_height = 430;
+  canvas_height = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_TECHNIC+H_RULER);      //430;
+
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
   edit_area.height = canvas_height;
   edit_area.onmousedown = edit_mouseDown;
   edit_area.onmousemove = edit_mouseMove;
   edit_area.onmouseup = edit_mouseUp;
+  // edit_area.addEventListener("wheel", edit_wheelScroll);
+  edit_area.onwheel = edit_wheelScroll;
+
   // draw_tabulature();
   draw_editor();
 }
@@ -232,38 +236,6 @@ var chord_name_table = [
   "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
 ];
 
-/*
-
-////  TAB 악보의 바탕 (4줄) 그리기.
-var draw_tab_lines = function(ctx, ypos) {
-  ctx.lineWidth = "2px";
-  ctx.fillStyle = "black";
-  ctx.moveTo(10,ypos+TAB_LINE_A_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_A_Y);
-  ctx.moveTo(10,ypos+TAB_LINE_E_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_E_Y);
-  ctx.moveTo(10,ypos+TAB_LINE_C_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_C_Y);
-  ctx.moveTo(10,ypos+TAB_LINE_G_Y);    ctx.lineTo(canvas_width-20, ypos+TAB_LINE_G_Y);
-  ctx.stroke();
-  ctx.font = CANVAS_FONT_BASIC;    // font 설정 - 주로 가사 표시할 때 사용될 폰트.
-  // 'TAB' 표시 
-  ctx.drawImage(note_icon, 19*18, 0, 28, 63,   10, TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
-}
-
-////   JSON데이터(배열)로 악표 표시
-var draw_notes = function(ctx, data, start_idx) {
-  var xpos;
-  var count = 0;
-  for (var i=start_idx; i<data.length; i++) {
-    xpos = START_XPOS + ((data[i].timestamp)/480) *note_space;           //// 악보 내에 note 간의 간격 = 480,
-    if (xpos >= canvas_width) {
-      break;
-    }
-    draw_a_note(ctx, data[i], xpos );
-    count+=1;
-  }
-  return count;
-}
-
-*/
 
 ////   1개의 화음을 표시
 var draw_a_note = function(ctx, data, xpos, ypos) {
@@ -306,11 +278,6 @@ var draw_a_note = function(ctx, data, xpos, ypos) {
     // }
   }
 
-  // 코드 표시 (아이콘)
-  // if (data.chord) {         // 코드를 표시
-  //   var chord_index = chord_name_table.indexOf(data.chord);
-  //   ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, ypos+10,  49, 53);
-  // }
   // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
   if (data.stroke) {         // 스트로크를 표시
     // console.log("stroke: " + data.stroke );
@@ -327,9 +294,10 @@ var draw_a_note = function(ctx, data, xpos, ypos) {
       ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, ypos+STROKE_ICON_Y+8,  14,8);
     }
     if ( data.stroke.indexOf('~') >= 0 ) {
-      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, ypos+STROKE_ICON_Y-64,  9,63);
+      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, ypos+TAB_LINE_G_Y-64,  9,63);
     }
   }
+
   // 화음 및 음표에 따른 연주 플랫 정보를 표시. 
   if (g != undefined ) {
     ctx.drawImage(note_icon, g*18, c_g, 15, 12,   xpos, ypos+TAB_LINE_G_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
@@ -343,10 +311,6 @@ var draw_a_note = function(ctx, data, xpos, ypos) {
   if (a != undefined ) {
     ctx.drawImage(note_icon, a*18, c_a, 15, 12,   xpos, ypos+TAB_LINE_A_Y-8, 16, 14);     // src_x, y, w, h ,  dst x, y, w, h
   }
-  // // 가사를 표시
-  // if (data.lyric) {
-  //   ctx.fillText( data.lyric, xpos, ypos+LYRIC_TEXT_Y );
-  // }
 
 }
 
@@ -444,9 +408,9 @@ var draw_editor = () => {
 
   ctx.fillStyle = '#888';
   ctx.font = CANVAS_FONT_TINY;
-  ctx.fillText("lyric:", 30, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC/2, 120);
-  ctx.fillText("chord:", 26, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD/2, 120);
+  ctx.fillText("chord:", 26, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD/2, 120);
   ctx.drawImage(note_icon, 19*18, 0, 28, 63,   START_XPOS-28, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
+  ctx.fillText("lyric:", 30, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC/2, 120);
   ctx.fillText("technic:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC/2, 120);
 }
 
@@ -474,7 +438,7 @@ var draw_offset_slider = (ctx, ypos) => {
 }
 
 var draw_ruler = (ctx, ypos) => {
-  let temp_index; //, index_withOffset;
+  let temp_index;
 
   let color_backup = ctx.fillStyle;
   let font_backup = ctx.font;
@@ -483,19 +447,29 @@ var draw_ruler = (ctx, ypos) => {
 
   let grid_time;
   let time_string;
-  for (var i=0; i<(canvas_width-START_XPOS); i++)  {
-    temp_index = (i*g_numSmp_per_px)+scrollPosition;
-    if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
-    // if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
-      ctx.fillRect(START_XPOS+i, ypos+2, 1, 10);
-      grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
-      time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
-      // console.log("grid_time="+grid_time+".toString="+time_string );
-      ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
-    } else {
-      // ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
-    }
-  }
+  // for (var i=0; i<(canvas_width-START_XPOS); i++)  {
+  //   temp_index = (i*g_numSmp_per_px)+scrollPosition;
+  //   if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
+  //   // if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
+  //     ctx.fillRect(START_XPOS+i, ypos+4, 2, 10);
+  //     grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
+  //     time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
+  //     // console.log("grid_time="+grid_time+".toString="+time_string );
+  //     ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
+  //   } else {
+  //     // ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
+  //   }
+  // }
+
+  // let grid_size;
+  // if (g_numSmp_per_px < 256) {   // 0.25초 단위.
+  //   grid_size = (g_sampleRate/4)/g_numSmp_per_px;
+  // } else if (g_numSmp_per_px < 1024) {   // 1초 단위.
+  //   grid_size = (g_sampleRate)/g_numSmp_per_px;
+  // } else {        // 2초 단위
+  //   grid_size = (g_sampleRate*2)/g_numSmp_per_px;
+  // }
+
   ctx.fillText("playing time:", 0, ypos, START_XPOS);
   ctx.font = font_backup;
   ctx.fillStyle = color_backup;
@@ -511,11 +485,8 @@ var draw_waveform = (ctx, ypos, height) => {
   if (array_l && array_l.length>0) {    // MP3 디코딩 된 데이터가 있으면 그린다. 없으면 안그림.
     waveformDraw(ctx, ypos, array_l);
   } else {
-    // draw_tab_lines(ctx);    // 바탕이 되는 4선(TAB line)을 그린다.
     ctx.font = CANVAS_FONT_BIGGER; //'26px SeoulNamsan canvas';
     ctx.fillText("No waveform data.", 120, 90, 820);
-    // ctx.font = CANVAS_FONT_SMALLER; //'26px SeoulNamsan canvas';
-    // ctx.fillText("글꼴 확인용 그리기 테스트. Font Check for canvas drawing..", 120, 140, 820);
   }
 
   ctx.font = font_backup;
@@ -569,9 +540,8 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_G_Y, 1, 2);
   }
 
-  /* 음파 Waveform 과 대이터를 나중에 그려 줘야 함. - 동시에 그리며느 그려진 글자가 지워지므로. */
+  /* 음파 Waveform과 데이터를 나중에 그려 줘야 함. - 동시에 그리면 그려진 글자가 지워지므로. */
   for ( i = 0; i< (canvas_width-START_XPOS); i++ ) {
-
     min= wavefrom_size; max= -wavefrom_size;
     temp_index = (i*g_numSmp_per_px)+scrollPosition;
     index_withOffset = temp_index +waveform_offset;
@@ -580,7 +550,6 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
           (typeof(waveform_offset) != "number") ) {
       console.error ( "typeof temp_index="+typeof(temp_index)+ ", typeof scrollPosition="+typeof(scrollPosition)+ ",typeof g_offset="+typeof(waveform_offset) );
     }
-
     // min-max 계산
     for ( j=0; j<g_numSmp_per_px; j++) {
       value = wavBuffer[temp_index +j ];
@@ -604,33 +573,46 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     ctx.moveTo( START_XPOS+ i+0.5, ypos+100 + min );
     ctx.lineTo( START_XPOS+ i+0.5, ypos+100 + max );
     ctx.stroke();
+  }
 
-    // 악보 note 데이터 그리기 판단. 
-    if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
-      ctx.font = CANVAS_FONT_BASIC;
-      let notes = song_data.notes;
-      for (j=0; j<notes.length; j++) {
-        if ( (notes[j].timestamp > (temp_index*1000/g_sampleRate) ) && (notes[j].timestamp < ((temp_index+g_numSmp_per_quaver)*1000/g_sampleRate) ) ) {
-          if (notes[j].lyric) {
-            ctx.fillStyle = LYRIC_TEXT_COLOR;
-            ctx.fillText("" + notes[j].lyric, START_XPOS+ i+30.5, 230, 820);
-          }
-          if (notes[j].chord) {
-            // ctx.fillStyle = CHORD_TEXT_COLOR;
-            // ctx.fillText("" + notes[j].chord, START_XPOS+ i+30, 260, 820);
-            let chord_index = chord_name_table.indexOf(notes[j].chord);
-            ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  START_XPOS+i+30, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER+H_LYRIC,  49, 53);
-          }
-          if (notes[j].tab) {
-            ctx.fillStyle = CHORD_TEXT_COLOR;
-            draw_a_note(ctx, notes[j], START_XPOS+i+30.5, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER+H_CHORD );
-          }
+  ctx.font = CANVAS_FONT_BASIC;
+  let notes = song_data.notes;
+  console.log("start to drawing notes" );
+  for (j=0; j<notes.length; j++) {
+    let note_ts = notes[j].timestamp;
+    let xpos = (((note_ts-g_offset)*g_sampleRate/1000)-scrollPosition) / g_numSmp_per_px; 
+    if (xpos < 0) continue;
+    if (xpos > canvas_width) continue;
+    // console.log("j="+j+", xpos="+xpos+", lyric="+notes[j].lyric );
 
-        }
+    // ctx.fillStyle = "magenta";
+    // ctx.fillRect(START_XPOS+xpos, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER, 10, H_CHORD);
+    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD, 10, H_NOTES);
+    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES, 10, H_LYRIC);
+    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC, 10, H_TECHNIC);
+    if (notes[j].chord) {
+      let chord_index = chord_name_table.indexOf(notes[j].chord);
+      ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  START_XPOS+xpos, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER,  49, 53);
+    }
+    if (notes[j].tab) {
+      ctx.fillStyle = CHORD_TEXT_COLOR;
+      draw_a_note(ctx, notes[j], START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_CHORD+H_WAVEFORM );
+    }
+    if (notes[j].lyric) {
+      ctx.fillStyle = LYRIC_TEXT_COLOR;
+      ctx.fillText("" + notes[j].lyric, START_XPOS+xpos, H_WAVEFORM+H_CHORD+H_NOTES+H_OFFSET_SLIDER+H_RULER+6 );
+      // console.log("[][] lyric x="+(START_XPOS+xpos)+", y="+H_WAVEFORM+H_NOTES+H_OFFSET_SLIDER+H_RULER );
+    }
+    if (notes[j].technic) {
+      if (notes[j].technic !== "|" ) {    // 마디 구분은 안 그려도 됨.
+        ctx.fillStyle = LYRIC_TEXT_COLOR;
+        ctx.fillText("" + notes[j].technic, START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC );
+        console.log("[][] technic:"+notes[j].technic+ ", x="+(START_XPOS+xpos) );
       }
     }
 
   }
+
 }
 
 
@@ -823,9 +805,9 @@ var edit_mouseMove = (e) => {
     let cursor_y = e.clientY - rect.top;
     scroll_x = (last_posX - cursor_x)*g_numSmp_per_px;
     scrollPosition = prev_position+scroll_x;
+    draw_editor();
   }
   e.preventDefault();
-  draw_editor();
 }
 var edit_mouseUp = (e) => {
   last_posX = 0;
@@ -849,16 +831,107 @@ var edit_mouseUp = (e) => {
   e.preventDefault();
   draw_editor();
 }
+var edit_wheelScroll = (e) => {
+  console.log("Scroll How much=" + e.deltaY );  
+  if (e.deltaY > 0) {   // Zoom In 
+    zoom_in();
+  } else if (e.deltaY < 0) {  // Zoom Out
+    zoom_out();
+  }
+}
 var btn_cancle_click = () => {
   close_note_edit_dlg();
 }
 var btn_ok_click = () => {
+  if (note_idx_editing !== -1) {    // 편집 중이던 데이터가 기존에 존재하던 데이터라면,
+    let note = song_data.notes[note_idx_editing];
+
+    note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
+    note.lyric = document.getElementById("lyric_input").value;
+    note.chord = document.getElementById("chord_input").value;
+    note.technic = document.getElementById("technic_input").value;
+    note.tab = new Array;
+    if ( document.getElementById("g_input").value != "" ) {
+      note.tab.push(document.getElementById("g_input").value);
+    }
+    if ( document.getElementById("c_input").value != "" ) {
+      note.tab.push(document.getElementById("c_input").value);
+    }
+    if ( document.getElementById("e_input").value != "" ) {
+      note.tab.push(document.getElementById("e_input").value);
+    }
+    if ( document.getElementById("a_input").value != "" ) {
+      note.tab.push(document.getElementById("a_input").value);
+    }
+  } else {
+    // 새로운 데이터를 추가해야 할 텐데... 
+  }
+  console.log( JSON.stringify(song_data.notes[note_idx_editing]) );
+
   close_note_edit_dlg();
+  draw_editor();
 }
 
-var open_note_edit_dlg = () => {
+var note_idx_editing = -1;
+
+var set_edit_column_for_ts = (from_ts, to_ts) => {
+  let i, j, found_flag=false;
+  let notes = song_data.notes;
+
+  console.log("from:"+from_ts + ", to:"+ to_ts + ", no data" );
+  document.getElementById("timeStamp_input").value = ""+from_ts;
+  document.getElementById("lyric_input").value = "";
+  document.getElementById("chord_input").value = "";
+  document.getElementById("technic_input").value = "";
+  document.getElementById("a_input").value = "";
+  document.getElementById("e_input").value = "";
+  document.getElementById("c_input").value = "";
+  document.getElementById("g_input").value = "";
+
+  note_idx_editing = -1;
+  for (i=0; i<notes.length; i++) {
+    if ( (notes[i].timestamp >= from_ts)&&(notes[i].timestamp < to_ts) ) {
+      found_flag=true;
+      note_idx_editing = i;
+      console.log("from:"+from_ts + ", to:"+ to_ts + ", note["+i+"]={" + notes[i].timestamp + ", " + notes[i].lyric+"}" );
+      document.getElementById("timeStamp_input").value = ""+from_ts;
+      if (notes[i].lyric) document.getElementById("lyric_input").value = notes[i].lyric;
+      document.getElementById("chord_input").value = notes[i].chord;
+      if (notes[i].technic) document.getElementById("technic_input").value = notes[i].technic;
+      for (j=0; j<notes[i].tab.length; j++) {
+        switch( notes[i].tab[j].charAt(0)) {
+          case "A":
+            document.getElementById("a_input").value = notes[i].tab[j];
+            break;
+          case "E":
+            document.getElementById("e_input").value = notes[i].tab[j];
+            break;
+          case "C":
+            document.getElementById("c_input").value = notes[i].tab[j];
+            break;
+          case "G":
+            document.getElementById("g_input").value = notes[i].tab[j];
+            break;
+          default:
+            console.error("Something Wrong at note string:"+ notes[i].tab[j] );
+            break;
+        }
+      }
+    }
+  }
+
+}
+
+var open_note_edit_dlg = (clicked_ts) => {
+  let ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
+  let note_ts = parseInt(clicked_ts/ms_for_quaver)*ms_for_quaver;
+  // document.getElementById("timeStamp_input").value = ""+note_ts;
+  set_edit_column_for_ts(note_ts, (note_ts+ms_for_quaver) );
+  // console.log("from:"+note_ts + ", to:"+ (note_ts+ms_for_quaver) );
+
   let dlg_wnd = document.getElementById("note_edit_window");
   dlg_wnd.classList.remove("closed");
+
 }
 var close_note_edit_dlg = () => {
   let dlg_wnd = document.getElementById("note_edit_window");
@@ -870,6 +943,25 @@ var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
   document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
 }
+
+
+var upload = () => {
+  alert("Upload() is not implimented.");
+}
+var download = () => {
+  downloadObjectAsJson(song_data, song_data.title );
+}
+
+function downloadObjectAsJson(exportObj, exportName){
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href",     dataStr);
+  downloadAnchorNode.setAttribute("download", exportName + ".json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
 /*
 async function ThumbUploadFile() {
   var uploadfiles = document.getElementById("loadThumbnail");
