@@ -192,7 +192,7 @@ function window_resized(event) {
     let w = dlg_wnd[i].offsetWidth;
     let h = dlg_wnd[i].offsetHeight;
     dlg_wnd[i].style.left = (event.target.innerWidth-w)/2 + "px";
-    dlg_wnd[i].style.top = (event.target.innerHeight-h-80)/2 + "px";    // 80은 그냥 조정값.
+    dlg_wnd[i].style.top = "30px";     // (event.target.innerHeight-h-80)/2 + "px";    // 80은 그냥 조정값.
     console.log("i="+i+", width=" + w+", height=" + h );
   }
 
@@ -271,7 +271,7 @@ var draw_a_note = function(ctx, data, xpos, ypos) {
   // 마디 구분 표시
   if (data.technic) {
     if (data.technic.indexOf('|') >= 0) {   // 마디 표시
-      ctx.fillRect(xpos-2, ypos+TAB_LINE_A_Y, 1, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
+      ctx.fillRect(xpos-2, ypos+TAB_LINE_A_Y, 2, (TAB_LINE_G_Y-TAB_LINE_A_Y) );
     }
     // if ( data.technic.indexOf('3') >= 0 ) {     // 셋 잇단음표를 표시
     //   ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, ypos+STROKE_ICON_Y+8,  14,8);
@@ -294,7 +294,7 @@ var draw_a_note = function(ctx, data, xpos, ypos) {
       ctx.drawImage(note_icon, 339, 92, 14,8,  xpos+8, ypos+STROKE_ICON_Y+8,  14,8);
     }
     if ( data.stroke.indexOf('~') >= 0 ) {
-      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, ypos+TAB_LINE_G_Y-64,  9,63);
+      ctx.drawImage(note_icon, 369, 0, 9, 63,  xpos+14, ypos+TAB_LINE_A_Y-20,  9, H_NOTES);
     }
   }
 
@@ -324,6 +324,8 @@ var g_offset = 0;
 var g_numSmp_per_px = 256;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
 
 var g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;      // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
+var g_ms_for_quaver;  // = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
+
 
 
 //// MP3 데이터를 로딩 하여 디코딩 요청.
@@ -732,6 +734,7 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   g_offset = parseInt(document.getElementById("offset").value);
   g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
   g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;
+  g_ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
 
   let _sign = document.getElementById("signature").value;
 
@@ -783,6 +786,7 @@ var signature_changed = () => {
 
 
 var last_posX=0, last_posY=0;
+var last_timeStamp = 0;
 var scroll_x = 0, prev_position=0;
 var isClicked = false;
 var click_pos = null;
@@ -792,8 +796,17 @@ var edit_mouseDown = (e) => {
   const rect = canvas.getBoundingClientRect();
   last_posX = e.clientX - rect.left;
   last_posY = e.clientY - rect.top;
-  scroll_x = 0;
-  prev_position = scrollPosition;
+
+  if (note_idx_editing !== -1) {    // TS 값을 조정 중이었다면, 
+    let temp_idx = (last_posX-START_XPOS)*g_numSmp_per_px+scrollPosition;
+    let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+    let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
+    document.getElementById("timeStamp_input").value = note_ts;
+  } else {
+    last_timeStamp = parseInt(document.getElementById("timeStamp_input").value);
+    scroll_x = 0;
+    prev_position = scrollPosition;
+  }
   isClicked = true;
   e.preventDefault();
 }
@@ -803,8 +816,18 @@ var edit_mouseMove = (e) => {
     const rect = canvas.getBoundingClientRect();
     let cursor_x = e.clientX - rect.left;
     let cursor_y = e.clientY - rect.top;
-    scroll_x = (last_posX - cursor_x)*g_numSmp_per_px;
-    scrollPosition = prev_position+scroll_x;
+
+    if (note_idx_editing !== -1) {    // 만약 뭔가 데이터를 편집 중이라면, = Dialog 가 표시된 상태라면,
+      // let time_diff = parseInt(((cursor_x-last_posX)*g_numSmp_per_px*1000) / g_sampleRate);
+      // console.log("isClicked="+isClicked+", adjust timestamp = "+ time_diff + ", g_numSmp_per_quaver="+g_numSmp_per_quaver );
+      // let new_timestamp = (last_timeStamp+time_diff);
+      // let grid_smpIdx = parseInt((((new_timestamp)*g_sampleRate)/1000)/g_numSmp_per_quaver) * g_numSmp_per_quaver;
+      // let grid_timestamp = parseInt(grid_smpIdx*1000/g_sampleRate);
+      // document.getElementById("timeStamp_input").value = grid_timestamp;    //  new_timestamp;   /// 
+    } else {
+      scroll_x = (cursor_x-last_posX)*g_numSmp_per_px;
+      scrollPosition = prev_position-scroll_x;
+    }
     draw_editor();
   }
   e.preventDefault();
@@ -812,24 +835,29 @@ var edit_mouseMove = (e) => {
 var edit_mouseUp = (e) => {
   last_posX = 0;
   last_posY = 0;
-  if (scrollPosition === prev_position) {   // 스크롤 되지 않았음. note 편집.
-    let canvas = document.getElementById("edit_area");
-    const rect = canvas.getBoundingClientRect();
-    let cursor_x = e.clientX - rect.left;
-    // let cursor_y = e.clientY - rect.top;
-    if (cursor_x > START_XPOS) {
-      // console.log("clicked xpos="+cursor_x+", clicked_ts:" + (((cursor_x-START_XPOS)*g_numSmp_per_px*1000+scrollPosition*1000)/g_sampleRate+g_offset) + ", g_offset:" + g_offset );
-      let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
-      let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-      console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
-      open_note_edit_dlg(clicked_ts);
-    }
+  last_timeStamp = 0;
+  if (note_idx_editing !== -1) {    // TS 값을 조정 중이었다면, 
+    // document.getElementById("timeStamp_input").value = last_timeStamp+time_diff;
   } else {
-    scrollPosition = prev_position+scroll_x;
+    if (scrollPosition === prev_position) {   // 스크롤 되지 않았음. note 편집.
+      let canvas = document.getElementById("edit_area");
+      const rect = canvas.getBoundingClientRect();
+      let cursor_x = e.clientX - rect.left;
+      // let cursor_y = e.clientY - rect.top;
+      if (cursor_x > START_XPOS) {
+        // console.log("clicked xpos="+cursor_x+", clicked_ts:" + (((cursor_x-START_XPOS)*g_numSmp_per_px*1000+scrollPosition*1000)/g_sampleRate+g_offset) + ", g_offset:" + g_offset );
+        let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
+        let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+        console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+        open_note_edit_dlg(clicked_ts);
+      }
+    } else {
+      scrollPosition = prev_position-scroll_x;
+    }
   }
   isClicked = false;
-  e.preventDefault();
   draw_editor();
+  e.preventDefault();
 }
 var edit_wheelScroll = (e) => {
   console.log("Scroll How much=" + e.deltaY );  
@@ -844,32 +872,39 @@ var btn_cancle_click = () => {
 }
 var btn_ok_click = () => {
   if (note_idx_editing !== -1) {    // 편집 중이던 데이터가 기존에 존재하던 데이터라면,
-    let note = song_data.notes[note_idx_editing];
-
-    note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
-    note.lyric = document.getElementById("lyric_input").value;
-    note.chord = document.getElementById("chord_input").value;
-    note.technic = document.getElementById("technic_input").value;
-    note.tab = new Array;
-    if ( document.getElementById("g_input").value != "" ) {
-      note.tab.push(document.getElementById("g_input").value);
-    }
-    if ( document.getElementById("c_input").value != "" ) {
-      note.tab.push(document.getElementById("c_input").value);
-    }
-    if ( document.getElementById("e_input").value != "" ) {
-      note.tab.push(document.getElementById("e_input").value);
-    }
-    if ( document.getElementById("a_input").value != "" ) {
-      note.tab.push(document.getElementById("a_input").value);
-    }
+    let new_note = new_data_from_edit_dlg();
+    song_data.notes[note_idx_editing] = new_note;
   } else {
-    // 새로운 데이터를 추가해야 할 텐데... 
+    let new_note = new_data_from_edit_dlg();
+    song_data.notes.push(new_note);
+    console.log("new data="+JSON.stringify(new_note) );
   }
   console.log( JSON.stringify(song_data.notes[note_idx_editing]) );
 
   close_note_edit_dlg();
   draw_editor();
+}
+
+var new_data_from_edit_dlg = () => {
+  let new_note = new Object;
+  new_note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
+  new_note.lyric = document.getElementById("lyric_input").value;
+  new_note.chord = document.getElementById("chord_input").value;
+  new_note.technic = document.getElementById("technic_input").value;
+  new_note.tab = new Array;
+  if ( document.getElementById("g_input").value != "" ) {
+    new_note.tab.push(document.getElementById("g_input").value);
+  }
+  if ( document.getElementById("c_input").value != "" ) {
+    new_note.tab.push(document.getElementById("c_input").value);
+  }
+  if ( document.getElementById("e_input").value != "" ) {
+    new_note.tab.push(document.getElementById("e_input").value);
+  }
+  if ( document.getElementById("a_input").value != "" ) {
+    new_note.tab.push(document.getElementById("a_input").value);
+  }
+  return new_note;
 }
 
 var note_idx_editing = -1;
@@ -923,11 +958,10 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
 }
 
 var open_note_edit_dlg = (clicked_ts) => {
-  let ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
-  let note_ts = parseInt(clicked_ts/ms_for_quaver)*ms_for_quaver;
+  let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
   // document.getElementById("timeStamp_input").value = ""+note_ts;
-  set_edit_column_for_ts(note_ts, (note_ts+ms_for_quaver) );
-  // console.log("from:"+note_ts + ", to:"+ (note_ts+ms_for_quaver) );
+  set_edit_column_for_ts(note_ts, (note_ts+g_ms_for_quaver) );
+  // console.log("from:"+note_ts + ", to:"+ (note_ts+g_ms_for_quaver) );
 
   let dlg_wnd = document.getElementById("note_edit_window");
   dlg_wnd.classList.remove("closed");
@@ -936,6 +970,7 @@ var open_note_edit_dlg = (clicked_ts) => {
 var close_note_edit_dlg = () => {
   let dlg_wnd = document.getElementById("note_edit_window");
   dlg_wnd.classList.add("closed");
+  note_idx_editing = -1;
 }
 
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
