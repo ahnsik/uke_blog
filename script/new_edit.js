@@ -236,6 +236,64 @@ var chord_name_table = [
   "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
 ];
 
+var chord_finger_a_table = [
+  "3", "3", "1", "2", "3", "3", "3", "3", "3", "0", "1", "2", "3", "5",
+  "4", "1", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
+  "0", "0", "3", "4", "3", "3", "3", "1", "0", "3", "3", "4", "4", "5",
+  "1", "1", "4", "5", "4", "3", "4", "2", "1", "3", "1", "1", "5", "1",
+  "2", "2", "2", "2", "2", "1", "1", "4", "2", "2", "2", "2", "2", "2",
+  "0", "3", "3", "0", "3", "2", "2", "0", "1", "3", "3", "0", "3", "0",
+  "1", "0", "4", "4", "4", "3", "3", "1", "4", "4", "4", "1", "4", "1",
+  "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
+  "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "3", "3", "2", "3",
+  "0", "0", "0", "0", "0", "3", "3", "0", "0", "4", "2", "2", "0", "2",
+  "1", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "3", "1", "3",
+  "2", "2", "2", "1", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
+];
+var chord_finger_e_table = [
+  "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
+  "1", "1", "1", "1", "0", "0", "0", "1", "4", "1", "1", "1", "0", "1",
+  "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
+  "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "1", "1", "2", "1",
+  "4", "3", "0", "4", "0", "0", "0", "0", "5", "0", "2", "2", "0", "2",
+  "1", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "0", "1", "1",
+  "2", "2", "2", "0", "2", "2", "2", "2", "0", "2", "4", "1", "2", "2",
+  "3", "3", "1", "2", "1", "0", "1", "3", "3", "0", "1", "2", "2", "3",
+  "4", "4", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
+  "0", "0", "0", "0", "0", "2", "3", "1", "0", "2", "0", "0", "0", "0",
+  "1", "1", "1", "1", "1", "0", "0", "2", "1", "1", "1", "1", "1", "1",
+  "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
+];
+var chord_finger_c_table = [
+  "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
+  "1", "1", "1", "1", "1", "1", "1", "1", "0", "1", "3", "3", "1", "3",
+  "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
+  "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "1", "2", "3", "3",
+  "4", "4", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
+  "0", "0", "3", "0", "3", "2", "3", "1", "0", "2", "3", "0", "4", "0",
+  "1", "1", "4", "5", "4", "3", "4", "2", "0", "3", "4", "1", "5", "1",
+  "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
+  "3", "3", "3", "3", "3", "2", "2", "0", "3", "3", "3", "3", "3", "3",
+  "1", "0", "1", "1", "0", "3", "3", "1", "2", "4", "1", "1", "0", "1",
+  "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
+  "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "3", "3", "2", "3",
+];
+var chord_finger_g_table = [
+  "0", "0", "0", "0", "3", "2", "3", "1", "0", "0", "0", "0", "4", "0",
+  "1", "3", "1", "1", "1", "0", "0", "2", "0", "1", "1", "1", "1", "1",
+  "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
+  "0", "3", "3", "3", "3", "2", "2", "0", "3", "3", "0", "0", "3", "0",
+  "4", "0", "1", "3", "0", "0", "0", "1", "4", "1", "1", "1", "0", "4",
+  "2", "1", "2", "5", "1", "1", "1", "2", "3", "2", "2", "0", "1", "0",
+  "3", "2", "3", "0", "2", "2", "2", "3", "0", "3", "3", "1", "2", "1",
+  "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "2", "2", "0", "2",
+  "5", "1", "1", "1", "1", "1", "1", "1", "1", "1", "3", "3", "1", "3",
+  "2", "2", "0", "1", "0", "2", "2", "2", "2", "2", "0", "1", "1", "2",
+  "3", "3", "1", "3", "1", "0", "1", "3", "3", "0", "1", "2", "2", "3",
+  "4", "4", "2", "4", "2", "1", "2", "4", "4", "1", "2", "3", "3", "4",
+];
+
+
 
 ////   1개의 화음을 표시
 var draw_a_note = function(ctx, data, xpos, ypos) {
@@ -867,17 +925,49 @@ var edit_wheelScroll = (e) => {
     zoom_out();
   }
 }
-var btn_cancle_click = () => {
+var set_chord_auto = () => {    // chord 명에 따라 현의 값을 자동으로 지정해 주는 함수.
+  let _a = document.getElementById("a_input");
+  let _e = document.getElementById("e_input");
+  let _c = document.getElementById("c_input");
+  let _g = document.getElementById("g_input");
+  let _chord = document.getElementById("chord_input");
+  console.log("set_chord_auto clicked : " +  _chord.value );
+
+  let idx;
+  // 코드 테이블 검색해서 문자열 비교한 다음에, 해당하는 index 에 값으로 A,E,C,G 의 값을 설정하도록 한다.
+  for (idx=0; idx<chord_name_table.length; idx++) {
+    if ( _chord.value === chord_name_table[idx] ) {   // 해당하는 코드를 찾으면, 
+      console.log("found code="+chord_name_table[idx]+" idx="+idx+": G="+chord_finger_g_table[idx]+" C="+chord_finger_c_table[idx]+" E="+chord_finger_e_table[idx]+" A="+chord_finger_a_table[idx] );
+      _a.value = chord_finger_a_table[idx];
+      _e.value = chord_finger_e_table[idx];
+      _c.value = chord_finger_c_table[idx];
+      _g.value = chord_finger_g_table[idx];
+      break;
+    }
+  }
+}
+var btn_cancel_click = () => {
   close_note_edit_dlg();
 }
 var btn_ok_click = () => {
+  let remove_flag = document.getElementById("remove_note").checked;
   if (note_idx_editing !== -1) {    // 편집 중이던 데이터가 기존에 존재하던 데이터라면,
-    let new_note = new_data_from_edit_dlg();
-    song_data.notes[note_idx_editing] = new_note;
+    if (remove_flag) {    // 기존 데이터의 삭제
+      console.log(" have to remove this note: idx="+note_idx_editing + " is " + remove_flag  );
+
+TODO://// 기존데이터(note_idx_editing)를 배열에서 제거할 것. 
+
+    } else {              // 기존 데이터의 수정
+      let new_note = new_data_from_edit_dlg();
+      song_data.notes[note_idx_editing] = new_note;
+    }
   } else {
-    let new_note = new_data_from_edit_dlg();
-    song_data.notes.push(new_note);
-    console.log("new data="+JSON.stringify(new_note) );
+    if (remove_flag) {    // 삭제플래그가 설정되어 있으면 그냥 무시. 왜냐면 편집중인 데이터가 기존 데이터를 수정하던 게 아니니까.
+    } else {              // 완전히 새로운 데이터를 추가.
+      let new_note = new_data_from_edit_dlg();
+      song_data.notes.push(new_note);
+      console.log("new data="+JSON.stringify(new_note) );
+    }
   }
   console.log( JSON.stringify(song_data.notes[note_idx_editing]) );
 
@@ -885,6 +975,11 @@ var btn_ok_click = () => {
   draw_editor();
 }
 
+/***********************************************
+ *  Dialog 에 입력한 새로운 note 데이터를 악보에 반영한다. 
+ *   TODO: tab 값을 확인하여 array 크기를 유효하게 정리해야 하며,
+ *         tab 값을 기준으로 연주용 음계값을 변환하여 note판정용 데이터 ('note') 에 적용하도록 한다. !!!
+ */
 var new_data_from_edit_dlg = () => {
   let new_note = new Object;
   new_note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
@@ -904,8 +999,10 @@ var new_data_from_edit_dlg = () => {
   if ( document.getElementById("a_input").value != "" ) {
     new_note.tab.push(document.getElementById("a_input").value);
   }
+
   return new_note;
 }
+
 
 var note_idx_editing = -1;
 
@@ -964,8 +1061,8 @@ var open_note_edit_dlg = (clicked_ts) => {
   // console.log("from:"+note_ts + ", to:"+ (note_ts+g_ms_for_quaver) );
 
   let dlg_wnd = document.getElementById("note_edit_window");
+  document.getElementById("remove_note").checked = false;
   dlg_wnd.classList.remove("closed");
-
 }
 var close_note_edit_dlg = () => {
   let dlg_wnd = document.getElementById("note_edit_window");
