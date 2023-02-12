@@ -1095,6 +1095,16 @@ var upload = () => {
   alert("Upload() is not implimented.");
 }
 var download = () => {
+  //song_data 에서, notes 배열을, timestamp 값을 기준으로  sort 할 것.
+  song_data.notes.sort( (a,b) => {
+    if (a.timestamp > b.timestamp ) {
+      return 1;
+    } else if (a.timestamp < b.timestamp ) {
+      return -1;
+    } else {
+      return 0;
+    }
+  } );
   downloadObjectAsJson(song_data, song_data.title );
 }
 
