@@ -515,28 +515,18 @@ var draw_ruler = (ctx, ypos) => {
 
   let grid_time;
   let time_string;
-  // for (var i=0; i<(canvas_width-START_XPOS); i++)  {
-  //   temp_index = (i*g_numSmp_per_px)+scrollPosition;
-  //   if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.    // if ( (parseInt(temp_index) % parseInt(g_numSmp_per_quaver)) < g_numSmp_per_px ) {    // 기준음표 1개 길이마다 grid 눈금으로 표시.
-  //   // if ( parseInt((i*g_numSmp_per_px)/g_sampleRate) != parseInt(((i+1)*g_numSmp_per_px)/g_sampleRate) ) {
-  //     ctx.fillRect(START_XPOS+i, ypos+4, 2, 10);
-  //     grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
-  //     time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
-  //     // console.log("grid_time="+grid_time+".toString="+time_string );
-  //     ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
-  //   } else {
-  //     // ctx.fillRect(START_XPOS+i, ypos+6, 1, 6);
-  //   }
-  // }
 
-  // let grid_size;
-  // if (g_numSmp_per_px < 256) {   // 0.25초 단위.
-  //   grid_size = (g_sampleRate/4)/g_numSmp_per_px;
-  // } else if (g_numSmp_per_px < 1024) {   // 1초 단위.
-  //   grid_size = (g_sampleRate)/g_numSmp_per_px;
-  // } else {        // 2초 단위
-  //   grid_size = (g_sampleRate*2)/g_numSmp_per_px;
-  // }
+  //// TODO:  zoom 레벨에 따라, 0.25초, 0.5초, 1초 등.. 초 단위 표시로 바꿀 것. 
+  for (var i=0; i<(canvas_width-START_XPOS); i++)  {
+    temp_index = (i*g_numSmp_per_px)+scrollPosition;
+    if ( (temp_index % g_numSmp_per_quaver) < g_numSmp_per_px ) {    
+      ctx.fillRect(START_XPOS+i, ypos+4, 2, 10);
+      grid_time = parseInt(i*g_numSmp_per_px)+parseInt(scrollPosition) / parseInt(g_sampleRate);
+      time_string = ""+Math.trunc(grid_time/60000)+":"+Math.trunc((grid_time%60000)/1000)+"."+Math.trunc(grid_time%1000);
+      ctx.fillText(time_string, START_XPOS+i+2, ypos);  // "0:00.000"
+    }
+  }
+
 
   ctx.fillText("playing time:", 0, ypos, START_XPOS);
   ctx.font = font_backup;
@@ -646,19 +636,13 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
 
   ctx.font = CANVAS_FONT_BASIC;
   let notes = song_data.notes;
-  console.log("start to drawing notes" );
+  // console.log("start to drawing notes" );
   for (j=0; j<notes.length; j++) {
     let note_ts = notes[j].timestamp;
     let xpos = (((note_ts-g_offset)*g_sampleRate/1000)-scrollPosition) / g_numSmp_per_px; 
     if (xpos < 0) continue;
     if (xpos > canvas_width) continue;
-    // console.log("j="+j+", xpos="+xpos+", lyric="+notes[j].lyric );
 
-    // ctx.fillStyle = "magenta";
-    // ctx.fillRect(START_XPOS+xpos, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER, 10, H_CHORD);
-    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD, 10, H_NOTES);
-    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES, 10, H_LYRIC);
-    // ctx.fillRect(START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC, 10, H_TECHNIC);
     if (notes[j].chord) {
       let chord_index = chord_name_table.indexOf(notes[j].chord);
       ctx.drawImage(chord_icon, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  START_XPOS+xpos, H_WAVEFORM+H_OFFSET_SLIDER+H_RULER,  49, 53);
@@ -670,13 +654,11 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
     if (notes[j].lyric) {
       ctx.fillStyle = LYRIC_TEXT_COLOR;
       ctx.fillText("" + notes[j].lyric, START_XPOS+xpos, H_WAVEFORM+H_CHORD+H_NOTES+H_OFFSET_SLIDER+H_RULER+6 );
-      // console.log("[][] lyric x="+(START_XPOS+xpos)+", y="+H_WAVEFORM+H_NOTES+H_OFFSET_SLIDER+H_RULER );
     }
     if (notes[j].stroke) {
       if (notes[j].stroke !== "~" ) {    // 디리링~ ~ 마크는 안 그려도 됨 - TAB표시에 img로 그릴 거니까..
         ctx.fillStyle = LYRIC_TEXT_COLOR;
         ctx.fillText("" + notes[j].stroke, START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC );
-        // console.log("[][] stroke:"+notes[j].stroke+ ", x="+(START_XPOS+xpos) );
       }
     }
     if (notes[j].technic) {
@@ -720,7 +702,6 @@ var stop_song = () => {
   document.getElementById("play_song").src = "common/play.svg" ;
   clearInterval(play_handler);
   play_handler = null;
-  // console.log("Stopped. - Clear Interval. :" + play_handler);
   draw_editor();
 }
 
@@ -891,12 +872,8 @@ var edit_mouseMove = (e) => {
     let cursor_y = e.clientY - rect.top;
 
     if (note_idx_editing !== -1) {    // 만약 뭔가 데이터를 편집 중이라면, = Dialog 가 표시된 상태라면,
-      // let time_diff = parseInt(((cursor_x-last_posX)*g_numSmp_per_px*1000) / g_sampleRate);
-      // console.log("isClicked="+isClicked+", adjust timestamp = "+ time_diff + ", g_numSmp_per_quaver="+g_numSmp_per_quaver );
-      // let new_timestamp = (last_timeStamp+time_diff);
-      // let grid_smpIdx = parseInt((((new_timestamp)*g_sampleRate)/1000)/g_numSmp_per_quaver) * g_numSmp_per_quaver;
-      // let grid_timestamp = parseInt(grid_smpIdx*1000/g_sampleRate);
-      // document.getElementById("timeStamp_input").value = grid_timestamp;    //  new_timestamp;   /// 
+      // Do Nothing... 데이터를 편집 중일 때에는 불필요하게&무자비하게 스크롤 시키지 않도록 제한
+      // ---- new note 를 추가하는 동작에서는 scroll이 가능한 상태로 되는 문제(?)가 있지만, 사용해 보고 나중에 고치기로 하자.
     } else {
       scroll_x = (cursor_x-last_posX)*g_numSmp_per_px;
       scrollPosition = prev_position-scroll_x;
@@ -1003,50 +980,6 @@ var new_data_from_edit_dlg = () => {
   new_note.technic = document.getElementById("technic_input").value;
   new_note.tab = new Array;
   new_note.note = new Array;
-  // let _g = document.getElementById("g_input").value;
-  // if ( _g != "" ) {
-  //   let _g_value = (_g.charAt(0) !== "G" ) ? parseInt(_g.slice(1)) : parseInt(_g);
-  //   if (_g.charAt(0) !== "G" )
-  //     new_note.tab.push("G"+_g);
-  //   else 
-  //     new_note.tab.push(_g);
-    
-  //   console.log("note G= "+ note_names[_g_value+12] );
-  //   new_note.note.push( note_names[_g_value+12] );    // G0 = 12번째값 G4
-  // }
-  // let _c = document.getElementById("c_input").value;
-  // if ( _c != "" ) {
-  //   let _c_value = (_c.charAt(0) !== "C" ) ? parseInt(_c.slice(1)) : parseInt(_c);
-  //   if (_c.charAt(0) !== "C" )
-  //     new_note.tab.push("C"+_c);
-  //   else 
-  //     new_note.tab.push(_c);
-
-  //   console.log("note C= "+ note_names[_c_value+5] );
-  //   new_note.note.push( note_names[_c_value+5] );    // C0 = 5번째값 C4
-  // }
-  // let _e = document.getElementById("e_input").value;
-  // if ( _e != "" ) {
-  //   let _e_value = (_e.charAt(0) !== "E" ) ? parseInt(_e.slice(1)) : parseInt(_e);
-  //   if (_e.charAt(0) !== "E" )
-  //     new_note.tab.push("E"+_e);
-  //   else 
-  //     new_note.tab.push(_e);
-
-  //   console.log("note E= "+ _e_value+9 );
-  //   new_note.note.push( note_names[_e_value+9] );
-  // }
-  // let _a = document.getElementById("a_input").value;
-  // if ( _a != "" ) {
-  //   let _a_value = (_a.charAt(0) !== "A" ) ? parseInt(_a.slice(1)) : parseInt(_a);
-  //   if (_a.charAt(0) !== "A" )
-  //     new_note.tab.push("A"+_a);
-  //   else
-  //     new_note.tab.push(_a);
-
-  //   console.log("note A= "+ _a_value+14 );
-  //   new_note.note.push( note_names[_a_value+14] );    // C0 = 5번째값 C4
-  // }
 
   let _g = document.getElementById("g_input").value;
   if ( _g != "" ) {
@@ -1080,8 +1013,7 @@ var new_data_from_edit_dlg = () => {
     console.log("note A= "+ (_a_value+14) + ", _a= " + _a );
     new_note.note.push(  note_names[_a_value+14] );
   }
-
-  
+ 
   return new_note;
 }
 
@@ -1140,9 +1072,7 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
 
 var open_note_edit_dlg = (clicked_ts) => {
   let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
-  // document.getElementById("timeStamp_input").value = ""+note_ts;
-  set_edit_column_for_ts(note_ts, (note_ts+g_ms_for_quaver) );
-  // console.log("from:"+note_ts + ", to:"+ (note_ts+g_ms_for_quaver) );
+  set_edit_column_for_ts( note_ts, (note_ts+g_ms_for_quaver) );
 
   let dlg_wnd = document.getElementById("note_edit_window");
   document.getElementById("remove_note").checked = false;
