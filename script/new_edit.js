@@ -87,7 +87,8 @@ const H_WAVEFORM = 200;
 const H_CHORD = 52;
 const H_NOTES = 84;
 const H_LYRIC = 26;
-const H_TECHNIC = 36;
+const H_STROKE = 22;
+const H_TECHNIC = 40;
 const H_TOTAL = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_TECHNIC+H_RULER);
 
 var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비트맵, 스프라이트
@@ -206,7 +207,7 @@ function window_resized(event) {
 
 function resize_canvas(cnvs_width) {
   canvas_width = cnvs_width;
-  canvas_height = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_TECHNIC+H_RULER);      //430;
+  canvas_height = (H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_TECHNIC+H_STROKE+H_RULER);      //430;
 
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
@@ -221,7 +222,13 @@ function resize_canvas(cnvs_width) {
   draw_editor();
 }
 
-var chord_name_table = [
+const note_names = [  "G3", "G#3", "A3", "A#3", "B3",         // 낮은 음으로 G 현을 조정했을 경우..
+                      "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
+                      "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
+                      "C5", "C#5", "D5", "D#5", "E5" ];
+
+
+const chord_name_table = [
   "C",   "Cm",   "C7",  "Cmaj7",  "Cm7",  "Cdim",  "Cm7b5",  "Caug",  "Csus4",  "C6",  "C9",  "Cmaj9",  "Cmmaj7",  "Cadd9",
   "C#",  "C#m",  "C#7", "C#maj7", "C#m7", "C#dim", "C#m7b5", "C#aug", "C#sus4", "C#6", "C#9", "C#maj9", "C#mmaj7", "C#add9",
   "D",   "Dm",   "D7",  "Dmaj7",  "Dm7",  "Ddim",  "Dm7b5",  "Daug",  "Dsus4",  "D6",  "D9",  "Dmaj9",  "Dmmaj7",  "Dadd9",
@@ -236,7 +243,7 @@ var chord_name_table = [
   "B",   "Bm",   "B7",  "Bmaj7",  "Bm7",  "Bdim",  "Bm7b5",  "Baug",  "Bsus4",  "B6",  "B9",  "Bmaj9",  "Bmmaj7",  "Badd9",
 ];
 
-var chord_finger_a_table = [
+const chord_finger_a_table = [
   "3", "3", "1", "2", "3", "3", "3", "3", "3", "0", "1", "2", "3", "5",
   "4", "1", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
   "0", "0", "3", "4", "3", "3", "3", "1", "0", "3", "3", "4", "4", "5",
@@ -250,7 +257,7 @@ var chord_finger_a_table = [
   "1", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "3", "1", "3",
   "2", "2", "2", "1", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
 ];
-var chord_finger_e_table = [
+const chord_finger_e_table = [
   "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
   "1", "1", "1", "1", "0", "0", "0", "1", "4", "1", "1", "1", "0", "1",
   "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
@@ -264,7 +271,7 @@ var chord_finger_e_table = [
   "1", "1", "1", "1", "1", "0", "0", "2", "1", "1", "1", "1", "1", "1",
   "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
 ];
-var chord_finger_c_table = [
+const chord_finger_c_table = [
   "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
   "1", "1", "1", "1", "1", "1", "1", "1", "0", "1", "3", "3", "1", "3",
   "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
@@ -278,7 +285,7 @@ var chord_finger_c_table = [
   "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
   "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "3", "3", "2", "3",
 ];
-var chord_finger_g_table = [
+const chord_finger_g_table = [
   "0", "0", "0", "0", "3", "2", "3", "1", "0", "0", "0", "0", "4", "0",
   "1", "3", "1", "1", "1", "0", "0", "2", "0", "1", "1", "1", "1", "1",
   "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
@@ -471,7 +478,8 @@ var draw_editor = () => {
   ctx.fillText("chord:", 26, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD/2, 120);
   ctx.drawImage(note_icon, 19*18, 0, 28, 63,   START_XPOS-28, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y-8, 28, 63);     // src_x, y, w, h ,  dst x, y, w, h
   ctx.fillText("lyric:", 30, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC/2, 120);
-  ctx.fillText("technic:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_TECHNIC/2, 120);
+  ctx.fillText("stroke:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_STROKE/2, 120);
+  ctx.fillText("technic:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_STROKE+H_TECHNIC/2, 120);
 }
 
 var draw_offset_slider = (ctx, ypos) => {
@@ -557,6 +565,7 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
   let i, j, min, max, temp_index, index_withOffset, value;
   let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
   let waveform_offset = parseInt(g_offset * g_sampleRate/1000);
+  const editor_height = H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES+H_STROKE;
 
   let current_playing_index = audioTag.currentTime*g_sampleRate + waveform_offset;
 
@@ -581,17 +590,17 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
       ctx.fillStyle = QUAVER_GRID_COLOR;
       ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
       // ctx.fillStyle = QUAVER_GRID_COLOR;
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, editor_height);
     } else if ( (parseInt(index_withOffset / g_numSmp_per_quaver) % signature_divider ) === 0 ) { // 각 마디별로 첫번째 마디인 경우에 배경색 변경.
       ctx.fillStyle = QUAVER_FIRST_COLOR;
       ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
       ctx.fillStyle = '#CEC';
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, editor_height);
     } else {
       ctx.fillStyle = QUAVER_BG_COLOR;
       ctx.fillRect(START_XPOS+i+0.5, ypos, 1, H_WAVEFORM );
       ctx.fillStyle = '#DFD';
-      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, H_TECHNIC+H_LYRIC+H_CHORD+H_NOTES);
+      ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM, 1, editor_height);
     }
     ctx.fillStyle = 'black';
     ctx.fillRect(START_XPOS+i+0.5, ypos+H_WAVEFORM+H_CHORD+TAB_LINE_A_Y, 1, 2);
@@ -663,14 +672,20 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
       ctx.fillText("" + notes[j].lyric, START_XPOS+xpos, H_WAVEFORM+H_CHORD+H_NOTES+H_OFFSET_SLIDER+H_RULER+6 );
       // console.log("[][] lyric x="+(START_XPOS+xpos)+", y="+H_WAVEFORM+H_NOTES+H_OFFSET_SLIDER+H_RULER );
     }
+    if (notes[j].stroke) {
+      if (notes[j].stroke !== "~" ) {    // 디리링~ ~ 마크는 안 그려도 됨 - TAB표시에 img로 그릴 거니까..
+        ctx.fillStyle = LYRIC_TEXT_COLOR;
+        ctx.fillText("" + notes[j].stroke, START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC );
+        // console.log("[][] stroke:"+notes[j].stroke+ ", x="+(START_XPOS+xpos) );
+      }
+    }
     if (notes[j].technic) {
       if (notes[j].technic !== "|" ) {    // 마디 구분은 안 그려도 됨.
         ctx.fillStyle = LYRIC_TEXT_COLOR;
-        ctx.fillText("" + notes[j].technic, START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC );
+        ctx.fillText("" + notes[j].technic, START_XPOS+xpos, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_CHORD+H_NOTES+H_LYRIC+H_STROKE );
         console.log("[][] technic:"+notes[j].technic+ ", x="+(START_XPOS+xpos) );
       }
     }
-
   }
 
 }
@@ -953,10 +968,9 @@ var btn_ok_click = () => {
   let remove_flag = document.getElementById("remove_note").checked;
   if (note_idx_editing !== -1) {    // 편집 중이던 데이터가 기존에 존재하던 데이터라면,
     if (remove_flag) {    // 기존 데이터의 삭제
-      console.log(" have to remove this note: idx="+note_idx_editing + " is " + remove_flag  );
-
-TODO://// 기존데이터(note_idx_editing)를 배열에서 제거할 것. 
-
+      console.log(" have to remove this note: idx="+note_idx_editing + " delete? " + remove_flag  );
+      // 기존데이터(note_idx_editing)를 배열에서 제거할 것. 
+      song_data.notes.splice(note_idx_editing, 1);
     } else {              // 기존 데이터의 수정
       let new_note = new_data_from_edit_dlg();
       song_data.notes[note_idx_editing] = new_note;
@@ -985,21 +999,89 @@ var new_data_from_edit_dlg = () => {
   new_note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
   new_note.lyric = document.getElementById("lyric_input").value;
   new_note.chord = document.getElementById("chord_input").value;
+  new_note.stroke = document.getElementById("stroke_input").value;
   new_note.technic = document.getElementById("technic_input").value;
   new_note.tab = new Array;
-  if ( document.getElementById("g_input").value != "" ) {
-    new_note.tab.push(document.getElementById("g_input").value);
+  new_note.note = new Array;
+  // let _g = document.getElementById("g_input").value;
+  // if ( _g != "" ) {
+  //   let _g_value = (_g.charAt(0) !== "G" ) ? parseInt(_g.slice(1)) : parseInt(_g);
+  //   if (_g.charAt(0) !== "G" )
+  //     new_note.tab.push("G"+_g);
+  //   else 
+  //     new_note.tab.push(_g);
+    
+  //   console.log("note G= "+ note_names[_g_value+12] );
+  //   new_note.note.push( note_names[_g_value+12] );    // G0 = 12번째값 G4
+  // }
+  // let _c = document.getElementById("c_input").value;
+  // if ( _c != "" ) {
+  //   let _c_value = (_c.charAt(0) !== "C" ) ? parseInt(_c.slice(1)) : parseInt(_c);
+  //   if (_c.charAt(0) !== "C" )
+  //     new_note.tab.push("C"+_c);
+  //   else 
+  //     new_note.tab.push(_c);
+
+  //   console.log("note C= "+ note_names[_c_value+5] );
+  //   new_note.note.push( note_names[_c_value+5] );    // C0 = 5번째값 C4
+  // }
+  // let _e = document.getElementById("e_input").value;
+  // if ( _e != "" ) {
+  //   let _e_value = (_e.charAt(0) !== "E" ) ? parseInt(_e.slice(1)) : parseInt(_e);
+  //   if (_e.charAt(0) !== "E" )
+  //     new_note.tab.push("E"+_e);
+  //   else 
+  //     new_note.tab.push(_e);
+
+  //   console.log("note E= "+ _e_value+9 );
+  //   new_note.note.push( note_names[_e_value+9] );
+  // }
+  // let _a = document.getElementById("a_input").value;
+  // if ( _a != "" ) {
+  //   let _a_value = (_a.charAt(0) !== "A" ) ? parseInt(_a.slice(1)) : parseInt(_a);
+  //   if (_a.charAt(0) !== "A" )
+  //     new_note.tab.push("A"+_a);
+  //   else
+  //     new_note.tab.push(_a);
+
+  //   console.log("note A= "+ _a_value+14 );
+  //   new_note.note.push( note_names[_a_value+14] );    // C0 = 5번째값 C4
+  // }
+
+  let _g = document.getElementById("g_input").value;
+  if ( _g != "" ) {
+    if (_g.charAt(0) !== "G" ) _g = "G"+_g;
+    new_note.tab.push(_g);
+    let _g_value = Number(_g.slice(1));
+    console.log("note G= "+ (_g_value+12) + ", _g= " + _g );
+    new_note.note.push(  note_names[_g_value+12] );
   }
-  if ( document.getElementById("c_input").value != "" ) {
-    new_note.tab.push(document.getElementById("c_input").value);
+  let _c = document.getElementById("c_input").value;
+  if ( _c != "" ) {
+    if (_c.charAt(0) !== "C" ) _c = "C"+_c;
+    new_note.tab.push(_c);
+    let _c_value = Number(_c.slice(1));
+    console.log("note C= "+ (_c_value+5) + ", _c= " + _c );
+    new_note.note.push(  note_names[_c_value+5] );
   }
-  if ( document.getElementById("e_input").value != "" ) {
-    new_note.tab.push(document.getElementById("e_input").value);
+  let _e = document.getElementById("e_input").value;
+  if ( _e != "" ) {
+    if (_e.charAt(0) !== "E" ) _e = "E"+_e;
+    new_note.tab.push(_e);
+    let _e_value = Number(_e.slice(1));
+    console.log("note E= "+ (_e_value+9) + ", _e= " + _e );
+    new_note.note.push(  note_names[_e_value+9] );
   }
-  if ( document.getElementById("a_input").value != "" ) {
-    new_note.tab.push(document.getElementById("a_input").value);
+  let _a = document.getElementById("a_input").value;
+  if ( _a != "" ) {
+    if (_a.charAt(0) !== "A" ) _a = "A"+_a;
+    new_note.tab.push(_a);
+    let _a_value = Number(_a.slice(1));
+    console.log("note A= "+ (_a_value+14) + ", _a= " + _a );
+    new_note.note.push(  note_names[_a_value+14] );
   }
 
+  
   return new_note;
 }
 
@@ -1014,6 +1096,7 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
   document.getElementById("timeStamp_input").value = ""+from_ts;
   document.getElementById("lyric_input").value = "";
   document.getElementById("chord_input").value = "";
+  document.getElementById("stroke_input").value = "";
   document.getElementById("technic_input").value = "";
   document.getElementById("a_input").value = "";
   document.getElementById("e_input").value = "";
@@ -1029,20 +1112,21 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
       document.getElementById("timeStamp_input").value = ""+from_ts;
       if (notes[i].lyric) document.getElementById("lyric_input").value = notes[i].lyric;
       document.getElementById("chord_input").value = notes[i].chord;
+      if (notes[i].stroke) document.getElementById("stroke_input").value = notes[i].stroke;
       if (notes[i].technic) document.getElementById("technic_input").value = notes[i].technic;
       for (j=0; j<notes[i].tab.length; j++) {
         switch( notes[i].tab[j].charAt(0)) {
           case "A":
-            document.getElementById("a_input").value = notes[i].tab[j];
+            document.getElementById("a_input").value = notes[i].tab[j].slice(1);
             break;
           case "E":
-            document.getElementById("e_input").value = notes[i].tab[j];
+            document.getElementById("e_input").value = notes[i].tab[j].slice(1);
             break;
           case "C":
-            document.getElementById("c_input").value = notes[i].tab[j];
+            document.getElementById("c_input").value = notes[i].tab[j].slice(1);
             break;
           case "G":
-            document.getElementById("g_input").value = notes[i].tab[j];
+            document.getElementById("g_input").value = notes[i].tab[j].slice(1);
             break;
           default:
             console.error("Something Wrong at note string:"+ notes[i].tab[j] );

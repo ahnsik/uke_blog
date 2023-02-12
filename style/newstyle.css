@@ -103,7 +103,7 @@ select,input {
 .dialog {
   display: block;
   width: 18em;
-  height: 22em;
+  height: 24em;
   background-color: rgba(192, 223, 250, 0.95);
   border-radius: 20px;
   border: rgb(192, 223, 250) 1px solid;
