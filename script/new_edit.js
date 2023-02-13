@@ -910,12 +910,9 @@ var edit_mouseUp = (e) => {
   e.preventDefault();
 }
 var edit_wheelScroll = (e) => {
-  console.log("Scroll How much=" + e.deltaY );  
-  if (e.deltaY > 0) {   // Zoom In 
-    zoom_in();
-  } else if (e.deltaY < 0) {  // Zoom Out
-    zoom_out();
-  }
+  scrollPosition += parseInt(e.deltaY/2)*g_numSmp_per_px;
+  // console.log("Wheel Scroll : e.deltaY="+e.deltaY + ", scrollPosition=" + scrollPosition );
+  draw_editor();
 }
 var set_chord_auto = () => {    // chord 명에 따라 현의 값을 자동으로 지정해 주는 함수.
   let _a = document.getElementById("a_input");
