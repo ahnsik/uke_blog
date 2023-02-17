@@ -791,13 +791,16 @@ var zoom_out = function () {
 
 var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크기를 결정.
   g_bpm = parseInt(document.getElementById("bpm").value);
+  song_data.bpm = g_bpm;
   g_offset = parseInt(document.getElementById("offset").value);
+  song_data.start_offset = g_offset;
   g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
   g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;
   g_numPx_per_quaver = g_numSmp_per_quaver / g_numSmp_per_px ;
   g_ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
 
   let _sign = document.getElementById("signature").value;
+  song_data.basic_beat = _sign;
 
   switch(_sign) {       // 1마디에 들어갈 음표 갯수
     case "2/4":
