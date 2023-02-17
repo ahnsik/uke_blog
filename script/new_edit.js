@@ -216,6 +216,8 @@ function resize_canvas(cnvs_width) {
   edit_area.onmousemove = edit_mouseMove;
   edit_area.onmouseup = edit_mouseUp;
   edit_area.onwheel = edit_wheelScroll;
+  // edit_area.onkeydown = edit_keyDown;
+  // edit_area.onkeyup = edit_keyUp;
 
   // draw_tabulature();
   draw_editor();
@@ -847,7 +849,19 @@ var scroll_x = 0, prev_position=0;
 var click_pos = null;
 var isClicked = false;
 var isScrollMode = false;
+/*var isShiftMode = false;
 
+var edit_keyDown = (e) => {
+  console.log("keydown : shift is " + e.isshiftKey );
+  if (e.isshiftKey)
+    isShiftMode = true;
+}
+var edit_keyUp = (e) => {
+  console.log("keyup : shift is " + e.isshiftKey );
+  if (e.isshiftKey)
+    isShiftMode = false;
+}
+*/
 var edit_mouseDown = (e) => {
   let canvas = document.getElementById("edit_area");
   const rect = canvas.getBoundingClientRect();
@@ -874,6 +888,8 @@ var edit_mouseDown = (e) => {
   e.preventDefault();
 }
 var edit_mouseMove = (e) => {
+  // console.log("is shift key pressed? " + e.shiftKey );
+
   if (isClicked) {
     let canvas = document.getElementById("edit_area");
     const rect = canvas.getBoundingClientRect();
@@ -890,7 +906,16 @@ var edit_mouseMove = (e) => {
         let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
         let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
         let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
-        song_data.notes[moving_note_idx].timestamp = note_ts;
+        if (e.shiftKey) {   // 뒤에 있는 모든 index의 timeStamp들을 같은 크기 만큼 함께 조정한다.
+          console.log("All timestamp will be changed");
+          let notes = song_data.notes;
+          let diff = (note_ts - notes[moving_note_idx].timestamp);
+          for (let i = moving_note_idx; i< notes.length; i++) {
+            notes[i].timestamp += diff;
+          }
+        } else {
+          song_data.notes[moving_note_idx].timestamp = note_ts;
+        }
       } else {
       }
     }
