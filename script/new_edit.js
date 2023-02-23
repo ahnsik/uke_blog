@@ -909,6 +909,9 @@ var edit_mouseMove = (e) => {
         let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
         let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
         let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
+        if (e.altKey) {     // ALT 키가 눌려 있을 때에는, Grid 에 고정하지 않는다.
+          note_ts = clicked_ts;
+        }
         if (e.shiftKey) {   // 뒤에 있는 모든 index의 timeStamp들을 같은 크기 만큼 함께 조정한다.
           console.log("All timestamp will be changed");
           let notes = song_data.notes;
