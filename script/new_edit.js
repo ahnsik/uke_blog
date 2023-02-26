@@ -25,7 +25,9 @@ const song_list = [
   "비와 당신",
   "바다가 보이는 마을 - 마녀의 택급편",
   "Somewhere over the rainbow - IZ",
-  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
+  "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
+  "사건의 지평선 - 윤하",
+  "오르트 구름 - 윤하"
 ];
 const file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
@@ -50,7 +52,9 @@ const file_list = [
   "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
   "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
   "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
+  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/event_horizon-yunha.json",
+  "http://ccash.gonetis.com:88/uke_blog/data/oort_cloud-yunha.json"
 ];
 
 
@@ -153,6 +157,10 @@ window.onload = function main() {
       let dom_beat = document.getElementById("signature");
       dom_beat.value = song_data.basic_beat;
       console.log("[][] 박자:" + song_data.basic_beat );
+      let edit_size = document.getElementById("quaver_mode");
+      edit_size.selectedIndex = (song_data.editsize == 16)?1:0;    // default값 = seleted=1 = 8분음표 편집
+      g_edit_size = (edit_size.selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+      console.log("[][] 편집단위:" + edit_size.value + ", 데이터:" + song_data.editsize + ", 변수값:" + g_edit_size );
 
       scrollPosition = 0;
       // 앨범thumbnail 파일 표시 .
@@ -245,11 +253,11 @@ const chord_name_table = [
 ];
 
 const chord_finger_a_table = [
-  "3", "3", "1", "2", "3", "3", "3", "3", "3", "0", "1", "2", "3", "5",
+  "3a", "3", "1", "2", "3", "3", "3", "3", "3", "0", "1", "2", "3", "5",
   "4", "1", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
   "0", "0", "3", "4", "3", "3", "3", "1", "0", "3", "3", "4", "4", "5",
   "1", "1", "4", "5", "4", "3", "4", "2", "1", "3", "1", "1", "5", "1",
-  "2", "2", "2", "2", "2", "1", "1", "4", "2", "2", "2", "2", "2", "2",
+  "2", "2i", "2", "2", "2", "1", "1", "4", "2", "2", "2", "2", "2", "2",
   "0", "3", "3", "0", "3", "2", "2", "0", "1", "3", "3", "0", "3", "0",
   "1", "0", "4", "4", "4", "3", "3", "1", "4", "4", "4", "1", "4", "1",
   "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
@@ -263,8 +271,8 @@ const chord_finger_e_table = [
   "1", "1", "1", "1", "0", "0", "0", "1", "4", "1", "1", "1", "0", "1",
   "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
   "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "1", "1", "2", "1",
-  "4", "3", "0", "4", "0", "0", "0", "0", "5", "0", "2", "2", "0", "2",
-  "1", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "0", "1", "1",
+  "4", "3m", "0", "4", "0", "0", "0", "0", "5", "0", "2", "2", "0", "2",
+  "1i", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "0", "1", "1",
   "2", "2", "2", "0", "2", "2", "2", "2", "0", "2", "4", "1", "2", "2",
   "3", "3", "1", "2", "1", "0", "1", "3", "3", "0", "1", "2", "2", "3",
   "4", "4", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
@@ -277,7 +285,7 @@ const chord_finger_c_table = [
   "1", "1", "1", "1", "1", "1", "1", "1", "0", "1", "3", "3", "1", "3",
   "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
   "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "1", "2", "3", "3",
-  "4", "4", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
+  "4", "4a", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
   "0", "0", "3", "0", "3", "2", "3", "1", "0", "2", "3", "0", "4", "0",
   "1", "1", "4", "5", "4", "3", "4", "2", "0", "3", "4", "1", "5", "1",
   "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
@@ -292,7 +300,7 @@ const chord_finger_g_table = [
   "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
   "0", "3", "3", "3", "3", "2", "2", "0", "3", "3", "0", "0", "3", "0",
   "4", "0", "1", "3", "0", "0", "0", "1", "4", "1", "1", "1", "0", "4",
-  "2", "1", "2", "5", "1", "1", "1", "2", "3", "2", "2", "0", "1", "0",
+  "2m", "1", "2", "5", "1", "1", "1", "2", "3", "2", "2", "0", "1", "0",
   "3", "2", "3", "0", "2", "2", "2", "3", "0", "3", "3", "1", "2", "1",
   "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "2", "2", "0", "2",
   "5", "1", "1", "1", "1", "1", "1", "1", "1", "1", "3", "3", "1", "3",
@@ -794,7 +802,7 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
   song_data.bpm = g_bpm;
   g_offset = parseInt(document.getElementById("offset").value);
   song_data.start_offset = g_offset;
-  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+  g_edit_size = song_data.editsize = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
   g_numSmp_per_quaver = (g_sampleRate*(30*8/g_edit_size) ) / g_bpm;
   g_numPx_per_quaver = g_numSmp_per_quaver / g_numSmp_per_px ;
   g_ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
@@ -823,6 +831,9 @@ var calc_note_size = () => {   // BPM, 편집단위, 박자 값으로 grid 크�
 }
 
 var quaver_changed = () => {
+  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+  console.log("편집단위:" + g_edit_size + "분음표로 편집");
+  song_data.editsize = g_edit_size;
   calc_note_size();
   draw_editor();
 }
