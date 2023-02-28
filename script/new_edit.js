@@ -253,7 +253,7 @@ const chord_name_table = [
 ];
 
 const chord_finger_a_table = [
-  "3a", "3", "1", "2", "3", "3", "3", "3", "3", "0", "1", "2", "3", "5",
+  "3a", "3a", "1i", "2", "3i", "3", "3", "3", "3", "0", "1", "2", "3", "5",
   "4", "1", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
   "0", "0", "3", "4", "3", "3", "3", "1", "0", "3", "3", "4", "4", "5",
   "1", "1", "4", "5", "4", "3", "4", "2", "1", "3", "1", "1", "5", "1",
@@ -267,9 +267,9 @@ const chord_finger_a_table = [
   "2", "2", "2", "1", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
 ];
 const chord_finger_e_table = [
-  "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
+  "0", "3m", "0", "0", "3i", "2", "2", "0", "1", "0", "0", "0", "3", "0",
   "1", "1", "1", "1", "0", "0", "0", "1", "4", "1", "1", "1", "0", "1",
-  "2", "1", "2", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
+  "2a", "1i", "2m", "2", "1", "1", "1", "2", "3", "2", "2", "2", "1", "2",
   "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "1", "1", "2", "1",
   "4", "3m", "0", "4", "0", "0", "0", "0", "5", "0", "2", "2", "0", "2",
   "1i", "1", "1", "0", "1", "1", "1", "1", "1", "1", "3", "0", "1", "1",
@@ -281,9 +281,9 @@ const chord_finger_e_table = [
   "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
 ];
 const chord_finger_c_table = [
-  "0", "3", "0", "0", "3", "2", "2", "0", "1", "0", "0", "0", "3", "0",
+  "0", "3i", "0", "0", "3i", "2", "2", "0", "1", "0", "0", "0", "3", "0",
   "1", "1", "1", "1", "1", "1", "1", "1", "0", "1", "3", "3", "1", "3",
-  "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
+  "2m", "2a", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "2", "4",
   "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "1", "2", "3", "3",
   "4", "4a", "2", "3", "2", "1", "2", "0", "4", "1", "2", "3", "3", "4",
   "0", "0", "3", "0", "3", "2", "3", "1", "0", "2", "3", "0", "4", "0",
@@ -295,9 +295,9 @@ const chord_finger_c_table = [
   "3", "2", "3", "3", "2", "2", "2", "3", "4", "3", "3", "3", "2", "3",
 ];
 const chord_finger_g_table = [
-  "0", "0", "0", "0", "3", "2", "3", "1", "0", "0", "0", "0", "4", "0",
+  "0", "0", "0", "0", "3i", "2", "3", "1", "0", "0", "0", "0", "4", "0",
   "1", "3", "1", "1", "1", "0", "0", "2", "0", "1", "1", "1", "1", "1",
-  "2", "2", "2", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
+  "2i", "2m", "2i", "2", "2", "1", "1", "3", "2", "2", "2", "2", "2", "2",
   "0", "3", "3", "3", "3", "2", "2", "0", "3", "3", "0", "0", "3", "0",
   "4", "0", "1", "3", "0", "0", "0", "1", "4", "1", "1", "1", "0", "4",
   "2m", "1", "2", "5", "1", "1", "1", "2", "3", "2", "2", "0", "1", "0",
@@ -863,6 +863,7 @@ var scroll_x = 0, prev_position=0;
 var click_pos = null;
 var isClicked = false;
 var isScrollMode = false;
+var isTsMoved = false;
 /*var isShiftMode = false;
 
 var edit_keyDown = (e) => {
@@ -899,6 +900,7 @@ var edit_mouseDown = (e) => {
   }
 
   isClicked = true;
+  isTsMoved = false;
   e.preventDefault();
 }
 var edit_mouseMove = (e) => {
@@ -933,7 +935,8 @@ var edit_mouseMove = (e) => {
         } else {
           song_data.notes[moving_note_idx].timestamp = note_ts;
         }
-      } else {
+        isTsMoved = true;
+        // } else {
       }
     }
     draw_editor();
@@ -948,6 +951,7 @@ var edit_mouseUp = (e) => {
   if (scrollPosition === prev_position) {   // 스크롤 되지 않았음. note 편집.
     if (moving_note_idx !== -1) {    // TS 값을 조정 중이었다면, 
       // document.getElementById("timeStamp_input").value = last_timeStamp+time_diff;
+      console.log("여기에서는 새로운 음을 편집하게 될 것?");
     } else {
       let canvas = document.getElementById("edit_area");
       const rect = canvas.getBoundingClientRect();
@@ -960,11 +964,26 @@ var edit_mouseUp = (e) => {
         console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
         open_note_edit_dlg(clicked_ts);
       }
+      console.log("분명히 편집 창을 열어야 할 텐데?");
     }
   } else {      // 스크롤 된 상태 
+    let canvas = document.getElementById("edit_area");
+    const rect = canvas.getBoundingClientRect();
+    let cursor_x = e.clientX - rect.left;
+    let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
+    let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+
     if (isScrollMode) {   // ==> if 스크롤모드라면 scrollPosition 조정, 아니라면, note 데이터 Move 동작,
       scrollPosition = prev_position-scroll_x;
     } else {              // ==> 아니라면, note 데이터 Move 동작,
+      console.log("여기에서 편집창을 열어 주어야 하는데 실수. clicked_ts="+clicked_ts+", isTsMoved="+isTsMoved );
+      if ( ! isTsMoved) {   // TimeStamp 이동이 없었을 때에만. 기존 데이터의 편집 창이 열린다.
+        // let cursor_y = e.clientY - rect.top;
+        if (cursor_x > START_XPOS) {
+          console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+          open_note_edit_dlg(clicked_ts);
+        }
+      }
     }
   }
   moving_note_idx = -1;
@@ -1103,7 +1122,7 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
   if (note_idx_editing !== -1) {
     let notes = song_data.notes[note_idx_editing];
     console.log("from:"+from_ts + ", to:"+ to_ts + ", note["+note_idx_editing+"]={" + notes.timestamp + ", " + notes.lyric+"}" );
-    document.getElementById("timeStamp_input").value = ""+from_ts;
+    document.getElementById("timeStamp_input").value = ""+notes.timestamp;  //from_ts;
     if (notes.lyric) document.getElementById("lyric_input").value = notes.lyric;
     document.getElementById("chord_input").value = notes.chord;
     if (notes.stroke) document.getElementById("stroke_input").value = notes.stroke;
@@ -1133,6 +1152,7 @@ var set_edit_column_for_ts = (from_ts, to_ts) => {
 
 var open_note_edit_dlg = (clicked_ts) => {
   let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
+  console.log("[] DEBUGGING []  clicked_ts="+clicked_ts+", g_ms_for_quaver="+ g_ms_for_quaver + ", clicked_ts/g_ms_for_quaver="+clicked_ts/g_ms_for_quaver + ", note_ts="+note_ts );
   set_edit_column_for_ts( note_ts, (note_ts+g_ms_for_quaver) );
 
   let dlg_wnd = document.getElementById("note_edit_window");
