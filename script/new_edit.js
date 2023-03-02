@@ -1051,6 +1051,16 @@ var btn_ok_click = () => {
  *   TODO: tab 값을 확인하여 array 크기를 유효하게 정리해야 하며,
  *         tab 값을 기준으로 연주용 음계값을 변환하여 note판정용 데이터 ('note') 에 적용하도록 한다. !!!
  */
+var getPretNum = (str) => {
+  // let numStr = str.slice(1);
+  let _num = Number(str.slice(1));
+  if ( isNaN(_num) ) {
+    _num = Number( str.substring(1, str.length-1) );
+  }
+  // console.log("Has finger mark?? :" + str + ", _num=" + _num);
+  return _num;
+}
+
 var new_data_from_edit_dlg = () => {
   let new_note = new Object;
   new_note.timestamp = parseInt(document.getElementById("timeStamp_input").value);
@@ -1065,7 +1075,8 @@ var new_data_from_edit_dlg = () => {
   if ( _g != "" ) {
     if (_g.charAt(0) !== "G" ) _g = "G"+_g;
     new_note.tab.push(_g);
-    let _g_value = Number(_g.slice(1));
+    // let _g_value = Number(_g.slice(1));
+    let _g_value = getPretNum(_g);
     console.log("note G= "+ (_g_value+12) + ", _g= " + _g );
     new_note.note.push(  note_names[_g_value+12] );
   }
@@ -1073,7 +1084,8 @@ var new_data_from_edit_dlg = () => {
   if ( _c != "" ) {
     if (_c.charAt(0) !== "C" ) _c = "C"+_c;
     new_note.tab.push(_c);
-    let _c_value = Number(_c.slice(1));
+    // let _c_value = Number(_c.slice(1));
+    let _c_value = getPretNum(_c);
     console.log("note C= "+ (_c_value+5) + ", _c= " + _c );
     new_note.note.push(  note_names[_c_value+5] );
   }
@@ -1081,7 +1093,8 @@ var new_data_from_edit_dlg = () => {
   if ( _e != "" ) {
     if (_e.charAt(0) !== "E" ) _e = "E"+_e;
     new_note.tab.push(_e);
-    let _e_value = Number(_e.slice(1));
+    // let _e_value = Number(_e.slice(1));
+    let _e_value = getPretNum(_e);
     console.log("note E= "+ (_e_value+9) + ", _e= " + _e );
     new_note.note.push(  note_names[_e_value+9] );
   }
@@ -1089,7 +1102,8 @@ var new_data_from_edit_dlg = () => {
   if ( _a != "" ) {
     if (_a.charAt(0) !== "A" ) _a = "A"+_a;
     new_note.tab.push(_a);
-    let _a_value = Number(_a.slice(1));
+    // let _a_value = Number(_a.slice(1));
+    let _a_value = getPretNum(_a);
     console.log("note A= "+ (_a_value+14) + ", _a= " + _a );
     new_note.note.push(  note_names[_a_value+14] );
   }
