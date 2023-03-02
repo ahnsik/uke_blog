@@ -1175,8 +1175,39 @@ var upload = () => {
   alert("Upload() is not implimented.");
 }
 var download = () => {
-  //song_data 에서, notes 배열을, timestamp 값을 기준으로  sort 할 것.
-  song_data.notes.sort( (a,b) => {
+  //song_data에서, 실제 데이터가 없는 note 들을 제거해 주어야 함.
+  let i;
+  for (i=0; i<song_data.notes.length; i++) {
+    let _note = song_data.notes[i];
+    if (_note.tab.length > 0) {     // 뭔가 데이터가 있음.
+      continue;
+    }
+    if (_note.note.length > 0) {     // 뭔가 데이터가 있음.
+      continue;
+    }
+    if (_note.technic != "" ) {
+      continue;
+    }
+    if (_note.stroke != "" ) {
+      continue;
+    }
+    if (_note.lyric != "" ) {
+      continue;
+    }
+    if (_note.chord != "" ) {
+      continue;
+    }
+    console.log("CHECK AGAIN: error 를 만들 가능성: i="+i+", note="+JSON.stringify(_note) );           // chord="+_note.chord );
+    song_data.notes[i].timestamp = -1;    // 일단 TS 를 -1 로 설정 함. - 배열을 loop 도는 중에 빼 버리면 error 발생 가능성이 있으므로 나중에 몰아서 처리하기 위함. 
+  }
+  let _notes = new Array;
+  for (i=0; i<song_data.notes.length; i++) {
+    let _note = song_data.notes[i];
+    if (_note.timestamp > 0) {
+      _notes.push(_note);
+    }
+  }
+  _notes.sort( (a,b) => {
     if (a.timestamp > b.timestamp ) {
       return 1;
     } else if (a.timestamp < b.timestamp ) {
@@ -1185,6 +1216,18 @@ var download = () => {
       return 0;
     }
   } );
+  song_data.notes = _notes;
+
+  //song_data 에서, notes 배열을, timestamp 값을 기준으로  sort 할 것.
+  // song_data.notes.sort( (a,b) => {
+  //   if (a.timestamp > b.timestamp ) {
+  //     return 1;
+  //   } else if (a.timestamp < b.timestamp ) {
+  //     return -1;
+  //   } else {
+  //     return 0;
+  //   }
+  // } );
   downloadObjectAsJson(song_data, song_data.title );
 }
 
