@@ -225,6 +225,22 @@ canvas {
   background-color: #EEE;
 }
 
+table, td, th {
+  border-collapse: collapse;
+  border:1px solid rgb(184, 184, 184);
+  text-align: center;
+  color: #949494;
+}
+th {
+  width: 2em;
+  font-size: 2em;
+  background-color: #CCC;
+}
+td {
+  background-color: #e7e4e2;
+}
+
 /* @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css); 
 h1,canvas { font-family: 'NotoSansKR', sans-serif; font-weight: 100 }
 .thin       { font-weight: 100 } */
+

@@ -30,7 +30,7 @@
     <div class="info">
       <img id="thumbnail" width="128" height="96" src="common/ukulele_icon.png"></img>
       <p>제목: <span id="song_title"></span><br/>
-      표지:  <input type="file" id="loadThumbnail" accept="image/*" onchange="changeThumnail()"/> <span id="loadThumbnail_file"></span> <br/>
+      표지:  <input type="file" id="loadThumbnail" accept="image/*" onchange="changeThumnail()"/> <span id="loadThumbnail_file"></span> <span class="space"></span> Strumming Pattern (category): <input type="text"  id="song_category"/><br/>
       곡 설명: <span id="comments"></span><br/>
       음원: <input type="file" id="loadMP3" accept=".mp3"/> <span id="loadMP3_file"></span> </p>
     </div>
@@ -63,16 +63,19 @@
       <img src="common/_ff1.5.svg" id="speed_1_5" class="ctrl_btn" onclick="change_speed(1.5);"></img>
       <img src="common/_ff2.0.svg" id="speed_2_0" class="ctrl_btn" onclick="change_speed(2.0);"></img>
       <span class="space"></span>
+      <img src="common/copy_head.svg" id="set_copy_head" class="ctrl_btn" onclick="set_copy_head();"></img>
+      <span id="copy_head_msec"><sup>head:</sup></span>
+      <img src="common/copy_tail.svg" id="set_copy_tail" class="ctrl_btn" onclick="set_copy_tail();"></img>
+      <span id="copy_head_msec"><sup>tail:</sup></span>
+      <img src="common/paste.svg" id="paste" class="ctrl_btn" onclick="paste();"></img>
+      <span class="space"></span>
       <img src="common/tab_up.svg" id="upload_tab" class="ctrl_btn" onclick="upload();"></img>
       <img src="common/tab_down.svg" id="download_tab" class="ctrl_btn" onclick="download();"></img>
     </div>
 
     <canvas id="edit_area" >캔버스기능이 필요함</canvas>
-
     <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
     <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
-
-    <script src="./script/new_edit.js" type="text/javascript" charset="utf-8"/> </script>
 
     <div id="note_edit_window" class="dialog closed">
       <p class="dlg_title">NOTE EDIT</p>
@@ -93,6 +96,9 @@
     <div class="guide">
       <img id="finger_guide" src="./common/finger_guide.png"/>
     </div>
+
+    <script src="./script/new_edit.js" type="text/javascript" charset="utf-8"/> </script>
+
   </body>
 </html>
 

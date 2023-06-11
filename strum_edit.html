@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <link rel="shortcut icon" href="./favicon.ico"> -->
+    <meta charset="utf-8" lang="kr">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style/fontstyle.css" />
+    <link rel="stylesheet" type="text/css" href="style/newstyle.css" />
+
+    <title> 우쿨렐레 스트러밍 패턴 편집 tool </title>
+    <style>
+      @media ( max-width: 768px ) {   /* 모바일용 CSS 스타일쉬트 */
+        @import url("style/newstyle_m.css"); 
+      }
+      @media ( min-width: 769px ) {   /* PC브라우저용 CSS 스타일쉬트 */
+        @import url("style/newstyle.css"); 
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>스트러밍 패턴 - Strumming Patterns </h1>
+      <span id="song_selector">Select Pattern:<select id="song_list">
+        <optgroup label="4/4박자">
+          <option>둥 둥 둥 둥 </option>
+          <option selected="selected">둥 둥가응가둥가</option>
+          <option>둥가직가둥가직가</option>
+          <option>둥가둥가직가직가</option>
+          <option>둥가직가둥가직가</option>
+        </optgroup>
+        <optgroup label="3/4박자">
+          <option>둥가둥가둥가</option>
+          <option>둥 둥 둥 </option>
+        </optgroup>
+        <optgroup label="16비트">
+          <option>둥 가 둥가둥가둥 가 둥가둥가</option>
+        </optgroup>
+      </select> </span> </br>
+    </header>
+
+    <div class="beat_setting">
+      <p>
+        편집단위:<select id="quaver_mode" onchange="quaver_changed();">
+          <option selected="selected">8 비트 </option>
+          <option>16비트</option>
+        </select>, 
+        <span class="space"></span>
+        박자: <input id="signature" size="8" value="4/4" onchange="signature_changed();"></input> 
+      </p>
+    </div>
+
+    <div class="control_panel">
+      <img src="common/_slow0.5.svg" id="speed_0_5" class="ctrl_btn" onclick="change_speed(0.5);"></img>
+      <img src="common/_slow0.75.svg" id="speed_0_75" class="ctrl_btn" onclick="change_speed(0.75);"></img>
+      <img src="common/ff1.0.svg" id="speed_1_0" class="ctrl_btn" onclick="change_speed(1.0);"></img>
+      <img src="common/_ff1.25.svg" id="speed_1_25" class="ctrl_btn" onclick="change_speed(1.25);"></img>
+      <img src="common/_ff1.5.svg" id="speed_1_5" class="ctrl_btn" onclick="change_speed(1.5);"></img>
+      <img src="common/_ff2.0.svg" id="speed_2_0" class="ctrl_btn" onclick="change_speed(2.0);"></img>
+    </div>
+
+
+    <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
+    <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
+
+    <div class="edit_area">
+      <table >
+        <th>1</th><th>&</th><th>2</th><th>&</th><th>3</th><th>&</th><th>4</th><th>&</th>
+        <tr class="selected_stroke">
+          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+        </tr>
+        <tr>
+          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+        </tr>
+        <tr>
+          <td>둥</td><td>둥</td><td>둥</td><td>둥</td><td>둥</td><td>둥</td><td>둥</td><td>둥</td>
+        </tr>
+        <tr>
+          <td>가</td><td>가</td><td>가</td><td>가</td><td>가</td><td>가</td><td>가</td><td>가</td>
+        </tr>
+        <tr>
+          <td>칙</td><td>칙</td><td>칙</td><td>칙</td><td>칙</td><td>칙</td><td>칙</td><td>칙</td>
+        </tr>
+    </table>
+    </div>
+  </body>
+
+  <script src="./script/strum_edit.js" type="text/javascript" charset="utf-8"> </script>
+
+</html>
+

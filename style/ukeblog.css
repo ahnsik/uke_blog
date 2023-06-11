@@ -272,6 +272,11 @@ a { text-decoration: none; }
   }
 }
 
+#strum_ptrn_edit {
+  background-color: #164;
+  font-size: 28px;
+}
+
 /* footer */
 footer {
   /* footer를 aside위에 올리기 위해 사용(부유객체) */

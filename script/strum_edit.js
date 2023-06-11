@@ -58,50 +58,6 @@ const file_list = [
 ];
 
 
-const strum_patrn_name_list = [
-  "4박자 - 'd-d-d-d'",
-  "8박자 - 'du-du-du-du'",
-  "패턴3 - 'd-du-d-du'",
-  "패턴4 - 'd-d-du-du'",
-  "패턴5 - 'd-du-du-du'",
-  "패턴6 - 'd-d-du-d'",
-  "패턴7 - 'du-d-du-d'",
-  "패턴8 - 'd-du-u-d'",
-  "칼립소 - 'd-du-u-du",
-  "업스트로크 - 'u-u-u-u'",
-  "패턴12 - 'du-xu-du-xu'",
-  "칼립소2 - 'd-du-xu-du'",
-  "패턴14 - 'du-u-d-du'",
-  "패턴15 - 'du-xu-xu-du'",
-  "패턴16 - 'du-du-u-du'",
-  "패턴17 - 'du-xu-xu-xu'",
-  "패턴18 - 'd-d-xu-xu'",
-  "패턴19 - 'd-d-xu-du'",
-  "패턴20 - 'd-d-u-xu'"
-  ];
-
-const strum_patrn_img_list = [
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_1.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_2.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_3.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_4.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_5.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_6.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_7.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_8.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_10.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_11.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_12.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_13.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_14.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_15.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_16.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_17.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_18.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_19.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_20.png"
-];
-
 const CHORD_ICON_Y = 48;
 const STROKE_ICON_Y = 136;
 const TAB_LINE_A_Y = 20;
@@ -184,27 +140,6 @@ window.onload = function main() {
     xmlhttp.send();
   }
 
-  // //// 스트럼패턴을 고를 수 있도록 selector 준비.
-  // let strum_selector = document.getElementById("pattern_list");
-  // if (initialSelect >= strum_patrn_name_list.length)    
-  //   initialSelect = 0;
-  // for (var i=0; i<strum_patrn_name_list.length; i++) {
-  //   var item = document.createElement("option");
-  //   item.text = strum_patrn_name_list[i];
-  //   item.value = strum_patrn_img_list[i];
-  //   if (i == initialSelect) 
-  //     item.selected="selected";
-  //     strum_selector.appendChild(item);
-  // }
-  // strum_selector.onchange = function() {
-  //   console.log("Strumming_patter_list : " + strum_patrn_name_list[strum_selector.selectedIndex] );
-  //   scrollPosition = 0;
-    
-  //   console.log("selected img src = "+ strum_patrn_img_list[strum_selector.selectedIndex] );
-  //   let strum_img = document.getElementById("strum_ptrn_img");
-  //   strum_img.innerHTML = "<img class='strum_pattern' width='300px' height='80px' src='"+ strum_patrn_img_list[strum_selector.selectedIndex] + "'/>";
-  // }
-
   ////  loading *.uke JSON data
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function() {
@@ -212,8 +147,6 @@ window.onload = function main() {
       song_data = JSON.parse(this.responseText);
       let title = document.getElementById("song_title");
       title.innerHTML = song_data.title;
-      let category = document.getElementById("song_category");
-      category.innerHTML = song_data.category;
       let comments = document.getElementById("comments");
       comments.innerHTML = song_data.comment;
       let dom_bpm = document.getElementById("bpm");
@@ -287,7 +220,6 @@ function resize_canvas(cnvs_width) {
   let edit_area = document.getElementById("edit_area");
   edit_area.width = cnvs_width;     // event.target.innerWidth-30;
   edit_area.height = canvas_height;
-  edit_area.ondblclick = edit_mouseDblClick;
   edit_area.onmousedown = edit_mouseDown;
   edit_area.onmousemove = edit_mouseMove;
   edit_area.onmouseup = edit_mouseUp;
@@ -471,8 +403,7 @@ var g_ms_for_quaver;  // = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
 
 var moving_note_idx = -1;     // 마우스 드래그로 음표를 이동시킬 때의 index.
 var note_idx_editing = -1;    // Dialog 에서 편집중인 음표의 index.
-var copy_head_idx = -1;
-var copy_tail_idx = -1;
+
 
 //// MP3 데이터를 로딩 하여 디코딩 요청.
 function request_mp3(filename) {
@@ -770,7 +701,7 @@ var play_song = () => {
       if (audioTag.ended) {
         stop_song();
       }
-    }, 50);
+    }, 120);
   } else {
     audioTag.pause();
     document.getElementById("play_song").src = "common/play.svg" ;
@@ -1049,10 +980,10 @@ var edit_mouseUp = (e) => {
       console.log("여기에서 편집창을 열어 주어야 하는데 실수. clicked_ts="+clicked_ts+", isTsMoved="+isTsMoved );
       if ( ! isTsMoved) {   // TimeStamp 이동이 없었을 때에만. 기존 데이터의 편집 창이 열린다.
         // let cursor_y = e.clientY - rect.top;
-        // if (cursor_x > START_XPOS) {
-        //   console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
-        //   open_note_edit_dlg(clicked_ts);
-        // }
+        if (cursor_x > START_XPOS) {
+          console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+          open_note_edit_dlg(clicked_ts);
+        }
       }
     }
   }
@@ -1062,18 +993,6 @@ var edit_mouseUp = (e) => {
   draw_editor();
   e.preventDefault();
 }
-
-var edit_mouseDblClick = (e) => {
-  console.log("Double Click" );
-  let canvas = document.getElementById("edit_area");
-  const rect = canvas.getBoundingClientRect();
-  let cursor_x = e.clientX - rect.left;
-  let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
-  let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-  console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
-  open_note_edit_dlg(clicked_ts);
-}
-
 var edit_wheelScroll = (e) => {
   scrollPosition += parseInt(e.deltaY/2)*g_numSmp_per_px;
   draw_editor();
@@ -1261,62 +1180,10 @@ var close_note_edit_dlg = () => {
   note_idx_editing = -1;
 }
 
-// var open_strum_pattern_edit_dialog = () => {
-//   selector = document.getElementById("song_list");
-//   if (initialSelect >= song_list.length)    // index overflow 방지.
-//     initialSelect = 0;
-//   for (var i=0; i<song_list.length; i++) {
-//     var item = document.createElement("option");
-//     item.text = song_list[i];
-//     item.value = file_list[i];
-//     if (i == initialSelect) 
-//       item.selected="selected";
-//     selector.appendChild(item);
-//   }
-//   selector.onchange = function() {
-//     console.log("Song file - Changed : " + file_list[selector.selectedIndex] );
-//     scrollPosition = 0;
-//     xmlhttp.open("GET", file_list[selector.selectedIndex], true);
-//     xmlhttp.send();
-//   }
-// }
-
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   let imgTag = document.getElementById("thumbnail");
   imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
   document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
-}
-
-var set_copy_head = () => {
-  let dom_copy_head = document.getElementById("set_copy_head");
-  let dom_copy_tail = document.getElementById("set_copy_tail");
-  // TODO: set copy_head_idx to current_position
-
-  if (copy_head_idx >= copy_tail_idx) {   // copy 영역이 해제 됨. (설정되지 않음)
-    dom_copy_head.innerHTML = "<sup>head:</sup>";
-    dom_copy_tail.innerHTML = "<sup>tail:</sup>";
-  } else {
-    dom_copy_head.innerHTML = "<sup>head:"+dom_copy_head+"</sup>";
-    dom_copy_tail.innerHTML = "<sup>tail:"+dom_copy_tail+"</sup>";
-  }
-}
-
-var set_copy_tail = () => {
-  let dom_copy_head = document.getElementById("set_copy_head");
-  let dom_copy_tail = document.getElementById("set_copy_tail");
-  // TODO: set copy_tail_idx to current_position
-
-  if (copy_head_idx >= copy_tail_idx) {   // copy 영역이 해제 됨. (설정되지 않음)
-    dom_copy_head.innerHTML = "<sup>head:</sup>";
-    dom_copy_tail.innerHTML = "<sup>tail:</sup>";
-  } else {
-    dom_copy_head.innerHTML = "<sup>head:"+dom_copy_head+"</sup>";
-    dom_copy_tail.innerHTML = "<sup>tail:"+dom_copy_tail+"</sup>";
-  }
-}
-
-var set_copy_paste = () => {
-
 }
 
 var upload = () => {
@@ -1376,7 +1243,6 @@ var download = () => {
   //     return 0;
   //   }
   // } );
-  song_data.version = "2.1";   // Uke파일에 Stroke 기능을 정의할 수 있도록 수정하려고 한다. 
   downloadObjectAsJson(song_data, song_data.title );
 }
 
