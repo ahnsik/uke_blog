@@ -1,66 +1,82 @@
-<!-- 여기에는 우쿨렐레를 공부하기 위한 기록과
-    초보자들을 위한 소개 및  각종 악보들을 모아 두는 홈페이지를 만들고 싶다.
-        Contents 는 여기:http://ukulelehunt.com/2018/07/04/classical-music-on-a-ukulele/
-        를 참고해도 좋을 것 같다.
-    by Ahnsik.Choi
--->
-
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="shortcut icon" href="./favicon.ico">
-  <meta charset="UTF-8" lang="kr">
-  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="style/ukeblog.css" />
-</head>
+  <head>
+    <link rel="shortcut icon" href="./favicon.ico">
+    <meta charset="utf-8" lang="kr">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style/fontstyle.css" />
+    <link rel="stylesheet" type="text/css" href="style/newstyle.css" />
 
-<body>
-  <div id="wrap">
+    <title> TAB악보 MP3 Sync tool </title>
+  </head>
+  <body>
     <header>
-      <a class="logo" href="#home"><img src="cas_logo.svg"></a>
-      <nav>
-        <ul class="nav-items">
-          <li><a href="#tutorials">배우기(Tutorial)</a></li>
-          <li><a href="#tabs">악보모음(Tabulature)</a></li>
-          <li><a href="#links">자료(Links)</a></li>
-          <li><a href="#blog">기록(Blog)</a></li>
-          <li><a href="#about">About</a></li>
-        </ul>
-      </nav>
+      <h1>TAB(ukulele) - MP3 Syncronize Tool from Chat-GPT </h1>
+      <span id="song_selector">Select Song:<select id="song_list">
+        <!-- <option>세계의 약속 - 하울의 움직이는 성 </option>
+        <option selected="selected">하와이 연정 - 패티킴</option>
+        <option>때로는 옛 이야기를 - 센과 치히로의 행방불명</option> -->
+      </select> </span> </br>
     </header>
 
-    <div id="content-wrap">
-      <aside>
-        <h1>About..</h1>
-        <ul>
-          <li><a href="#author" class="active">나는 누구?</a></li>
-          <li><a href="#request">자료요청</a></li>
-          <li><a href="#qna">물어보기</a></li>
-        </ul>
-      </aside>
-      <section>
-        <article id="author">
-          <h1>Who am I ?</h1> <span class="date_written"> 2020/11/15 </span>
-          <p>나는 누구인가 ?</p>
-        </article>
-
-        <article id="request">
-          <h1>자료요청</h1> <span class="date_written"> 2020/11/20 </span>
-          <p>나에게 요청할 내용은 여기에 써 주세요.</p>
-        </article>
-
-        <article id="qna">
-          <h1>나에 관한 질문</h1> <span class="date_written"> 2020/11/20 </span>
-          <p>여기에 물어 보기...</p>
-        </article>
-
-      </section>
-      <!-- end of content-wrap -->
+    <div class="info">
+      곡 설명: <span id="comments"></span><br/>
+      음원: <input type="file" id="loadMP3" accept=".mp3"/> <span id="loadMP3_file"></span> </p>
     </div>
-    <footer>
-      Mail to:  <a href="mailto:ccash@daum.net">CAS </a>
-    </footer>
-  <!-- end of wrap   -->
-  </div>
-</body>
+    <div class="beat_setting">
+      <p>
+        편집단위:<select id="quaver_mode" onchange="quaver_changed();">
+          <option selected="selected">8분음표로 편집 </option>
+          <option>16분음표로 편집</option>
+        </select>, 
+        <span class="space"></span>
+        박자: <input id="signature" size="8" value="4/4" onchange="signature_changed();"></input> 
+        BPM: <input id="bpm" type="number" min="20" max="280" size="4" value="60" onchange="bpm_changed();"></input>, 
+        Playing Offset: <input id="offset" type="number" min="-3000" max="3000" step="10" size="8" value="0" onchange="offset_changed();"></input>msec, 
+      </p>
+    </div>
+    <div class="control_panel">
+      <img src="common/zoom-in.svg" id="zoomin" class="ctrl_btn" onclick="zoom_in();"></img>
+      <img src="common/zoom-out.svg" id="zoomout" class="ctrl_btn" onclick="zoom_out();"></img>
+      <span class="space"></span>
+      <audio id="playing_audio"></audio>
+      <img src="common/goto_head.svg" id="goto_head" class="ctrl_btn" onclick="goto_head();"></img>
+      <img src="common/play.svg" id="play_song" class="ctrl_btn" onclick="play_song();"></img>
+      <img src="common/stop.svg" id="stop_song" class="ctrl_btn" onclick="stop_song();"></img>
+      <img src="common/rewind_10sec.svg" id="rew_10s" class="ctrl_btn" onclick="rewind_10sec();"></img>
+      <span class="space"></span>
+      <img src="common/_slow0.5.svg" id="speed_0_5" class="ctrl_btn" onclick="change_speed(0.5);"></img>
+      <img src="common/_slow0.75.svg" id="speed_0_75" class="ctrl_btn" onclick="change_speed(0.75);"></img>
+      <img src="common/ff1.0.svg" id="speed_1_0" class="ctrl_btn" onclick="change_speed(1.0);"></img>
+      <img src="common/_ff1.25.svg" id="speed_1_25" class="ctrl_btn" onclick="change_speed(1.25);"></img>
+      <img src="common/_ff1.5.svg" id="speed_1_5" class="ctrl_btn" onclick="change_speed(1.5);"></img>
+      <img src="common/_ff2.0.svg" id="speed_2_0" class="ctrl_btn" onclick="change_speed(2.0);"></img>
+      <span class="space"></span>
+      <img src="common/copy_head.svg" id="set_copy_head" class="ctrl_btn" onclick="set_copy_head();"></img>
+      <span id="copy_head_msec"></span>
+      <img src="common/copy_tail.svg" id="set_copy_tail" class="ctrl_btn" onclick="set_copy_tail();"></img>
+      <span id="copy_head_msec"></span>
+      <img src="common/paste.svg" id="paste" class="ctrl_btn" onclick="paste();"></img>
+      <span class="space"></span>
+      <img src="common/tab_up.svg" id="upload_tab" class="ctrl_btn" onclick="upload();"></img>
+      <img src="common/tab_down.svg" id="download_tab" class="ctrl_btn" onclick="download();"></img>
+    </div>
+
+    <canvas id="waveformCanvas" >캔버스기능이 필요함</canvas>
+    <!-- <canvas id="edit_area" >캔버스기능이 필요함</canvas> -->
+    <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
+    <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
+
+    <div class="guide">
+      <!-- <img id="shift_key_guide" width="40px" src="./common/shift-button-icon.svg"/><span>전체이동</span>
+      <img id="alt_key_guide" width="36px" src="./common/alt-button-icon.svg"/><span>미세조정</span>
+      <img id="ctrl_key_guide" width="36px" src="./common/ctrl-button-icon.svg"/><span>미지정</span> -->
+      <img id="finger_guide" src="./common/finger_guide.png"/>
+    </div>
+
+    <script src="./script/waveformDraw.js" type="text/javascript" charset="utf-8"/> </script>
+    <script src="./script/editor.js" type="text/javascript" charset="utf-8"/> </script>
+
+  </body>
 </html>
+
