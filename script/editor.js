@@ -460,6 +460,8 @@ var edit_mouseMove = (e) => {
     if (isScrollMode) {
         scroll_x = (cursor_x-last_posX);       // (cursor_x-last_posX)*g_numSmp_per_px;
         scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
+        if (scrollPosition_msec < 0)
+          scrollPosition_msec = 0;
         // console.log("move - startOffset=", scrollPosition_msec );
         waveformDraw.set_scrollPos(scrollPosition_msec);
       
@@ -514,6 +516,8 @@ var edit_mouseUp = (e) => {
 
     if (isScrollMode) {
       scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
+      if (scrollPosition_msec < 0)
+        scrollPosition_msec = 0;
       waveformDraw.set_scrollPos(scrollPosition_msec);
     }
   }
@@ -525,17 +529,21 @@ var edit_mouseUp = (e) => {
 }
 
 var edit_mouseDblClick = (e) => {
-  // const rect = edit_area.getBoundingClientRect();
-  // let cursor_x = e.clientX - rect.left;
+  const rect = edit_area.getBoundingClientRect();
+  let cursor_x = e.clientX - rect.left;
+  let cursor_y = e.clientY - rect.top;
   // let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
   // let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
   // console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+
+  console.log("clicked pos:(",cursor_x,",",cursor_y,") : ts=", waveformDraw.get_clickedTimeStamp(cursor_x), ", ", waveformDraw.get_clickedCategory(cursor_y));
 }
 
 var edit_wheelScroll = (e) => {
-  // scrollPosition_msec += parseInt(e.deltaY/2)*g_numSmp_per_px;
-  // waveformDraw.set_scrollPos(scrollPosition_msec);
-
-  // draw_editor(edit_area);
+  scrollPosition_msec += parseInt(e.deltaY/2);
+  if (scrollPosition_msec < 0)
+    scrollPosition_msec = 0;
+  waveformDraw.set_scrollPos(scrollPosition_msec);
+  draw_editor(edit_area);
 }
 

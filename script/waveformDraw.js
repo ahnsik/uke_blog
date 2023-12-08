@@ -69,6 +69,7 @@ var waveformDraw = {
 
         for (i=1; i<(this.w-this.x); i++ ) {
             let start_idx = parseInt( this.numSmp4Px*(i-1) +offset );       // offset 은 waveBuffer의 index (sample단위)
+            if (start_idx >= this.waveBuffer.length)  break;                // wave data 의 끝까지 왔으면 더이상 그릴 게 없으므로 종료.
             let end_idx =  parseInt( this.numSmp4Px*i +offset );
 
             if ( (start_idx < 0) ) { //|| (end_idx >= this.waveBuffer.length) ) {   // 범위를 벗어나면.. 0 값으로.
@@ -90,7 +91,7 @@ var waveformDraw = {
             } else if ( (parseInt(start_idx/this.samplerate) % 2) == 0 ) {    // 짝수 초(sec)라면 파랑. 아니면 녹색으로 표시 
                 ctx.strokeStyle = "darkblue";       
             } else {
-                ctx.strokeStyle = "darkgreen";
+                ctx.strokeStyle = "darkslateblue";
             }
             ctx.moveTo( xpos+i, center_y + min*waveSize);
             ctx.lineTo( xpos+i, center_y + max*waveSize);
@@ -118,7 +119,7 @@ var waveformDraw = {
             let beat = parseInt( (i*msec_per_pixel+this.scrollOffset) / (msec_perGrid/2) ) % this.numQuaver4Word;      // 1 마디를 8분음표로 나눈 갯수...
             if (prev_beat != beat) {
                 ctx.fillStyle = "grey";
-                ctx.fillRect( xpos+i, this.y, 2, this.h );
+                ctx.fillRect( xpos+i, this.y, 1, this.h );
                 prev_beat = beat;
             } else {
                 let y = 0;
@@ -249,7 +250,8 @@ var waveformDraw = {
         this.h = h;
     },
     set_scrollPos: (offset) => {
-        this.scrollOffset = offset;
+        if (offset >= 0)
+            this.scrollOffset = offset;
     },
     get_scrollPos: () => {
         return parseInt(this.scrollOffset);
@@ -304,7 +306,7 @@ var waveformDraw = {
         size += TAB_STROKE;
         if (ypos < size)
             return "stroke";
-        size += TAB_TECHINIC;
+        size += TAB_TECHNIC;
         if (ypos < size)
             return "technic";
         size += TAB_CHORD;
@@ -330,6 +332,8 @@ var waveformDraw = {
     }
 };
 
+////////////////////////////////////
+//// localy used utility functions..
 function makeTimeString (msec) {
     let min = ""+parseInt(msec/60000);
     let sec = ""+parseInt(parseInt(msec%60000)/1000);
@@ -337,7 +341,6 @@ function makeTimeString (msec) {
     let retString = "▲"+min+":"+sec.padStart(2,'0')+"."+milli.padStart(3,"0");
     return retString;
 };
-
 function isEmptyStr(str) {
     if (str==undefined)
         return true;
@@ -388,6 +391,5 @@ function draw_a_note (ctx, x, y, note) {
             }
         }
     }
-
     ctx.font = backupFont;
 };
