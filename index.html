@@ -36,6 +36,9 @@
       </p>
     </div>
     <div class="control_panel">
+      <img src="common/scale_overdraw.svg" id="full" class="ctrl_btn" onclick="halfWave();"></img>
+      <img src="common/scale_small.svg" id="harf" class="ctrl_btn" onclick="fullWave();"></img>
+      <span class="space"></span>
       <img src="common/zoom-in.svg" id="zoomin" class="ctrl_btn" onclick="zoom_in();"></img>
       <img src="common/zoom-out.svg" id="zoomout" class="ctrl_btn" onclick="zoom_out();"></img>
       <span class="space"></span>
@@ -63,11 +66,10 @@
     </div>
 
     <canvas id="waveformCanvas" >캔버스기능이 필요함</canvas>
-    <!-- <canvas id="edit_area" >캔버스기능이 필요함</canvas> -->
     <img id="uke_note" style="display:none" src="./common/uke_note.png"/>
     <img id="whole_chords" style="display:none" src="./common/chord_total.png"/>
 
-    <div class="guide">
+    <div class="guide" style="display:none;">
       <!-- <img id="shift_key_guide" width="40px" src="./common/shift-button-icon.svg"/><span>전체이동</span>
       <img id="alt_key_guide" width="36px" src="./common/alt-button-icon.svg"/><span>미세조정</span>
       <img id="ctrl_key_guide" width="36px" src="./common/ctrl-button-icon.svg"/><span>미지정</span> -->

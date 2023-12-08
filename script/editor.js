@@ -25,7 +25,7 @@ const song_list = [
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
   "사건의 지평선 - 윤하"
 ];
-var host_url = "http://ccash2.gonetis.com:88";
+const host_url = "http://ccash2.gonetis.com:88";
 const file_list = [
   host_url+"/uke_blog/data/oort_cloud-yunha.json",
   host_url+"/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
@@ -48,12 +48,13 @@ const file_list = [
   host_url+"/uke_blog/data/event_horizon-yunha.json"
 ];
 
+const START_XPOS = 0;     // ??
+const MINIMUM_WAVE_SIZE = 120;
+
 /////// about Editor resize & UKE_Document
 var initialSelect = 0;
 var array_l = [];     // wav buffer
 var canvas_width, canvas_height;
-
-var START_XPOS = 0;     // ??
 
 var scrollPosition_msec = 0;
 
@@ -96,10 +97,9 @@ window.onload = function main() {
       console.log("[][] 박자:" + song_data.basic_beat );
       let edit_size = document.getElementById("quaver_mode");
       edit_size.selectedIndex = (song_data.editsize == 16)?1:0;    // default값 = seleted=1 = 8분음표 편집
-      // g_edit_size = (edit_size.selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
-      // console.log("[][] 편집단위:" + edit_size.value + ", 데이터:" + song_data.editsize + ", 변수값:" + g_edit_size );
-      scrollPosition_msec = 0;
+      waveformDraw.set_semiQuaver( (edit_size.selectedIndex == 0)?true:false );
 
+      scrollPosition_msec = 0;
       // MP3 파일 로딩.
       audioTag = document.getElementById("playing_audio");
       if (song_data.source.length > 0) {
@@ -113,7 +113,7 @@ window.onload = function main() {
       calc_note_size();
       change_speed(1.0);
       //  Drawing Tabulature
-      resize_canvas( window.innerWidth-40);
+      resize_canvas( window.innerWidth, window.innerHeight );
     }
   };
   xmlhttp.open("GET", file_list[initialSelect], true);
@@ -132,17 +132,15 @@ function getParameterByName(name) {
 window.addEventListener("resize", window_resized);
 function window_resized(event) {
   dlg_wnd = document.getElementsByClassName("dialog");
-  console.log("num="+dlg_wnd.length);
+  // console.log("num="+dlg_wnd.length);
   for (let i=0; i<dlg_wnd.length; i++) {
     let w = dlg_wnd[i].offsetWidth;
     let h = dlg_wnd[i].offsetHeight;
     dlg_wnd[i].style.left = (event.target.innerWidth-w)/2 + "px";
-    dlg_wnd[i].style.top = "30px";     // (event.target.innerHeight-h-80)/2 + "px";    // 80은 그냥 조정값.
-    console.log("i="+i+", width=" + w+", height=" + h );
+    dlg_wnd[i].style.top = "30px";
+    // console.log("i="+i+", width=" + w+", height=" + h );
   }
-
-  console.log("resize window.." );
-  resize_canvas (event.target.innerWidth-40 );
+  resize_canvas( window.innerWidth, window.innerHeight );
 }
 
 ///////////////////////////////////////////////////////////////
@@ -151,47 +149,37 @@ function window_resized(event) {
 
 let edit_area = document.getElementById("waveformCanvas");
 
-function resize_canvas(cnvs_width) {
-  canvas_width = cnvs_width;
-  canvas_height = 160;  
-
-  edit_area.width = cnvs_width;     // event.target.innerWidth-30;
+function resize_canvas(cnvs_width, cnvs_height) {
+  canvas_width = cnvs_width - 32; // 32=padding,
+  canvas_height = cnvs_height-300;    // 300 = 각종 song data 속성 및 control form area size...
+  if (canvas_height < (MINIMUM_WAVE_SIZE+280) ) {   //  280 = TAB_EDIT_HEIGHT
+    canvas_height = (MINIMUM_WAVE_SIZE+280);
+    console.log("canvas size is too small : ", cnvs_height, ", change to : ", canvas_height );
+  }
+  edit_area.width = cnvs_width;
   edit_area.height = canvas_height;
   edit_area.ondblclick = edit_mouseDblClick;
   edit_area.onmousedown = edit_mouseDown;
   edit_area.onmousemove = edit_mouseMove;
   edit_area.onmouseup = edit_mouseUp;
   edit_area.onwheel = edit_wheelScroll;
-  // edit_area.onkeydown = edit_keyDown;
-  // edit_area.onkeyup = edit_keyUp;
+  edit_area.onkeydown = edit_keyDown;
+  edit_area.onkeyup = edit_keyUp;
 
-  // waveformDraw.init();
   waveformDraw.set_windowSize(0, 0, canvas_width, canvas_height);
   draw_editor(edit_area);
 }
 
 ////// About UKE documents - BMP, samplate, etc,,
 
-var g_sampleRate = 0;        // 1초당 sound sample 수.. --> 이 값에 따라 grid 의 pixel 간격이 달라질 수 있으므로 주의.
-var g_totalMsec = 0;         // 음악 전체의 길이 (msec단위)
-
-var signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8분음표
-// var g_edit_size = 8;         // 8=quaver(8분음표), 16=semi-quaver(16분음표)
 var g_bpm = 60;
 var g_offset = 0;
-var g_numSmp_per_px = 256;     // number of samples per pixel;        --> 1, 2, 4, 8, 16, 32, 64, 128, .. <-- 확대/축소 배율
 
-var g_numSmp_per_msec = g_sampleRate/1000;
-var g_msec_per_quaver = (30000/g_bpm);    // 30000 은 8분음표 니까.
-var g_numSmp_per_quaver = (g_sampleRate*30) / g_bpm;      // 기준 음표(8분음표or16분음표)가 차지하는 가로 pixel 크기    // var grid_width = 20;        // 1개 단위음 (8분음표 or 16분음표) 크기 - BPM 및 확대/축소에 따라, 박자(signature)에 따라 크기가 변경된다.
-var g_numPx_per_quaver = g_numSmp_per_quaver / g_numSmp_per_px;   // 마우스 드래그로 이동 시킬 때의 위치 표시용, 1개 음표 크기 (pixel)
-var g_ms_for_quaver;  // = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
-
+///// 아래 각종 기준은 msec 단위로 처리.
 var moving_note_idx = -1;     // 마우스 드래그로 음표를 이동시킬 때의 index.
 var note_idx_editing = -1;    // Dialog 에서 편집중인 음표의 index.
 var copy_head_idx = -1;
 var copy_tail_idx = -1;
-
 
 //// MP3 데이터를 로딩 하여 디코딩 요청.
 function request_mp3(filename) {
@@ -228,15 +216,13 @@ async function mp3Decode(mp3Buffer) {
   const ac = new AudioContext();
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
-  g_sampleRate = audioBuf.sampleRate;
-  g_totalMsec = audioBuf.duration;
   let float32Array_l = audioBuf.getChannelData(0);
   let i=0;
   let wavefrom_size = canvas_width; //parseInt( (H_WAVEFORM-1)/2 );
   const length = float32Array_l.length;
   array_l = float32Array_l;
 
-  waveformDraw.set_audioBuffer(array_l, g_sampleRate);
+  waveformDraw.set_audioBuffer(array_l, audioBuf.sampleRate);
   waveformDraw.set_scrollPos(0);
   draw_editor(edit_area);
 }
@@ -248,8 +234,6 @@ var draw_editor = (canvas) => {
   canvas.width = canvas_width;
   canvas.height = canvas_height;
 
-  // console.log(" scrollPosition_msec = "+ scrollPosition_msec );
-
   let ctx = canvas.getContext("2d");
   ctx.textBaseline = 'top';
   ctx.fillStyle = 'white';
@@ -260,75 +244,16 @@ var draw_editor = (canvas) => {
 
   // waveformDrawWithMsec(ctx, 10, 3, canvas_width, canvas_height, array_l);
   waveformDraw.set_playingPosition(audioTag.currentTime);
+  // waveformDraw.draw(ctx, song_data);
   waveformDraw.drawBg(ctx);
-  waveformDraw.draw(ctx);
-  waveformDraw.drawRuler(ctx);
+  waveformDraw.drawWave(ctx);
+  waveformDraw.drawNotes(ctx, song_data);
+  waveformDraw.drawRuler(ctx );
 }
 
 /* canvas width 에 맞춰서 pixel 별로, 해당 pixel (xpos)에 해당하는 msec 값을 구한 다음에, 
    해당 msec 를 기준으로 모든 것을 판단하고 drawing 하도록 한다. 
 */
-
-// var waveformDraw = (ctx, xpos, ypos, width, height, wavBuffer) => {      // samplingdata 의 index값이 기준이 되어 그림을 그리는 함수.
-
-//   let i, j, min, max, temp_index, index_withOffset, value;
-//   let wavefrom_size = height;
-//   let waveform_offset = 0;  //parseInt(g_offset * g_sampleRate/1000);
-
-//   let current_playing_index = audioTag.currentTime*g_sampleRate + waveform_offset;
-
-//   // if ( ! audioTag.paused ) {    // 재생 중인 동안에는, Playing Position 위치에 맞게 자동으로 scrolling..
-//   //   let leftScrollLimit = 0;      /// -(START_XPOS*g_numSmp_per_px);    // TODO: 그래프에서 왼쪽에 label 표시 영역 처리해야 하는데...
-//   //   let rightScrollLimit = ((canvas_width-xpos)*g_numSmp_per_px*0.4);   // 화면 크기의 40%진행 위치
-//   //   if ( (current_playing_index-scrollPosition_msec) > rightScrollLimit ) {
-//   //     scrollPosition_msec = parseInt(current_playing_index - rightScrollLimit ) ;
-//   //   }
-//   //   if ( (current_playing_index-scrollPosition_msec) < leftScrollLimit ) {
-//   //     scrollPosition_msec = parseInt(current_playing_index);
-//   //   }
-//   // }
-
-//   /* 음파 Waveform과 데이터를 나중에 그려 줘야 함. - 동시에 그리면 그려진 글자가 지워지므로. */
-//   let center_y = ypos+height/2;  // canvas center 에 그리기 위해서 
-//   let xpos_prime = xpos+0.5;     // 단지 draw를 하기 위해 위치 보정
-//   let scrollPosition_index = scrollPosition_msec * g_numSmp_per_msec;
-//   for ( i = 0; i< (canvas_width-xpos); i++ ) {
-//     min= 1.0; max= -1.0;      
-//     temp_index = (i*g_numSmp_per_px)+scrollPosition_index;
-//     index_withOffset = temp_index +waveform_offset;
-//     if ( (typeof(temp_index)!="number") || 
-//           (typeof(scrollPosition_index)!="number") ||
-//           (typeof(waveform_offset) != "number") ) {
-//       console.error ( "typeof temp_index="+typeof(temp_index)+ ", typeof scrollPosition_index="+typeof(scrollPosition_index)+ ",typeof g_offset="+typeof(waveform_offset) );
-//     }
-//     // min-max 계산
-//     for ( j=0; j<g_numSmp_per_px; j++) {
-//       value = wavBuffer[temp_index +j ];
-//       if ( value >= max)
-//         max = value;      //parseInt(value);
-//       if ( value <= min)
-//         min = value;      //parseInt(value);
-//     }
-
-//     // BG color : BPM에 맞춰서..
-
-//     // WAVE 파형 그리기.
-//     if ( index_withOffset < current_playing_index ) { 
-//       ctx.strokeStyle = "grey"; // WAVEFORM_COLOR_PAST;
-//     } else {
-//       if ( ( parseInt(index_withOffset/g_sampleRate) % 2) == 0 ) {   // 초단위 구분을 위한 색깔 변화
-//         ctx.strokeStyle = "yellow"; // WAVEFORM_COLOR_EVEN;
-//       } else {
-//         ctx.strokeStyle = "green"; // WAVEFORM_COLOR_ODD;
-//       }
-//     }
-//     ctx.beginPath();
-//     ctx.moveTo( xpos_prime+ i, center_y + min*height );
-//     ctx.lineTo( xpos_prime+ i, center_y + max*height );
-//     ctx.stroke();
-//   }
-
-// }
 
 
 var play_handler = null;
@@ -339,6 +264,10 @@ var play_song = () => {
     audioTag.play();
     document.getElementById("play_song").src = "common/pause.svg" ;
     play_handler = setInterval( function() {
+      // playing 위치를 좇아 가는 부분 ?
+      scrollPosition_msec = audioTag.currentTime * 1000;
+      // console.log("[][] playing position=", scrollPosition_msec );
+      waveformDraw.set_scrollPos(scrollPosition_msec - 2000 );
       draw_editor(edit_area);
       if (audioTag.ended) {
         stop_song();
@@ -409,32 +338,28 @@ var zoom_in = function () {
   waveformDraw.zoom_in();
   draw_editor(edit_area);
 }
-
 var zoom_out = function () {
   waveformDraw.zoom_out();
   draw_editor(edit_area);
 }
+var fullWave = function () {
+  waveformDraw.set_scaleFactor(0.5);
+  draw_editor(edit_area);
+}
+var halfWave = function () {
+  waveformDraw.set_scaleFactor(1.0);
+  draw_editor(edit_area);
+}
+
 
 var calc_note_size = () => {   // samplesPerPixel, zoomFactor 등을 계산
+  let signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8분음표
+
   g_bpm = parseInt(document.getElementById("bpm").value);
   song_data.bpm = g_bpm;
   g_offset = parseInt(document.getElementById("offset").value);
   song_data.start_offset = g_offset;
   let editSize = song_data.editsize = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
-
-  g_numSmp_per_msec = (g_sampleRate/1000);
-  g_msec_per_quaver = 30000 / g_bpm; 
-/*   8분음표(?)1개는 몇 msec 인가 ?   : 참고링크 : https://www.cuonet.com/bbs/board.php?bo_table=qna2&wr_id=999237 
-    60bmp 이라면..?  4분음표=1000,  8분음표=500,
-    80bmp 이라면..?  60000 / 80 ==> 4분음표: 750 msec, 8분음표 = 375msec.
-    즉, 8분음표 = 30000/bpm,  4분음표 = 60000/bpm 이 된다. 
-*/
-  // console.log("SampleRate = "+g_sampleRate+", g_numSmp_per_msec = "+ g_numSmp_per_msec + ", g_bpm = "+g_bpm+", g_msec_per_quaver="+g_msec_per_quaver);
-
-  g_numSmp_per_quaver = (g_sampleRate*(30*8/editSize) ) / g_bpm;
-  g_numPx_per_quaver = g_numSmp_per_quaver / g_numSmp_per_px ;
-  // g_ms_for_quaver = parseInt((g_numSmp_per_quaver*1000)/g_sampleRate);
-  // console.log(".. g_numSmp_per_quaver = "+ g_numSmp_per_quaver + ", g_numPx_per_quaver = "+g_numPx_per_quaver );
 
   let _sign = document.getElementById("signature").value;
   song_data.basic_beat = _sign;
@@ -459,17 +384,15 @@ var calc_note_size = () => {   // samplesPerPixel, zoomFactor 등을 계산
   }
 
   ////////////////////// 새로운 drawing 방법을 위해.. - global 변수를 사용하지 않도록.
-  // let quaverSize = (30000/g_bpm) * 8 / signature_divider
-  // console.log("signature_divider=",signature_divider, ", quaverSize = ", quaverSize )
   waveformDraw.set_quaverSize(30000/g_bpm);    // 30000/g_bpm);     //g_msec_per_quaver);
   waveformDraw.set_wordSize(signature_divider); //song_data.editsize);
 }
 
 var quaver_changed = () => {
   waveformDraw.set_semiQuaver( (document.getElementById("quaver_mode").selectedIndex == 0)?true:false );
-  g_edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
-  console.log("편집단위:" + g_edit_size + "분음표로 편집");
-  song_data.editsize = g_edit_size;
+  let edit_size = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
+  console.log("편집단위:" + edit_size + "분음표로 편집");
+  song_data.editsize = edit_size;
   calc_note_size();
   draw_editor(edit_area);
 }
@@ -482,7 +405,6 @@ var bpm_changed = () => {
 }
 var offset_changed = () => {
   g_offset = parseInt(document.getElementById("offset").value);
-  // console.log("playing offset:" + g_offset+", scrollPosition_msec="+scrollPosition_msec);
   calc_note_size();
   waveformDraw.set_startOffset(g_offset);
   draw_editor(edit_area);
@@ -498,11 +420,10 @@ var signature_changed = () => {
 var last_posX=0, last_posY=0;
 var last_timeStamp = 0;
 var scroll_x = 0, prev_position=0;
-var click_pos = null;
+// var click_pos = null;
 var isDragging = false;
 var isScrollMode = false;
 
-/*
 var edit_keyDown = (e) => {
   console.log("keydown : shift is " + e.isshiftKey );
   if (e.isshiftKey)
@@ -513,7 +434,7 @@ var edit_keyUp = (e) => {
   if (e.isshiftKey)
     isShiftMode = false;
 }
-*/
+
 var edit_mouseDown = (e) => {
   const rect = edit_area.getBoundingClientRect();
   last_posX = e.clientX - rect.left;
@@ -522,7 +443,7 @@ var edit_mouseDown = (e) => {
   isScrollMode = true;
   scroll_x = 0;
   prev_position = scrollPosition_msec = waveformDraw.get_scrollPos();    // waveformDraw.startOffset;  //
-  console.log("clicked - startOffset=", scrollPosition_msec );
+  // console.log("clicked - startOffset=", scrollPosition_msec );
   isDragging = true;
   // isTsMoved = false;
   e.preventDefault();
@@ -534,34 +455,34 @@ var edit_mouseMove = (e) => {
     let cursor_x = e.clientX - rect.left;
     let cursor_y = e.clientY - rect.top;
 
-    console.log("mousemove - startOffset=", scrollPosition_msec );
+    // console.log("mousemove - startOffset=", scrollPosition_msec );
 
     if (isScrollMode) {
         scroll_x = (cursor_x-last_posX);       // (cursor_x-last_posX)*g_numSmp_per_px;
         scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
-        console.log("move - startOffset=", scrollPosition_msec );
+        // console.log("move - startOffset=", scrollPosition_msec );
         waveformDraw.set_scrollPos(scrollPosition_msec);
       
     } else {
-      if (moving_note_idx !== -1) {    // 만약 뭔가 데이터를 편집 중이라면, = Dialog 가 표시된 상태라면,
-        console.log("선택된 note 를 drag 해서 이동시킨다");
-        let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
-        let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-        let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
-        if (e.altKey) {     // ALT 키가 눌려 있을 때에는, Grid 에 고정하지 않는다.
-          note_ts = clicked_ts;
-        }
-        if (e.shiftKey) {   // 뒤에 있는 모든 index의 timeStamp들을 같은 크기 만큼 함께 조정한다.
-          console.log("All timestamp will be changed");
-          let notes = song_data.notes;
-          let diff = (note_ts - notes[moving_note_idx].timestamp);
-          for (let i = moving_note_idx; i< notes.length; i++) {
-            notes[i].timestamp += diff;
-          }
-        } else {
-          song_data.notes[moving_note_idx].timestamp = note_ts;
-        }
-      }
+      // if (moving_note_idx !== -1) {    // 만약 뭔가 데이터를 편집 중이라면, = Dialog 가 표시된 상태라면,
+      //   console.log("선택된 note 를 drag 해서 이동시킨다");
+      //   let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
+      //   let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+      //   // let note_ts = parseInt(clicked_ts/g_ms_for_quaver)*g_ms_for_quaver;
+      //   if (e.altKey) {     // ALT 키가 눌려 있을 때에는, Grid 에 고정하지 않는다.
+      //     note_ts = clicked_ts;
+      //   }
+      //   if (e.shiftKey) {   // 뒤에 있는 모든 index의 timeStamp들을 같은 크기 만큼 함께 조정한다.
+      //     console.log("All timestamp will be changed");
+      //     let notes = song_data.notes;
+      //     let diff = (note_ts - notes[moving_note_idx].timestamp);
+      //     for (let i = moving_note_idx; i< notes.length; i++) {
+      //       notes[i].timestamp += diff;
+      //     }
+      //   } else {
+      //     song_data.notes[moving_note_idx].timestamp = note_ts;
+      //   }
+      // }
     }
     draw_editor(edit_area);
   }
@@ -576,20 +497,20 @@ var edit_mouseUp = (e) => {
     if (moving_note_idx !== -1) {    // TS 값을 조정 중이었다면, 
       console.log("여기에서는 새로운 음을 편집하게 될 것?");
     } else {
-      const rect = edit_area.getBoundingClientRect();
-      let cursor_x = e.clientX - rect.left;
-      if (cursor_x > START_XPOS) {
-        let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
-        let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-        console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
-      }
-      console.log("분명히 편집 창을 열어야 할 텐데?");
+      // const rect = edit_area.getBoundingClientRect();
+      // let cursor_x = e.clientX - rect.left;
+      // if (cursor_x > START_XPOS) {
+      //   let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
+      //   let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+      //   console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+      // }
+      // console.log("분명히 편집 창을 열어야 할 텐데?");
     }
   } else {      // 스크롤 된 상태 
     const rect = edit_area.getBoundingClientRect();
-    let cursor_x = e.clientX - rect.left;
-    let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
-    let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+    // let cursor_x = e.clientX - rect.left;
+    // let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
+    // let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
 
     if (isScrollMode) {
       scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
@@ -604,18 +525,17 @@ var edit_mouseUp = (e) => {
 }
 
 var edit_mouseDblClick = (e) => {
-  console.log("Double Click" );
-  const rect = edit_area.getBoundingClientRect();
-  let cursor_x = e.clientX - rect.left;
-  let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
-  let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-  console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
+  // const rect = edit_area.getBoundingClientRect();
+  // let cursor_x = e.clientX - rect.left;
+  // let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
+  // let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+  // console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
 }
 
 var edit_wheelScroll = (e) => {
-  scrollPosition_msec += parseInt(e.deltaY/2)*g_numSmp_per_px;
-  waveformDraw.set_scrollPos(scrollPosition_msec);
+  // scrollPosition_msec += parseInt(e.deltaY/2)*g_numSmp_per_px;
+  // waveformDraw.set_scrollPos(scrollPosition_msec);
 
-  draw_editor(edit_area);
+  // draw_editor(edit_area);
 }
 
