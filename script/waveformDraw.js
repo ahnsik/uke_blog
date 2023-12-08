@@ -268,6 +268,10 @@ var waveformDraw = {
     set_quaverSize: (note_size) => {        // 편집단위 조정 : 8분음표 단위로 편집? or 16분음표 단위로 편집?
         this.msec4Quaver = note_size;
     },
+    get_msecPerGrid: () => {
+        let msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
+        return msec_perGrid;
+    },
     set_wordSize: (word_size) => {        // 1마디 당 음표 갯수 - 4/4박자면, 8분음표 8개,  3/4박자면, 8분음표 6개, etc...
         this.numQuaver4Word = word_size;
     },

@@ -3,6 +3,8 @@
 ================================ */
 
 // import waveformDraw from "./script/waveformDraw";
+const AUTOSCROLL_LEFT_LIMIT = 2000;
+// const AUTOSCROLL_RIGHT_LIMIT = 1000;
 
 const song_list = [
   "오르트 구름 - 윤하",
@@ -57,6 +59,7 @@ var array_l = [];     // wav buffer
 var canvas_width, canvas_height;
 
 var scrollPosition_msec = 0;
+// var song_duration_msec = 0;
 
 /* ================================
     HTML 로드 되고 초기화 동작. - resource load, etc..
@@ -206,6 +209,7 @@ function request_mp3(filename) {
       console.log("start decode MP3");
       mp3Decode(mp3Buffer);         // 디코딩 된 mp3 데이터는 0번채널을 array_l 라는 버퍼에 float32 데이터로 저장해 담아 둔다.
     };
+    // song_duration_msec = parseInt(audioTag.duration) * 1000;    // make milli-sec
     oReq.send(null);
     console.log("--> request_end:" + filename );
   }
@@ -217,9 +221,6 @@ async function mp3Decode(mp3Buffer) {
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
   let float32Array_l = audioBuf.getChannelData(0);
-  let i=0;
-  let wavefrom_size = canvas_width; //parseInt( (H_WAVEFORM-1)/2 );
-  const length = float32Array_l.length;
   array_l = float32Array_l;
 
   waveformDraw.set_audioBuffer(array_l, audioBuf.sampleRate);
@@ -265,9 +266,9 @@ var play_song = () => {
     document.getElementById("play_song").src = "common/pause.svg" ;
     play_handler = setInterval( function() {
       // playing 위치를 좇아 가는 부분 ?
-      scrollPosition_msec = audioTag.currentTime * 1000;
-      // console.log("[][] playing position=", scrollPosition_msec );
-      waveformDraw.set_scrollPos(scrollPosition_msec - 2000 );
+      let playingPosition_msec = audioTag.currentTime * 1000;
+      scrollPosition_msec = playingPosition_msec;
+      waveformDraw.set_scrollPos(playingPosition_msec - AUTOSCROLL_LEFT_LIMIT );
       draw_editor(edit_area);
       if (audioTag.ended) {
         stop_song();
@@ -462,7 +463,9 @@ var edit_mouseMove = (e) => {
         scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
         if (scrollPosition_msec < 0)
           scrollPosition_msec = 0;
-        // console.log("move - startOffset=", scrollPosition_msec );
+        // if (scrollPosition_msec >= song_duration_msec)
+        //   scrollPosition_msec = song_duration_msec;
+        // console.log("scroll_point=", song_duration_msec, ", end_point=", audioTag.duration*1000 );
         waveformDraw.set_scrollPos(scrollPosition_msec);
       
     } else {
@@ -518,6 +521,8 @@ var edit_mouseUp = (e) => {
       scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
       if (scrollPosition_msec < 0)
         scrollPosition_msec = 0;
+      // if (scrollPosition_msec >= song_duration_msec)
+      //   scrollPosition_msec = song_duration_msec;
       waveformDraw.set_scrollPos(scrollPosition_msec);
     }
   }
@@ -532,17 +537,21 @@ var edit_mouseDblClick = (e) => {
   const rect = edit_area.getBoundingClientRect();
   let cursor_x = e.clientX - rect.left;
   let cursor_y = e.clientY - rect.top;
-  // let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition_msec;
-  // let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
-  // console.log("clicked xpos="+cursor_x+", clicked_ts:"+clicked_ts );
 
   console.log("clicked pos:(",cursor_x,",",cursor_y,") : ts=", waveformDraw.get_clickedTimeStamp(cursor_x), ", ", waveformDraw.get_clickedCategory(cursor_y));
+  let grid_size = waveformDraw.get_msecPerGrid();
+  let note_seq = parseInt(waveformDraw.get_clickedTimeStamp(cursor_x) / grid_size);
+  let start_msec = note_seq * grid_size;
+  let edn_msec = start_msec + grid_size;
+  console.log("grid: size=",grid_size," from ", start_msec, " to ", edn_msec, ", note_seq=", note_seq );
 }
 
 var edit_wheelScroll = (e) => {
   scrollPosition_msec += parseInt(e.deltaY/2);
   if (scrollPosition_msec < 0)
     scrollPosition_msec = 0;
+  // if (scrollPosition_msec >= song_duration_msec)
+  //   scrollPosition_msec = song_duration_msec;
   waveformDraw.set_scrollPos(scrollPosition_msec);
   draw_editor(edit_area);
 }
