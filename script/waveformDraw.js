@@ -28,6 +28,7 @@ var waveformDraw = {
     currPos: 0,         // 현재 play 중인 위치.
     scrollOffset: 0,     // Scroll 되어 drawing을 시작할 msec
     startOffset: 0,     // waveform 과 박자 grid 의 시간 차이 보정.
+    focus_msec: 0,      // 커서 포커스가 위치하는 timeline.
     numSmp4Px: 256,     // 1 pixel 당 smaple 수. = drawing 의 기준. 
     msec4Quaver: 500,   // 8분음표에 해당하는 시간(msec)   - default: 60 bpm 일 때, 4분음표는 1초, 즉, 8분음표는 0.5초
     semiQuaverMode: false,  // 16분음표 편집 모드(=true) 또는 8분음표 편집 모드(=false)
@@ -50,6 +51,7 @@ var waveformDraw = {
         this.currPos = 0;
         this.scrollOffset = 0;
         this.startOffset = 0;
+        this.focus_msec = 0;
         this.numSmp4Px = 256;
         this.msec4Quaver = 500;
         this.semiQuaverMode = false,
@@ -104,19 +106,15 @@ var waveformDraw = {
         let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
         let msec_per_pixel = this.numSmp4Px * 1000 / this.samplerate ;        // 1pixel 에 해당하는 msec 시간
 
-        let edit_unit;
-        switch(this.numQuaver4Word) {
-            case 8:         // 1 마디 당 8분음표 8개 = 8분음표 기준 편집.
-                edit_unit = 8; break;
-            case 16:        // 1 마디 당 8분음표 16개 = 16분음표 기준 편집.
-            case 6:         // 1 마디 당 8분음표 6개 = 8분음표 기준 편집, 3/4 박자.
-            case 12:        // 1 마디 당 8분음표 12개 = 16분음표 기준 편집, 3/4 박자. ?
+        let gridSize_msec = this.msec4Quaver;     // 왜? /2 를 해야 되지?? 이해가 안되네.
+        if ( ! this.semiQuaverMode) {
+            gridSize_msec /= 2;
         }
-        let msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver*2 : this.msec4Quaver;
+        let edit_unit = (this.semiQuaverMode)?8:16;
 
         let prev_beat = 15;
         for (i=1; i<(this.w-this.x); i++ ) {
-            let beat = parseInt( (i*msec_per_pixel+this.scrollOffset) / (msec_perGrid/2) ) % this.numQuaver4Word;      // 1 마디를 8분음표로 나눈 갯수...
+            let beat = parseInt( (i*msec_per_pixel+this.scrollOffset) / gridSize_msec ) % edit_unit;      // 1 마디를 8분음표로 나눈 갯수...
             if (prev_beat != beat) {
                 ctx.fillStyle = "grey";
                 ctx.fillRect( xpos+i, this.y, 1, this.h );
@@ -158,6 +156,13 @@ var waveformDraw = {
                 }
             }
         }
+        // drawing cursor pos.
+        let focus_start = parseInt(this.focus_msec/gridSize_msec) * gridSize_msec;
+        console.log("[][] focus msec = ", this.focus_msec, " gridsize=", gridSize_msec );
+        let x = (focus_start-this.scrollOffset) / msec_per_pixel;
+        let w = gridSize_msec / msec_per_pixel;
+        ctx.fillStyle = "steelblue";
+        ctx.fillRect(x, 0, w, this.h);
     },
 
     drawNotes: (ctx, json_data) => {
@@ -249,6 +254,13 @@ var waveformDraw = {
         this.w = w;
         this.h = h;
     },
+    set_focusPos: (offset) => {
+        if (offset >= 0)
+            this.focus_msec = offset;
+    },
+    get_focusPos_msec: () => {
+        return this.focus_msec;
+    },
     set_scrollPos: (offset) => {
         if (offset >= 0)
             this.scrollOffset = offset;
@@ -269,8 +281,9 @@ var waveformDraw = {
         this.msec4Quaver = note_size;
     },
     get_msecPerGrid: () => {
-        let msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
-        return msec_perGrid;
+        // let msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
+        // return msec_perGrid;
+        return this.msec4Quaver;
     },
     set_wordSize: (word_size) => {        // 1마디 당 음표 갯수 - 4/4박자면, 8분음표 8개,  3/4박자면, 8분음표 6개, etc...
         this.numQuaver4Word = word_size;
