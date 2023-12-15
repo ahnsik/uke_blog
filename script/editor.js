@@ -166,8 +166,10 @@ function resize_canvas(cnvs_width, cnvs_height) {
   edit_area.onmousemove = edit_mouseMove;
   edit_area.onmouseup = edit_mouseUp;
   edit_area.onwheel = edit_wheelScroll;
-  edit_area.onkeydown = edit_keyDown;
-  edit_area.onkeyup = edit_keyUp;
+  window.onkeydown = edit_keyDown;
+  window.onkeyup = edit_keyUp;
+  // edit_area.addEventListener('keydown', edit_keyDown, false);
+  // edit_area.addEventListener('keyup', edit_keyUp, false);
 
   waveformDraw.set_windowSize(0, 0, canvas_width, canvas_height);
   draw_editor(edit_area);
@@ -440,13 +442,39 @@ var isDragging = false;
 var isScrollMode = false;
 
 var edit_keyDown = (e) => {
-  console.log("keydown : shift is " + e.isshiftKey );
-  if (e.isshiftKey)
+  let key_used = false;
+  console.log("keydown : isShift is ", e.shiftKey, ", isCtrl is ", e.ctrlKey, ", isAlt is ", e.altKey );
+  if (e.shiftKey) {
     isShiftMode = true;
+  } else {
+    let focused_msec = waveformDraw.get_focusPos_msec();
+    let grid_msec = waveformDraw.get_msecPerGrid();
+    if (e.keyCode == 39) {      // Arrow Right
+      waveformDraw.set_focusPos( focused_msec + grid_msec );
+      key_used = true;
+    } else if (e.keyCode == 37) {      // Arrow Left
+      waveformDraw.set_focusPos( focused_msec - grid_msec );
+      key_used = true;
+    } else if (e.keyCode == 38) {      // Arrow Up
+      key_used = true;
+    } else if (e.keyCode == 40) {      // Arrow Down
+      key_used = true;
+    } else if (e.keyCode == 13) {      // Enter key
+      key_used = true;
+    } else if (e.keyCode == 27) {      // ESC key
+      key_used = true;
+    }
+  }
+  draw_editor(edit_area);
+
+  if (key_used) {
+    e.preventDefault();
+    e.stopPropagation()
+  }
 }
 var edit_keyUp = (e) => {
-  console.log("keyup : shift is " + e.isshiftKey );
-  if (e.isshiftKey)
+  // console.log("keyup : shift is " + e.shiftKey );
+  if (e.shiftKey)
     isShiftMode = false;
 }
 
@@ -455,17 +483,17 @@ var edit_mouseDown = (e) => {
   last_posX = e.clientX - rect.left;
   last_posY = e.clientY - rect.top;
   
+  isDragging = true;
   // waveform 부분을 드래그 하면 스크롤 한다.
   if (waveformDraw.get_clickedCategory(last_posY)=="waveform") {
     isScrollMode = true;
     scroll_x = 0;
     prev_position = scrollPosition_msec = waveformDraw.get_scrollPos();    // waveformDraw.startOffset;  //
     // console.log("clicked - startOffset=", scrollPosition_msec );
-    isDragging = true;
   } else {    // 그 외의 위치를 클릭하면, 
     // TODO: 편집 메뉴를 띄우거나 note 데이터(timestamp)를 이동시키거나 하는 등의 동작.
     let focus_in_msec = waveformDraw.get_msecPerPixel()*last_posX + scrollPosition_msec;
-    console.log("Focus position: last_posX=", last_posX, ", msec=", focus_in_msec, "msec");
+    // console.log("Focus position: last_posX=", last_posX, ", msec=", focus_in_msec, "msec");
     waveformDraw.set_focusPos(focus_in_msec);
   }
   e.preventDefault();
@@ -480,22 +508,22 @@ var edit_mouseMove = (e) => {
       scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel(cursor_x) );
       if (scrollPosition_msec < 0)
         scrollPosition_msec = 0;
-      // if (scrollPosition_msec >= song_duration_msec)
-      //   scrollPosition_msec = song_duration_msec;
       waveformDraw.set_scrollPos(scrollPosition_msec);
+      console.log("scroll mode");
   } else {    // 스크롤이 아닌 상태
-    // if (isDragging) {     // note 의 위치이동 (timestamp) 중이라면..
-    //   // TODO: timestamp 조정 동작..
-    // } else {  // TODO: 그냥 커서만 이동 중 --> note 위치를 확인할 수 있도록 해 보자.
-    //   // let cursor_msec = waveformDraw.get_clickedTimeStamp(cursor_x, cursor_y);
-    //   let grid_size = waveformDraw.get_msecPerGrid();
-    //   let grid_idx = parseInt(waveformDraw.get_clickedTimeStamp(cursor_x) / grid_size); 
-    //   let start_msec = grid_idx * grid_size;
-    //   let end_msec = start_msec + grid_size;
-    //   let note_idx = findNoteIndex(start_msec, end_msec);
-    //   if (note_idx >= 0)
-    //     console.log("Focused Note : ", note_idx,"th note. (", song_data.notes[note_idx] );
-    // }
+    if (isDragging) {     // note 의 위치이동 (timestamp) 중이라면..
+      console.log("dragging...");
+      //   // TODO: timestamp 조정 동작..
+    } else {  // TODO: 그냥 커서만 이동 중 --> note 위치를 확인할 수 있도록 해 보자.
+      let focus_line = waveformDraw.get_clickedCategory(cursor_y);
+      if (focus_line!="waveform") {
+        console.log("cursor position...", focus_line);
+        let focus_in_msec = waveformDraw.get_msecPerPixel()*cursor_x + scrollPosition_msec;
+        waveformDraw.set_focusPos(focus_in_msec);
+        waveformDraw.set_focusCategory(focus_line);
+      } else {
+      }
+    }
   }
   draw_editor(edit_area);
 
