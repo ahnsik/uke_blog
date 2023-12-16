@@ -2,15 +2,17 @@
     WAVEFORM 을 그리는 함수 분리함.
 ================================ */
 
-const TAB_LYRIC = 0;
-const TAB_CHORD = (TAB_LYRIC+28);
-const TAB_STROKE = (TAB_CHORD+28);
-const TAB_TECHNIC = (TAB_STROKE+28);
-const TAB_LINE_A = (TAB_TECHNIC+36);
-const TAB_LINE_E = (TAB_LINE_A+30);
-const TAB_LINE_C = (TAB_LINE_E+30);
-const TAB_LINE_G = (TAB_LINE_C+30);
-const TABULATE_HEIGHT = (TAB_LINE_G+30);
+const LYRIC_HEIGHT = 32;
+const CHORD_HEIGHT = 32;
+const STROKE_HEIGHT = 32;
+const TECHNIC_HEIGHT = 30;
+const NOTES_HEIGHT = 150;           // (45+30+30+45)
+const LINE_A_OFFSET = 25;
+const LINE_E_OFFSET = 25+30;
+const LINE_C_OFFSET = 25+30+30;
+const LINE_G_OFFSET = 25+30+30+30;
+
+const COMPONENT_HEIGHT = (LYRIC_HEIGHT+CHORD_HEIGHT+STROKE_HEIGHT+TECHNIC_HEIGHT+NOTES_HEIGHT);
 
 const TAB_BGCOLOR = "lavender";                // 
 const TAB_BGCOLOR_BEAT = "lightsteelblue";       //
@@ -64,7 +66,7 @@ var waveformDraw = {
         this.h = 200;
     }, 
     drawWave: (ctx) => {
-        let waveSize = this.h - TABULATE_HEIGHT;
+        let waveSize = this.h - COMPONENT_HEIGHT;
         let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
         let center_y = (this.y+waveSize)/2;  // canvas center 에 그리기 위해서 
         let i, j, min, max, value;
@@ -124,36 +126,36 @@ var waveformDraw = {
                 let y = 0;
                 if (beat == 0) {        // 마디 의 첫 비트
                     ctx.fillStyle = TAB_BGCOLOR_BEAT;
-                    ctx.fillRect( xpos+i, y, 1, (this.h-TABULATE_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=(this.h-TABULATE_HEIGHT);
+                    ctx.fillRect( xpos+i, y, 1, (this.h-COMPONENT_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=(this.h-COMPONENT_HEIGHT);
                     ctx.fillStyle = BGCOLOR_LYRIC;
-                    ctx.fillRect( xpos+i, y, 1, TAB_LYRIC);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_LYRIC;
+                    ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=LYRIC_HEIGHT;
                     ctx.fillStyle = BGCOLOR_CHORD_BEAT;
-                    ctx.fillRect( xpos+i, y, 1, TAB_CHORD);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_CHORD;
+                    ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=CHORD_HEIGHT;
                     ctx.fillStyle = BGCOLOR_STROKE_BEAT;
-                    ctx.fillRect( xpos+i, y, 1, TAB_STROKE);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_STROKE;
+                    ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=STROKE_HEIGHT;
                     ctx.fillStyle = BGCOLOR_TECHNIC;
-                    ctx.fillRect( xpos+i, y, 1, TAB_TECHNIC);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_TECHNIC;
+                    ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=TECHNIC_HEIGHT;
                 } else {
                     ctx.fillStyle = TAB_BGCOLOR;
-                    ctx.fillRect( xpos+i, y, 1, (this.h-TABULATE_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=(this.h-TABULATE_HEIGHT);
+                    ctx.fillRect( xpos+i, y, 1, (this.h-COMPONENT_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=(this.h-COMPONENT_HEIGHT);
                     ctx.fillStyle = BGCOLOR_LYRIC;
-                    ctx.fillRect( xpos+i, y, 1, TAB_LYRIC);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_LYRIC;
+                    ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=LYRIC_HEIGHT;
                     ctx.fillStyle = BGCOLOR_CHORD;
-                    ctx.fillRect( xpos+i, y, 1, TAB_CHORD);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_CHORD;
+                    ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=CHORD_HEIGHT;
                     ctx.fillStyle = BGCOLOR_STROKE;
-                    ctx.fillRect( xpos+i, y, 1, TAB_STROKE);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_STROKE;
+                    ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=STROKE_HEIGHT;
                     ctx.fillStyle = BGCOLOR_TECHNIC;
-                    ctx.fillRect( xpos+i, y, 1, TAB_TECHNIC);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TAB_TECHNIC;
+                    ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    y+=TECHNIC_HEIGHT;
                 }
             }
         }
@@ -167,16 +169,16 @@ var waveformDraw = {
     },
 
     drawNotes: (ctx, json_data) => {
-        let ypos = this.h - TABULATE_HEIGHT;
+        let ypos = this.h - NOTES_HEIGHT;
         ctx.fillStyle = "gray";
         // 윗경계
         ctx.fillRect( this.x, ypos, this.w, 4 );
         // TAB Line
         ctx.fillStyle = "black";
-        ctx.fillRect( this.x+32, ypos+TAB_LINE_A, this.w, 2 );     // A
-        ctx.fillRect( this.x+32, ypos+TAB_LINE_E, this.w, 2 );     // E
-        ctx.fillRect( this.x+32, ypos+TAB_LINE_C, this.w, 2 );     // C
-        ctx.fillRect( this.x+32, ypos+TAB_LINE_G, this.w, 2 );    // G
+        ctx.fillRect( this.x+32, ypos+LINE_A_OFFSET, this.w, 2 );     // A
+        ctx.fillRect( this.x+32, ypos+LINE_E_OFFSET, this.w, 2 );     // E
+        ctx.fillRect( this.x+32, ypos+LINE_C_OFFSET, this.w, 2 );     // C
+        ctx.fillRect( this.x+32, ypos+LINE_G_OFFSET, this.w, 2 );    // G
 
         // 본격적으로 note 데이터를 표시해 보자.
         let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
@@ -186,12 +188,13 @@ var waveformDraw = {
         // let backupFont = ctx.font;
         // ctx.fillStyle = "black";
 
+        ypos = this.h - COMPONENT_HEIGHT;
         for (i=0; i<(this.w-this.x); i++ ) {
             let msec = parseInt( (i*this.numSmp4Px) * 1000 / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
             for (j=0; j<notes.length; j++) {
                 let diff = notes[j].timestamp - msec;
                 if ( (diff >= 0) && (diff < msec_per_pixel) ) {       // 1픽셀 안에 악보 데이터의 timeStamp 가 들어 오면..
-                    draw_a_note(ctx, xpos+i, ypos+30, notes[j] );
+                    draw_a_note(ctx, xpos+i, ypos, notes[j] );
                     // if ( (notes[j].lyric!=undefined)&&(notes[j].lyric!=null) ) {
                     //     ctx.font = "22px Arial";
                     //     ctx.fillText( notes[j].lyric, xpos+i, ypos+30 );
@@ -222,7 +225,7 @@ var waveformDraw = {
         }
 
         let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
-        let ypos = this.h - TABULATE_HEIGHT - 16;
+        let ypos = this.h - COMPONENT_HEIGHT - 16;
 
         ctx.fillStyle = "black";
         let prev_time = 0;
@@ -315,34 +318,34 @@ var waveformDraw = {
     },
 
     get_clickedCategory: (ypos) => {
-        let size = (this.h-TABULATE_HEIGHT);
+        let size = (this.h-COMPONENT_HEIGHT);
         if (ypos < size)
             return "waveform";
-        size += TAB_LYRIC;
+        size += LYRIC_HEIGHT;
         if (ypos < size)
             return "lyric";
-        size += TAB_CHORD;
+        size += CHORD_HEIGHT;
         if (ypos < size)
             return "chord";
-        size += TAB_STROKE;
+        size += STROKE_HEIGHT;
         if (ypos < size)
             return "stroke";
-        size += TAB_TECHNIC;
+        size += TECHNIC_HEIGHT;
         if (ypos < size)
             return "technic";
-        size += TAB_CHORD;
+        size += CHORD_HEIGHT;
         if (ypos < size)
             return "chord";
-        size += TAB_LINE_A;
+        size += LINE_A_OFFSET;
         if (ypos < size)
             return "line_a";
-        size += TAB_LINE_E;
+        size += LINE_E_OFFSET;
         if (ypos < size)
             return "line_e";
-        size += TAB_LINE_C;
+        size += LINE_C_OFFSET;
         if (ypos < size)
             return "line_c";
-        size += TAB_LINE_G;
+        size += LINE_G_OFFSET;
         if (ypos < size)
             return "line_g";
         return "unknown";
@@ -375,33 +378,27 @@ function isEmptyStr(str) {
 }
 function draw_a_note (ctx, x, y, note, focused_line) {
     let backupFont = ctx.font;
+    let ypos = y;
     ctx.font = "22px Arial";
 
     if ( ! isEmptyStr(note.lyric) ) {
-        if (focused_line=="lyric") {
-            ctx.fillStyle = "red";
-        }
-        ctx.fillText( note.lyric, x, y+TAB_LYRIC );
+        ctx.fillText( note.lyric, x, ypos );
     }
+    ypos+=LYRIC_HEIGHT;
     if ( ! isEmptyStr(note.chord) ) {
-        if (focused_line=="chord") {
-            ctx.fillStyle = "red";
-        }
-        ctx.fillText( note.chord, x, y+TAB_CHORD );
+        ctx.fillText( note.chord, x, ypos );
     }
+    ypos+=CHORD_HEIGHT;
     if ( ! isEmptyStr(note.stroke) ) {
-        if (focused_line=="stroke") {
-            ctx.fillStyle = "red";
-        }
-        ctx.fillText( note.stroke, x, y+TAB_STROKE );
+        ctx.fillText( note.stroke, x, ypos );
     }
+    ypos+=STROKE_HEIGHT;
     if ( ! isEmptyStr(note.technic) ) {
-        if (focused_line=="technic") {
-            ctx.fillStyle = "red";
-        }
-        ctx.fillText( note.technic, x, y+TAB_TECHNIC );
+        ctx.fillText( note.technic, x, ypos );
     }
+    ypos+=TECHNIC_HEIGHT;
 
+    // ypos = y+(LYRIC_HEIGHT+CHORD_HEIGHT+STROKE_HEIGHT+TECHNIC_HEIGHT);
     if ( note.tab != undefined ) {
         if (note.tab.length > 0) {
             // console.log("ts=", note.timestamp, ", len=", note.tab.length, ", tab = ", note.tab );
@@ -409,16 +406,16 @@ function draw_a_note (ctx, x, y, note, focused_line) {
                 let noteStr = note.tab[k];
                 if (!isEmptyStr(noteStr)) {
                     if (noteStr.charAt(0)=="A") {
-                        ctx.fillText(noteStr, x, y+TAB_LINE_A);
+                        ctx.fillText(noteStr, x, ypos+LINE_A_OFFSET-10);
                     }
                     if (noteStr.charAt(0)=="E") {
-                        ctx.fillText(noteStr, x, y+TAB_LINE_E);
+                        ctx.fillText(noteStr, x, ypos+LINE_E_OFFSET-10);
                     }
                     if (noteStr.charAt(0)=="C") {
-                        ctx.fillText(noteStr, x, y+TAB_LINE_C);
+                        ctx.fillText(noteStr, x, ypos+LINE_C_OFFSET-10);
                     }
                     if (noteStr.charAt(0)=="G") {
-                        ctx.fillText(noteStr, x, y+TAB_LINE_G);
+                        ctx.fillText(noteStr, x, ypos+LINE_G_OFFSET-10);
                     }
                 }
             }
