@@ -5,15 +5,17 @@
 const LYRIC_HEIGHT = 32;
 const CHORD_HEIGHT = 32;
 const STROKE_HEIGHT = 32;
-const TECHNIC_HEIGHT = 30;
-const NOTES_HEIGHT = 150;           // (45+30+30+45)
-const LINE_A_OFFSET = 25;
-const LINE_E_OFFSET = 25+30;
-const LINE_C_OFFSET = 25+30+30;
-const LINE_G_OFFSET = 25+30+30+30;
+const TECHNIC_HEIGHT = 32;
+const NOTES_HEIGHT = 128;           // (45+30+30+45)
+const LINE_A_OFFSET = NOTES_HEIGHT+16;
+const LINE_E_OFFSET = NOTES_HEIGHT+48;
+const LINE_C_OFFSET = NOTES_HEIGHT+80;
+const LINE_G_OFFSET = NOTES_HEIGHT+112;
 
-const COMPONENT_HEIGHT = (LYRIC_HEIGHT+CHORD_HEIGHT+STROKE_HEIGHT+TECHNIC_HEIGHT+NOTES_HEIGHT);
+// const COMPONENT_HEIGHT = (LYRIC_HEIGHT+CHORD_HEIGHT+STROKE_HEIGHT+TECHNIC_HEIGHT+NOTES_HEIGHT);
+const COMPONENT_HEIGHT = 256;       // tab_notes.png - image height
 
+const TAB_LABEL_WIDTH = 32;
 const TAB_BGCOLOR = "lavender";                // 
 const TAB_BGCOLOR_BEAT = "lightsteelblue";       //
 const BGCOLOR_LYRIC = "khaki";             // 약간 탁한 노랑
@@ -24,6 +26,7 @@ const BGCOLOR_STROKE_BEAT = "palegoldenrod"; // 밝고 탁한 노랑
 const BGCOLOR_TECHNIC = "wheat";           // 쿨피스 자두맛 
 
 var waveformDraw = {
+    icon_src: null,
     // audio 속성들..
     waveBuffer: [],     // FloatArray
     samplerate: 44100,  // Audio SampleRate
@@ -49,6 +52,7 @@ var waveformDraw = {
     // 기본 함수들.
     init: () => {
         console.log("[][][][][][][][][][]\n  initialize wavefrawDraw... []\n[][][][][][][][][][]");
+        this.icon_src = document.getElementById("uke_note");
         this.waveBuffer = [];
         this.samplerate = 48000;
         this.currPos = 0;
@@ -105,15 +109,16 @@ var waveformDraw = {
     },
 
     drawBg: (ctx) => {
+        // let icon_src = document.getElementById("uke_note");
         // 배경에 박자에 따라 마디 배경 그려줄 함수.
-        let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
+        let xpos = this.x;     // 0.5는 단지 draw를 하기 위해 위치 보정
         let msec_per_pixel = this.numSmp4Px * 1000 / this.samplerate ;        // 1pixel 에 해당하는 msec 시간
-
-        let gridSize_msec = this.msec4Quaver;     // 왜? /2 를 해야 되지?? 이해가 안되네.
-        if ( ! this.semiQuaverMode) {
+        let gridSize_msec = this.msec4Quaver;
+        if ( ! this.semiQuaverMode) {            // 왜? /2 를 해야 되지?? 이해가 안되네.
             gridSize_msec /= 2;
         }
         let edit_unit = (this.semiQuaverMode)?8:16;
+        let w = gridSize_msec / msec_per_pixel;
 
         let prev_beat = 15;
         for (i=1; i<(this.w-this.x); i++ ) {
@@ -123,39 +128,41 @@ var waveformDraw = {
                 ctx.fillRect( xpos+i, this.y, 1, this.h );
                 prev_beat = beat;
             } else {
-                let y = 0;
+                // let y = 0;
                 if (beat == 0) {        // 마디 의 첫 비트
+                    ctx.drawImage(this.icon_src, 37, 0, 1, 256, xpos+i, this.y+this.h-COMPONENT_HEIGHT, 1, 256);
                     ctx.fillStyle = TAB_BGCOLOR_BEAT;
                     ctx.fillRect( xpos+i, y, 1, (this.h-COMPONENT_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=(this.h-COMPONENT_HEIGHT);
-                    ctx.fillStyle = BGCOLOR_LYRIC;
-                    ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=LYRIC_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_CHORD_BEAT;
-                    ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=CHORD_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_STROKE_BEAT;
-                    ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=STROKE_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_TECHNIC;
-                    ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TECHNIC_HEIGHT;
+                    // y+=(this.h-COMPONENT_HEIGHT);
+                    // ctx.fillStyle = BGCOLOR_LYRIC;
+                    // ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=LYRIC_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_CHORD_BEAT;
+                    // ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=CHORD_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_STROKE_BEAT;
+                    // ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=STROKE_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_TECHNIC;
+                    // ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=TECHNIC_HEIGHT;
                 } else {
+                    ctx.drawImage(this.icon_src, 33, 0, 1, 256, xpos+i, this.y+this.h-COMPONENT_HEIGHT, 1, 256);
                     ctx.fillStyle = TAB_BGCOLOR;
                     ctx.fillRect( xpos+i, y, 1, (this.h-COMPONENT_HEIGHT) );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=(this.h-COMPONENT_HEIGHT);
-                    ctx.fillStyle = BGCOLOR_LYRIC;
-                    ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=LYRIC_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_CHORD;
-                    ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=CHORD_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_STROKE;
-                    ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=STROKE_HEIGHT;
-                    ctx.fillStyle = BGCOLOR_TECHNIC;
-                    ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                    y+=TECHNIC_HEIGHT;
+                    // y+=(this.h-COMPONENT_HEIGHT);
+                    // ctx.fillStyle = BGCOLOR_LYRIC;
+                    // ctx.fillRect( xpos+i, y, 1, LYRIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=LYRIC_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_CHORD;
+                    // ctx.fillRect( xpos+i, y, 1, CHORD_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=CHORD_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_STROKE;
+                    // ctx.fillRect( xpos+i, y, 1, STROKE_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=STROKE_HEIGHT;
+                    // ctx.fillStyle = BGCOLOR_TECHNIC;
+                    // ctx.fillRect( xpos+i, y, 1, TECHNIC_HEIGHT);         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
+                    // y+=TECHNIC_HEIGHT;
                 }
             }
         }
@@ -163,7 +170,6 @@ var waveformDraw = {
         let focus_start = parseInt(this.focus_msec/gridSize_msec) * gridSize_msec;
         // console.log("[][] focus msec = ", this.focus_msec, " gridsize=", gridSize_msec );
         let x = (focus_start-this.scrollOffset) / msec_per_pixel;
-        let w = gridSize_msec / msec_per_pixel;
         ctx.fillStyle = "steelblue";
         ctx.fillRect(x, 0, w, this.h);
     },
@@ -173,38 +179,30 @@ var waveformDraw = {
         ctx.fillStyle = "gray";
         // 윗경계
         ctx.fillRect( this.x, ypos, this.w, 4 );
-        // TAB Line
-        ctx.fillStyle = "black";
-        ctx.fillRect( this.x+32, ypos+LINE_A_OFFSET, this.w, 2 );     // A
-        ctx.fillRect( this.x+32, ypos+LINE_E_OFFSET, this.w, 2 );     // E
-        ctx.fillRect( this.x+32, ypos+LINE_C_OFFSET, this.w, 2 );     // C
-        ctx.fillRect( this.x+32, ypos+LINE_G_OFFSET, this.w, 2 );    // G
 
         // 본격적으로 note 데이터를 표시해 보자.
         let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
         let msec_per_pixel = this.numSmp4Px * 1000 / this.samplerate ;        // 1pixel 에 해당하는 msec 시간
         let notes = json_data.notes;
 
-        // let backupFont = ctx.font;
-        // ctx.fillStyle = "black";
-
         ypos = this.h - COMPONENT_HEIGHT;
         for (i=0; i<(this.w-this.x); i++ ) {
             let msec = parseInt( (i*this.numSmp4Px) * 1000 / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
             for (j=0; j<notes.length; j++) {
                 let diff = notes[j].timestamp - msec;
+                let played = (msec < this.currPos)?1:0;
                 if ( (diff >= 0) && (diff < msec_per_pixel) ) {       // 1픽셀 안에 악보 데이터의 timeStamp 가 들어 오면..
-                    draw_a_note(ctx, xpos+i, ypos, notes[j] );
-                    // if ( (notes[j].lyric!=undefined)&&(notes[j].lyric!=null) ) {
-                    //     ctx.font = "22px Arial";
-                    //     ctx.fillText( notes[j].lyric, xpos+i, ypos+30 );
-                    // }
-                
+                    draw_a_note(ctx, xpos+i, ypos, notes[j], played, "none" );
                     break;
                 }
             }
         }
-        // ctx.font = backupFont;
+
+        // LEFT SIDE - LABEL Area.
+        // let icon_src = document.getElementById("uke_note");
+        ctx.drawImage(this.icon_src, 0, 0, 36, 256, this.x, this.y+this.h-COMPONENT_HEIGHT, 36, 256);
+        ctx.fillStyle = "lightgray";
+        ctx.fillRect(0, 0, TAB_LABEL_WIDTH, this.y+this.h-COMPONENT_HEIGHT);
     }, 
 
     drawRuler: (ctx) => {
@@ -224,7 +222,7 @@ var waveformDraw = {
             rulerGridSize = 125;
         }
 
-        let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
+        let xpos = this.x+TAB_LABEL_WIDTH-0.5;     // 단지 draw를 하기 위해 위치 보정
         let ypos = this.h - COMPONENT_HEIGHT - 16;
 
         ctx.fillStyle = "black";
@@ -376,11 +374,17 @@ function isEmptyStr(str) {
         return true;
     return false;
 }
-function draw_a_note (ctx, x, y, note, focused_line) {
+function draw_a_note (ctx, x, y, note, played, focused_line) {
     let backupFont = ctx.font;
     let ypos = y;
     ctx.font = "22px Arial";
 
+    if (played) {
+        console.log("change color for already played.");
+        ctx.fillStyle = "gray";
+    } else {
+        ctx.fillStyle = "black";
+    }
     if ( ! isEmptyStr(note.lyric) ) {
         ctx.fillText( note.lyric, x, ypos );
     }

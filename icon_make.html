@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="shortcut icon" href="./favicon.ico">
+    <meta charset="utf-8" lang="kr">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style/fontstyle.css" />
+    <link rel="stylesheet" type="text/css" href="style/newstyle.css" />
+
+    <title> UKE_EDITOR icon Maker  </title>
+    <!-- <style>
+      @media ( min-width: 769px ) {   /* PC브라우저용 CSS 스타일쉬트 */
+        @import url("style/newstyle.css"); 
+      }
+    </style> -->
+  </head>
+  <body>
+    <header>
+      <span id="song_selector">Select Song:<select id="song_list">
+      </select> </span> </br>
+    </header>
+
+    <canvas id="tab_grid" >캔버스기능이 필요함</canvas>
+
+    <script>
+        const lyric_color = "#FFE994";
+        const chord_color = "#FFDBB6";
+        const stroke_color = "#DEE7E5";
+        const technic_color = "#DDE8CB";
+        const TAB_BG_COLOR = "#EEEEEE";
+
+        const LEFT_END = 40;
+        const NOTE_SIZE = 40;
+
+        let canvas_width = 800;
+        let canvas_height = 256;
+
+        window.onload = () => {
+            console.log("drawing background...");
+
+            let canvas = document.getElementById("tab_grid");
+            canvas.width = canvas_width;
+            canvas.height = canvas_height;
+            let ctx = canvas.getContext("2d");
+            // clear canvas
+            ctx.fillStyle = TAB_BG_COLOR;
+            ctx.clearRect(0, 0, canvas_width, canvas_height);
+            ctx.imageSmoothingEnabled= true;
+            // BG COLOR
+            ctx.fillStyle = lyric_color;
+            ctx.fillRect(0, 0, LEFT_END, 32);
+            ctx.fillStyle = chord_color;
+            ctx.fillRect(0, 32, LEFT_END, 32);
+            ctx.fillStyle = stroke_color;
+            ctx.fillRect(0, 64, LEFT_END, 32);
+            ctx.fillStyle = technic_color;
+            ctx.fillRect(0, 96, LEFT_END, 32);
+            ctx.fillStyle = TAB_BG_COLOR;
+            ctx.fillRect(0, 128, LEFT_END, 128);
+            // quaver hilight
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = "gray";
+            ctx.fillRect(36,0,4,canvas_height);
+            ctx.globalAlpha = 1.0;
+            // 4 lines
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 128+32, LEFT_END, 1);
+            ctx.fillRect(0, 128+64, LEFT_END, 1);
+            ctx.fillRect(0, 128+96, LEFT_END, 1);
+            ctx.fillRect(0, 128+128, LEFT_END, 1);
+            // T.A.B
+            ctx.font = "bold 32px sanserif";
+            ctx.textAlign = "center";
+            ctx.fillText("T", 16, 128+48);
+            ctx.fillText("A", 16, 128+80);
+            ctx.fillText("B", 16, 128+112);
+            // labels
+            ctx.font = "8px sanserif gray";
+            ctx.textAlign = "right";
+            ctx.fillText("lyric", 2+30, 16);
+            ctx.fillText("chord", 2+30, 32+16);
+            ctx.fillText("stroke", 2+30, 64+16);
+            ctx.fillText("technic", 2+30, 96+16);
+            // note flet number with finger color
+            ctx.textAlign = "center";
+            for (i=0; i<19; i++) {
+                ctx.font = "bold 32px sanserif";
+                ctx.fillStyle = "black";
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 32);
+                ctx.fillStyle = "green";        // i = 검지
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 64);
+                ctx.fillStyle = "magenta";      // m = 중지
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 96);
+                ctx.fillStyle = "cyan";        // a = 약지
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 128);
+                ctx.fillStyle = "blue";        // c = 새끼
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 160);
+                ctx.fillStyle = "lightgray";        // c = 새끼
+                ctx.fillText( ""+i, LEFT_END+20+i*NOTE_SIZE, 192);
+            }
+            // stroke  - down
+            ctx.strokeStyle = "gray";
+            ctx.beginPath();
+            ctx.lineWidth = "8";
+            ctx.moveTo(LEFT_END+6, 224);
+            ctx.lineTo(LEFT_END+26, 224);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.lineWidth = "4";
+            ctx.moveTo(LEFT_END+6, 240);
+            ctx.lineTo(LEFT_END+6, 220);
+            ctx.moveTo(LEFT_END+26, 220);
+            ctx.lineTo(LEFT_END+26, 240);
+            ctx.stroke();
+            // stroke  - up
+            ctx.beginPath();
+            ctx.lineWidth = "4";
+            ctx.moveTo(LEFT_END+NOTE_SIZE+8, 220);
+            ctx.lineTo(LEFT_END+NOTE_SIZE+16, 240);
+            ctx.lineTo(LEFT_END+NOTE_SIZE+24, 220);
+            ctx.stroke();
+            // stroke  - mute 
+            ctx.beginPath();
+            ctx.lineWidth = "4";
+            ctx.moveTo(LEFT_END+NOTE_SIZE*2+6, 220);
+            ctx.lineTo(LEFT_END+NOTE_SIZE*2+26, 240);
+            ctx.moveTo(LEFT_END+NOTE_SIZE*2+6, 240);
+            ctx.lineTo(LEFT_END+NOTE_SIZE*2+26, 220);
+            ctx.stroke();
+        }
+
+
+
+    </script>
+
+  </body>
+</html>
+
