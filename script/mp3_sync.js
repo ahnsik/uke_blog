@@ -19,20 +19,20 @@ var song_list = [
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
 ];
 var file_list = [
-  "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
+  "http://ccash2.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/appointment_of_world.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/rain_and_you.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/umigamierumachi.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
 ];
 
 var CHORD_ICON_Y = 48;
@@ -343,14 +343,14 @@ function draw_tabulature() {
     array_l = [];
     array_r = [];
 
-    audioTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+song_data.source;
+    audioTag.src = "http://ccash2.gonetis.com:88/uke_blog/data/"+song_data.source;
 
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/"+song_data.source, true);
+    oReq.open("GET", "http://ccash2.gonetis.com:88/uke_blog/data/"+song_data.source, true);
     oReq.responseType = "arraybuffer";
     // clearInterval(animationHandler);
     oReq.onload = function() {      //     // oReq.onreadystatechange = function() {
-      console.log("xmlhttpReq... sftp://ccash.gonetis.com:/home/ahnsik/ukulele/"+song_data.source);
+      console.log("xmlhttpReq... sftp://ccash2.gonetis.com:/home/ahnsik/ukulele/"+song_data.source);
       if (this.readyState != 4 || this.status != 200) {
         console.log("... readyState=" + this.readyState + ", status="+this.status );
         return;

@@ -30,31 +30,31 @@ const song_list = [
   "오르트 구름 - 윤하"
 ];
 const file_list = [
-  "http://ccash.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
-  "http://ccash.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
+  "http://ccash2.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json",
 
-  "http://ccash.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/appointment_of_world.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/rain_and_you.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/umigamierumachi.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/event_horizon-yunha.json",
-  "http://ccash.gonetis.com:88/uke_blog/data/oort_cloud-yunha.json"
+  "http://ccash2.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/appointment_of_world.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/rain_and_you.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/umigamierumachi.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/event_horizon-yunha.json",
+  "http://ccash2.gonetis.com:88/uke_blog/data/oort_cloud-yunha.json"
 ];
 
 
@@ -81,25 +81,25 @@ const strum_patrn_name_list = [
   ];
 
 const strum_patrn_img_list = [
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_1.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_2.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_3.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_4.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_5.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_6.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_7.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_8.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_10.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_11.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_12.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_13.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_14.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_15.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_16.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_17.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_18.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_19.png",
-  "http://ccash.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_20.png"
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_1.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_2.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_3.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_4.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_5.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_6.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_7.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_8.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_10.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_11.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_12.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_13.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_14.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_15.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_16.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_17.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_18.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_19.png",
+  "http://ccash2.gonetis.com:88/uke_blog/strum_pattern/strumming_pattern_20.png"
 ];
 
 const CHORD_ICON_Y = 48;
@@ -483,7 +483,7 @@ function request_mp3(filename) {
   stop_song();
   if (filename) {       //  loading *.MP3 data :   refer : https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
     array_l = [];
-    audioTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+filename;
+    audioTag.src = "http://ccash2.gonetis.com:88/uke_blog/data/"+filename;
     if (!filename || filename.length == 0) {
       console.log("음원파일을 지정하지 않았습니다..");
       return;
@@ -491,10 +491,10 @@ function request_mp3(filename) {
       console.log("음원파일 = " + filename);
     }
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "http://ccash.gonetis.com:88/uke_blog/data/"+filename, true);
+    oReq.open("GET", "http://ccash2.gonetis.com:88/uke_blog/data/"+filename, true);
     oReq.responseType = "arraybuffer";
     oReq.onload = function() {
-      console.log("xmlhttpReq... sftp://ccash.gonetis.com:/home/ahnsik/ukulele/"+filename);
+      console.log("xmlhttpReq... sftp://ccash2.gonetis.com:/home/ahnsik/ukulele/"+filename);
       if (this.readyState != 4 || this.status != 200) {
         console.log("... readyState=" + this.readyState + ", status="+this.status );
         return;
@@ -1299,7 +1299,7 @@ var close_note_edit_dlg = () => {
 
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   let imgTag = document.getElementById("thumbnail");
-  imgTag.src = "http://ccash.gonetis.com:88/uke_blog/data/"+ imgsrc;
+  imgTag.src = "http://ccash2.gonetis.com:88/uke_blog/data/"+ imgsrc;
   document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
 }
 
