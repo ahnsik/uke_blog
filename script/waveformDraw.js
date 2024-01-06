@@ -25,7 +25,7 @@ const LINE_G_OFFSET = NOTES_HEIGHT+112;
 // const COMPONENT_HEIGHT = (LYRIC_HEIGHT+CHORD_HEIGHT+STROKE_HEIGHT+TECHNIC_HEIGHT+NOTES_HEIGHT);
 const COMPONENT_HEIGHT = 256;       // tab_notes.png - image height
 
-const TAB_LABEL_WIDTH = 32;
+const TAB_LABEL_WIDTH = 36;
 const TAB_BGCOLOR = "lavender";                // 
 const TAB_BGCOLOR_BEAT = "lightsteelblue";       //
 const BGCOLOR_LYRIC = "khaki";             // 약간 탁한 노랑
@@ -45,9 +45,12 @@ var waveformDraw = {
     startOffset: 0,     // waveform 과 박자 grid 의 시간 차이 보정.
     focus_msec: 0,      // 커서 포커스가 위치하는 timeline.
     focused_line: "",
+    focused_index: -1,
     numSmp4Px: 256,     // 1 pixel 당 smaple 수. = drawing 의 기준. 
+    msec_per_pixel: 0,  // need to be re-calculated with 'numSmp4Px'
     msec4Quaver: 500,   // 8분음표에 해당하는 시간(msec)   - default: 60 bpm 일 때, 4분음표는 1초, 즉, 8분음표는 0.5초
     semiQuaverMode: false,  // 16분음표 편집 모드(=true) 또는 8분음표 편집 모드(=false)
+    msec_perGrid: 0,    // need to be re-calculated with 'msec4Quaver' or 'semiQuaverMode', etc..
     numQuaver4Word: 8,  // 1마디에 해당하는 음표 갯수      - default: 8분음표 단위 편집, / or 16=16분음표 단위 편집.
                                                                     // 8분음표 3/4박자일 땐, 6이 될 것. 16분음표는 12..
     scaleFactor: 0.5,
@@ -69,6 +72,7 @@ var waveformDraw = {
         this.scrollOffset = 0;
         this.startOffset = 0;
         this.focus_msec = 0;
+        this.focused_index = -1;
         this.numSmp4Px = 256;
         this.msec4Quaver = 500;
         this.semiQuaverMode = false,
@@ -78,14 +82,53 @@ var waveformDraw = {
         this.y = 0;
         this.w = 800;
         this.h = 200;
+
+        this.msec_per_pixel = (this.numSmp4Px * 1000 / this.samplerate) ;        // 1pixel 에 해당하는 msec 시간
+        this.msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
     }, 
+
+    drawBg: (ctx) => {
+        // let icon_src = document.getElementById("uke_note");
+        // 배경에 박자에 따라 마디 배경 그려줄 함수.
+        let edit_unit = (this.semiQuaverMode)?8:16;
+        let xpos = this.x+TAB_LABEL_WIDTH-1;
+        let loop_w = (this.w-xpos);
+
+        let prev_beat = 0;     // quaver 간의 경계선 그리기 위해서..
+        let ypos = this.y;
+        let wave_height = this.h-COMPONENT_HEIGHT;
+
+        for (i=0; i<loop_w; i++ ) {
+            let beat = parseInt( (i*this.msec_per_pixel+this.scrollOffset) / this.msec_perGrid ) % edit_unit;      // 1 마디를 8분음표로 나눈 갯수...
+            let xx = xpos+i;
+            if (prev_beat != beat) {    // 음표 구분.. 
+                ctx.fillStyle = "grey";
+                ctx.fillRect( xx, ypos, 1, this.h );
+                prev_beat = beat;
+            } else {
+                if (beat == 0) {        // 마디 의 첫 비트 - 하이라이트 - 마디(WORD) 구분
+                    draw_bg_vline_hilight (ctx, xx, ypos, wave_height);
+                } else {
+                    draw_bg_vline(ctx, xx, ypos, wave_height);
+                }
+            }
+        }
+
+        // drawing cursor pos.
+        let focus_start = parseInt(this.focus_msec/this.msec_perGrid) * this.msec_perGrid;
+        // console.log("[][] focus msec = ", this.focus_msec, " gridsize=", this.msec_perGrid );
+        let x = (focus_start-this.scrollOffset) / this.msec_per_pixel;
+        let w = this.msec_perGrid / this.msec_per_pixel;
+        ctx.fillStyle = "burlywood";    //"steelblue";
+        ctx.fillRect(x+TAB_LABEL_WIDTH, 0, w, this.h);
+    },
     drawWave: (ctx) => {
         let waveSize = this.h - COMPONENT_HEIGHT;
-        let xpos = this.x-0.5;     // 단지 draw를 하기 위해 위치 보정
+        let xpos = this.x-0.5+TAB_LABEL_WIDTH;     // 0.5는 단지 draw를 하기 위해 위치 보정
         let center_y = (this.y+waveSize)/2;  // canvas center 에 그리기 위해서 
         let i, j, min, max, value;
         let offset = (( (this.scrollOffset-this.startOffset) * this.samplerate) / 1000);        // let numSmp4msec = this.samplerate / 1000;
-        let loop_w = (this.w-this.x);
+        let loop_w = (this.w-xpos);
 
         for (i=1; i<loop_w; i++ ) {
             let start_idx = parseInt( this.numSmp4Px*(i-1) +offset );       // offset 은 waveBuffer의 index (sample단위)
@@ -118,85 +161,36 @@ var waveformDraw = {
             ctx.stroke();
         }
     },
-
-    drawBg: (ctx) => {
-        // let icon_src = document.getElementById("uke_note");
-        // 배경에 박자에 따라 마디 배경 그려줄 함수.
-        let xpos = this.x;     // 0.5는 단지 draw를 하기 위해 위치 보정
-        let msec_per_pixel = this.numSmp4Px * 1000 / this.samplerate ;        // 1pixel 에 해당하는 msec 시간
-        let gridSize_msec = this.msec4Quaver;
-        if ( ! this.semiQuaverMode) {            // 왜? /2 를 해야 되지?? 이해가 안되네.
-            gridSize_msec /= 2;
-        }
-        let edit_unit = (this.semiQuaverMode)?8:16;
-        let w = gridSize_msec / msec_per_pixel;
-        let loop_w = (this.w-this.x);
-
-        let prev_beat = 15;
-        let y = this.y;
-        let wave_height = this.h-COMPONENT_HEIGHT;
-        for (i=1; i<loop_w; i++ ) {
-            let beat = parseInt( (i*msec_per_pixel+this.scrollOffset) / gridSize_msec ) % edit_unit;      // 1 마디를 8분음표로 나눈 갯수...
-            let xx = xpos+i;
-            if (prev_beat != beat) {
-                ctx.fillStyle = "grey";
-                ctx.fillRect( xx, y, 1, this.h );
-                prev_beat = beat;
-            } else {
-                if (beat == 0) {        // 마디 의 첫 비트
-                    ctx.drawImage(this.icon_src, 37, 0, 1, 256, xx, y+wave_height, 1, 256);
-                    ctx.fillStyle = TAB_BGCOLOR_BEAT;
-                    ctx.fillRect( xx, y, 1, wave_height );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                } else {
-                    ctx.drawImage(this.icon_src, 33, 0, 1, 256, xx, y+wave_height, 1, 256);
-                    ctx.fillStyle = TAB_BGCOLOR;
-                    ctx.fillRect( xx, y, 1, wave_height );         // TODO: y, h를 반복계산하지 않도록 정리가 필요.
-                }
-            }
-        }
-        // drawing cursor pos.
-        let focus_start = parseInt(this.focus_msec/gridSize_msec) * gridSize_msec;
-        // console.log("[][] focus msec = ", this.focus_msec, " gridsize=", gridSize_msec );
-        let x = (focus_start-this.scrollOffset) / msec_per_pixel;
-        ctx.fillStyle = "burlywood";    //"steelblue";
-        ctx.fillRect(x, 0, w, this.h);
-    },
-
     drawNotes: (ctx, json_data) => {
         let ypos = this.h - NOTES_HEIGHT;
         // 윗경계
         ctx.fillStyle = "gray";
-        ctx.fillRect( this.x, ypos, this.w, 4 );
+        ctx.fillRect( this.x+TAB_LABEL_WIDTH-1, ypos, this.w, 4 );
 
         // 본격적으로 note 데이터를 표시해 보자.
-        let xpos = this.x;     // 단지 draw를 하기 위해 위치 보정
-        let msec_per_pixel = this.numSmp4Px * 1000 / this.samplerate ;        // 1pixel 에 해당하는 msec 시간
-        let msec_per_grid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
         let notes = json_data.notes;
-        let loop_w = (this.w-this.x);
 
         ypos = this.h - COMPONENT_HEIGHT;
-        for (i=0; i<loop_w; i++ ) {
-            let msec = parseInt( (i*this.numSmp4Px) * 1000 / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
-            for (j=0; j<notes.length; j++) {
-                let diff = notes[j].timestamp - msec;
-                if ( (diff >= 0) && (diff < msec_per_pixel) ) {       // 1픽셀 안에 악보 데이터의 timeStamp 가 들어 오면..
-                    let played = (msec < (this.currPos*1000) )?"past":"normal";
-                    let focus_diff = notes[j].timestamp - this.focus_msec;
-                    if ((focus_diff >= 0)&&(focus_diff< msec_per_grid))
-                        played = "focused";
-                    draw_a_note(ctx, xpos+i, ypos, msec_per_grid/msec_per_pixel, notes[j], played);
-                    break;                    
-                }
+
+        for (j=0; j<notes.length; j++) {
+            let x = (notes[j].timestamp-this.scrollOffset)/this.msec_per_pixel + TAB_LABEL_WIDTH;
+            let played = (notes[j].timestamp < (this.currPos*1000) )?"past":"normal";
+            if (x < this.w) {
+                if (j===this.focused_index) {
+                    draw_a_note(ctx, x, ypos, this.msec_perGrid/this.msec_per_pixel, notes[j], "focused");
+                } else 
+                    draw_a_note(ctx, x, ypos, this.msec_perGrid/this.msec_per_pixel, notes[j], played);
             }
         }
 
         // LEFT SIDE - LABEL Area.
-        ctx.drawImage(this.icon_src, 0, 0, 36, 256, this.x, this.y+this.h-COMPONENT_HEIGHT, 36, 256);
+        ctx.drawImage(this.icon_src, 0, 0, TAB_LABEL_WIDTH, 256, this.x, this.y+this.h-COMPONENT_HEIGHT, TAB_LABEL_WIDTH, 256);
         ctx.fillStyle = "lightgray";
         ctx.fillRect(0, 0, TAB_LABEL_WIDTH, this.y+this.h-COMPONENT_HEIGHT);
+        ctx.font = "8px sanserif gray";
+        ctx.textAlign = "right";
+        ctx.fillText("waveform", 2+30, this.y+COMPONENT_HEIGHT/2);
     }, 
-
     drawRuler: (ctx) => {
         // 눈금자 msec 단위로 그려주는 함수.
         let rulerGridSize;
@@ -214,14 +208,14 @@ var waveformDraw = {
             rulerGridSize = 125;
         }
 
-        let xpos = this.x+TAB_LABEL_WIDTH;     // 단지 draw를 하기 위해 위치 보정
+        let xpos = this.x+TAB_LABEL_WIDTH-1;
         let ypos = this.h - COMPONENT_HEIGHT - 16;
-        let loop_w = (this.w-this.x);
+        let loop_w = (this.w-xpos);
 
         ctx.fillStyle = "black";
         let prev_time = 0;
         for (i=0; i<loop_w; i++ ) {
-            let msec = parseInt( (i*this.numSmp4Px) * 1000 / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
+            let msec = parseInt( (i*1000 * this.numSmp4Px) / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
             if ( parseInt(msec/rulerGridSize) != parseInt(prev_time/rulerGridSize) ) {          //     rulerGridSize: 500,
                 ctx.fillText( makeTimeString(msec), xpos+i, ypos+6);
                 ctx.fillText( makeTimeString(msec), xpos+i, 3);
@@ -230,16 +224,20 @@ var waveformDraw = {
         }
     },
 
-    set_audioBuffer: (buf, samplerate) => {
+    set_audioBuffer: (buf, sample_rate) => {
         this.waveBuffer = buf;
-        this.samplerate = samplerate;
+        this.samplerate = sample_rate;
         this.numSmp4Px = 256;
+        this.msec_per_pixel = (1000 * this.numSmp4Px / this.samplerate) ;        // numSmp4Px 값이 바뀌면 새로 계산 해야 함.
     },
     set_windowSize: (x, y, w, h) => {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+    },
+    get_drawingOffset: () => {
+        return { x: TAB_LABEL_WIDTH, y: 0 }
     },
     set_focusPos: (offset) => {
         if (offset >= 0)
@@ -248,6 +246,12 @@ var waveformDraw = {
     get_focusPos_msec: () => {
         return this.focus_msec;
     },
+    set_focusIndex: (index) => {
+        this.focused_index = index;
+    },
+    // get_focusIndex: () => {
+    //     return this.focused_index;
+    // },
     set_scrollPos: (offset) => {
         if (offset >= 0)
             this.scrollOffset = offset;
@@ -266,34 +270,37 @@ var waveformDraw = {
     },
     set_quaverSize: (note_size) => {        // 편집단위 조정 : 8분음표 단위로 편집? or 16분음표 단위로 편집?
         this.msec4Quaver = note_size;
+        this.msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
+    },
+    get_msecPerPixel: () => {
+        return this.msec_per_pixel;     // = (1000 * this.numSmp4Px / this.samplerate) ;
     },
     get_msecPerGrid: () => {
-        let msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
-        return msec_perGrid;
+        return this.msec_perGrid;
     },
     set_wordSize: (word_size) => {        // 1마디 당 음표 갯수 - 4/4박자면, 8분음표 8개,  3/4박자면, 8분음표 6개, etc...
         this.numQuaver4Word = word_size;
     },
     set_semiQuaver: (semi) => {
         this.semiQuaverMode = (semi)? true : false;
+        this.msec_perGrid = (this.semiQuaverMode)?this.msec4Quaver : this.msec4Quaver/2;
     },
     zoom_in: () => {
         if (this.numSmp4Px > 2) {
             this.numSmp4Px /= 1.2;
+            this.msec_per_pixel = (1000 * this.numSmp4Px / this.samplerate) ;        // numSmp4Px 값이 바뀌면 새로 계산 해야 함.
         }
         console.log("numSmp4Px :" + this.numSmp4Px);
     },
     zoom_out: () => {
         if (this.numSmp4Px < 2048) {
             this.numSmp4Px *= 1.2;
+            this.msec_per_pixel = (1000 * this.numSmp4Px / this.samplerate) ;        // numSmp4Px 값이 바뀌면 새로 계산 해야 함.
         }
         console.log("numSmp4Px :" + this.numSmp4Px);
     },
     set_scaleFactor: (factor) => {
         this.scaleFactor = factor;
-    },
-    get_msecPerPixel: () => {
-        return ( (this.numSmp4Px * 1000) / this.samplerate) ;        // 1pixel 에 해당하는 msec 시간
     },
 
     set_focusCategory: (focus_line) => {
@@ -334,7 +341,7 @@ var waveformDraw = {
         return FLAG_WAVE;
     },
     get_clickedTimeStamp: (xpos) => {
-        let msec = parseInt( ( xpos*this.numSmp4Px) * 1000 / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
+        let msec = parseInt( xpos*1000 * this.numSmp4Px / this.samplerate )+this.scrollOffset;         // i 번째 픽셀의 msec 값
         return msec;
     }
 };
@@ -359,6 +366,79 @@ function isEmptyStr(str) {
         return true;
     return false;
 }
+
+
+const lyric_color = "#FFE994";
+const chord_color = "#FFDBB6";
+const stroke_color = "#DEE7E5";
+const technic_color = "#DDE8CB";
+const TAB_BG_COLOR = "#EEEEEE";
+
+const lyric_color_hi = "#e0d080";
+const chord_color_hi = "#e0c0a0";
+const stroke_color_hi = "#c0e0e0";
+const technic_color_hi = "#c0e0b0";
+const TAB_BG_COLOR_hi = "#d0d0d0";
+
+// 배경이 되는 세로 1 라인을 그림. - 미리 준비된 bitmap 으로 부터 copy 하거나, 직접 영역 별로 색상을 구분해서 그려 보거나.
+// - 성능 비교할 것 : 비교 결과.. 큰 차이는 없는 듯..
+function draw_bg_vline_hilight (ctx, x, y, wave_height) {
+    //  미리 준비된 비트맵을 copy 하는경우.
+    ctx.drawImage(this.icon_src, 37, 0, 1, 256, x, y+wave_height, 1, 256);
+    ctx.fillStyle = TAB_BGCOLOR_BEAT;
+    ctx.fillRect( x, y, 1, wave_height );
+
+    // //  bitmap copy 하지 않고 직접 색깔별로 line 을 그리는 경우.
+    // ctx.fillStyle = TAB_BGCOLOR_BEAT;           // wave form BG
+    // ctx.fillRect( x, y, 1, wave_height );
+    // y += wave_height;
+    // ctx.fillStyle = lyric_color_hi;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = chord_color_hi;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = stroke_color_hi;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = technic_color_hi;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = TAB_BG_COLOR_hi;
+    // ctx.fillRect( x, y, 1, 128);
+    // // y += 128;
+}
+
+
+function draw_bg_vline (ctx, x, y, wave_height) {
+    //  미리 준비된 비트맵을 copy 하는경우.
+    ctx.drawImage(this.icon_src, 33, 0, 1, 256, x, y+wave_height, 1, 256); // TODO: 비트맵 이미지 대신 라인으로 직접그릴 수 있게 함수화 해 볼 것
+    ctx.fillStyle = TAB_BGCOLOR;
+    ctx.fillRect( x, y, 1, wave_height );
+
+    // //  bitmap copy 하지 않고 직접 색깔별로 line 을 그리는 경우.
+    // ctx.fillStyle = TAB_BGCOLOR;           // wave form BG
+    // ctx.fillRect( x, y, 1, wave_height );
+    // y += wave_height;
+    // ctx.fillStyle = lyric_color;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = chord_color;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = stroke_color;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = technic_color;
+    // ctx.fillRect( x, y, 1, 32);
+    // y += 32;
+    // ctx.fillStyle = TAB_BG_COLOR;
+    // ctx.fillRect( x, y, 1, 128);
+    // // y += 128;
+}
+
+
+
 function draw_a_note (ctx, x, y, w, note, played) {
     let backupFont = ctx.font;
     let ypos = y;

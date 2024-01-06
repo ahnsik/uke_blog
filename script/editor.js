@@ -182,7 +182,6 @@ var g_bpm = 60;
 var g_offset = 0;
 
 ///// 아래 각종 기준은 msec 단위로 처리.
-var moving_note_idx = -1;     // 마우스 드래그로 음표를 이동시킬 때의 index.
 var note_idx_editing = -1;    // Dialog 에서 편집중인 음표의 index.
 var copy_head_idx = -1;
 var copy_tail_idx = -1;
@@ -481,7 +480,7 @@ var edit_keyUp = (e) => {
 
 var edit_mouseDown = (e) => {
   const rect = edit_area.getBoundingClientRect();
-  last_posX = e.clientX - rect.left;
+  last_posX = e.clientX - rect.left - waveformDraw.get_drawingOffset().x;
   last_posY = e.clientY - rect.top;
   
   isDragging = true;
@@ -492,19 +491,20 @@ var edit_mouseDown = (e) => {
     prev_position = scrollPosition_msec = waveformDraw.get_scrollPos();    // waveformDraw.startOffset;  //
   } else {    // 그 외의 위치를 클릭하면, 
     // TODO: 편집 메뉴를 띄우거나 note 데이터(timestamp)를 이동시키거나 하는 등의 동작.
-    let focus_in_msec = waveformDraw.get_msecPerPixel()*last_posX + scrollPosition_msec;
-    // waveformDraw.set_focusPos(focus_in_msec);
     let grid_width_msec = waveformDraw.get_msecPerGrid();
+    let focus_in_msec = waveformDraw.get_msecPerPixel()*last_posX + scrollPosition_msec;
     let grid_start_msec = parseInt(focus_in_msec / grid_width_msec) * grid_width_msec;    // 그리드 단위.
+    console.log("clicked_x=", last_posX, ", focus_in_msec=", focus_in_msec, ", start=", grid_start_msec);
     editing_note_index = findNoteIndex(grid_start_msec, grid_start_msec+grid_width_msec);
+    console.log( "editing_note_index=", editing_note_index);
+    waveformDraw.set_focusIndex(editing_note_index);
     prev_position = song_data.notes[editing_note_index].timestamp;
-    console.log("found note index=", editing_note_index, ", note.timestamp=", prev_position );
   }
   e.preventDefault();
 }
 var edit_mouseMove = (e) => {
   const rect = edit_area.getBoundingClientRect();
-  let cursor_x = e.clientX - rect.left;
+  let cursor_x = e.clientX - rect.left - waveformDraw.get_drawingOffset().x;
   let cursor_y = e.clientY - rect.top;
 
   if (isScrollMode) {     // 스크롤 중이면..
@@ -513,34 +513,26 @@ var edit_mouseMove = (e) => {
       if (scrollPosition_msec < 0)
         scrollPosition_msec = 0;
       waveformDraw.set_scrollPos(scrollPosition_msec);
-      console.log("scroll mode");
   } else {    // 스크롤이 아닌 상태
     if (isDragging) {     // note 의 위치이동 (timestamp) 중이라면..
-      console.log("dragging...", editing_note_index);
-      //   // TODO: timestamp 조정 동작..
       let moving_x = (cursor_x-last_posX);
-      moving_msec = prev_position+(moving_x * waveformDraw.get_msecPerPixel() );
+      let moving_msec = prev_position+(moving_x * waveformDraw.get_msecPerPixel() );
       if (e.altKey) {     // ALT 키가 눌려 있을 때에는, Grid 에 고정하지 않는다.
-        song_data.notes[editing_note_index].timestamp = moving_msec;
       } else {
         let gridSize = waveformDraw.get_msecPerGrid();
-        let note_ts = parseInt(moving_msec/gridSize)*gridSize;
-        console.log("idx=", editing_note_index, ", notes=", song_data.notes[editing_note_index], ", ts=", song_data.notes[editing_note_index].timestamp, ", moving=", moving_msec );
-        song_data.notes[editing_note_index].timestamp = note_ts;
+        moving_msec = parseInt(moving_msec/gridSize)*gridSize;
       }
       if (e.shiftKey) {
-        let offset_msec = song_data.notes[editing_note_index].timestamp - prev_position;
-        shiftAllTimestampAfter(editing_note_index+1, offset_msec);
+        let moving_offset = moving_msec - song_data.notes[editing_note_index].timestamp;
+        shiftAllTimestampAfter(editing_note_index, moving_offset);
+      } else {
+        song_data.notes[editing_note_index].timestamp = moving_msec;
       }
-      console.log("moving_x=", moving_x, ", timestamp=", song_data.notes[editing_note_index].timestamp );
     } else {  // TODO: 그냥 커서만 이동 중 --> note 위치를 확인할 수 있도록 해 보자.
       let focus_line = waveformDraw.get_clickedCategory(cursor_y);
-      // if (focus_line!="waveform") {
-        let focus_in_msec = waveformDraw.get_msecPerPixel()*cursor_x + scrollPosition_msec;
-        waveformDraw.set_focusPos(focus_in_msec);
-        waveformDraw.set_focusCategory(focus_line);
-      // } else {
-      // }
+      let focus_in_msec = waveformDraw.get_msecPerPixel()*cursor_x + waveformDraw.get_scrollPos();  //  scrollPosition_msec;
+      waveformDraw.set_focusPos(focus_in_msec);
+      waveformDraw.set_focusCategory(focus_line);
     }
   }
   draw_editor(edit_area);
@@ -552,14 +544,8 @@ var edit_mouseUp = (e) => {
   last_posY = 0;
 
   if (scrollPosition_msec === prev_position) {   // 스크롤 되지 않았음. note 편집.
-    if (moving_note_idx !== -1) {    // TS 값을 조정 중이었다면, 
-      console.log("여기에서는 새로운 음을 편집하게 될 것?");
-    } else {
-      editing_note_index = -1;
-    }
+    //   console.log("여기에서는 새로운 음을 편집하게 될 것?");
   } else {      // 스크롤 된 상태 
-    const rect = edit_area.getBoundingClientRect();
-    // let cursor_x = e.clientX - rect.left;
     if (isScrollMode) {
       scrollPosition_msec = prev_position-(scroll_x * waveformDraw.get_msecPerPixel() );
       if (scrollPosition_msec < 0)
@@ -567,7 +553,8 @@ var edit_mouseUp = (e) => {
       waveformDraw.set_scrollPos(scrollPosition_msec);
     }
   }
-  moving_note_idx = -1;
+  editing_note_index = -1;
+  waveformDraw.set_focusIndex(-1);
   isScrollMode = false;
   isDragging = false;
   draw_editor(edit_area);
@@ -576,7 +563,7 @@ var edit_mouseUp = (e) => {
 
 var edit_mouseDblClick = (e) => {
   const rect = edit_area.getBoundingClientRect();
-  let cursor_x = e.clientX - rect.left;
+  let cursor_x = e.clientX - rect.left - waveformDraw.get_drawingOffset().x;
   let cursor_y = e.clientY - rect.top;
 
   let grid_size = waveformDraw.get_msecPerGrid();
@@ -602,7 +589,8 @@ var findNoteIndex = (start, end) => {
   let notes = song_data.notes;
   for (var i=0; i<notes.length; i++) {
     if ( (notes[i].timestamp >= start) && (notes[i].timestamp < end) ) {
-        return i;
+      console.log("start=", start, ", end=", end, ",   found_msec=", notes[i].timestamp );
+      return i;
     }
   }
   return -1;
@@ -611,7 +599,6 @@ var findNoteIndex = (start, end) => {
 var shiftAllTimestampAfter = (targetIndex, offset_msec) => {
   console.log("All timestamp will be changed");
   let notes = song_data.notes;
-  // let diff = (note_ts - notes[moving_note_idx].timestamp);
   for (let i = targetIndex; i< notes.length; i++) {
     notes[i].timestamp += offset_msec;  //diff;
   }
