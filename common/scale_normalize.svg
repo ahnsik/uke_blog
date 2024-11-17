@@ -26,16 +26,8 @@
    rdf:about="">
       <dc:format>image/svg+xml</dc:format>
 
-
-
       <dc:type
    rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-
-
-
-      
-
-
 
     </cc:Work>
 
@@ -84,98 +76,6 @@
    inkscape:deskcolor="#d1d1d1" />
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <g
    id="g3"
    transform="matrix(0.00769514,0,0,0.00769514,-9.8882248,-2.7908332)"><path
@@ -200,35 +100,9 @@
      id="g2"
      transform="translate(11316.858,8181.7955)"><g
        id="g59">
-</g><g
-       id="g61">
-</g><g
-       id="g63">
-</g><g
-       id="g65">
-</g><g
-       id="g67">
-</g><g
-       id="g69">
-</g><g
-       id="g71">
-</g><g
-       id="g73">
-</g><g
-       id="g75">
-</g><g
-       id="g77">
-</g><g
-       id="g79">
-</g><g
-       id="g81">
-</g><g
-       id="g83">
-</g><g
-       id="g85">
-</g><g
-       id="g87">
-</g><path
+</g>
+
+<path
        sodipodi:nodetypes="ccssccc"
        inkscape:connector-curvature="0"
        id="path55-9"

@@ -27,7 +27,7 @@ const song_list = [
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
   "사건의 지평선 - 윤하"
 ];
-const host_url = "http://ccash2.gonetis.com:88";
+const host_url = "http://ccash.iptime.org:88";
 const file_list = [
   host_url+"/uke_blog/data/oort_cloud-yunha.json",
   host_url+"/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
