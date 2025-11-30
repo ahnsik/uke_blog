@@ -1,16 +1,16 @@
 {
-  "title": "60BPM 3/4박자 모노 드럼비트 8분음표 편집 (8000Hz)",
+  "title": "60BPM 4/4박자 드럼비트 8분음표 편집 (48000Hz)",
   "docversion": 2,
   "create_date": "2025-01-14  22:15",
   "author": "ahnsik",
   "author_note": "uke author",
   "category": "Rhythm",
   "source": "60Bpm_3-4Beat_Drum_8bit_mono_8000hz.mp3 ",
-  "comment": "60BPM의 3/4박자 드럼비트. 8분음표로 편집",
+  "comment": "60BPM의 4/4박자 드럼비트. 8분음표로 편집",
   "start_offset": 100,
   "bpm": 60,
-  "editsize": "quaver",
-  "basic_beat": "3/4",
+  "editsize": "semiquaver",
+  "basic_beat": "4/4",
   "notes": [
     {
       "timestamp": 0,
@@ -96,6 +96,12 @@
       ]
     },
     {
+      "timestamp": 2250,
+      "stroke": "U",
+      "note": [],
+      "tab": []
+    },
+    {
       "timestamp": 2500,
       "stroke": "D",
       "note": [
@@ -112,7 +118,57 @@
       ]
     },
     {
+      "timestamp": 2750,
+      "stroke": "U",
+      "note": [],
+      "tab": []
+    },
+    {
       "timestamp": 3000,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 3250,
+      "stroke": "U",
+      "note": [],
+      "tab": []
+    },
+    {
+      "timestamp": 3500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 3750,
+      "stroke": "U",
+      "note": [],
+      "tab": []
+    },
+    {
+      "timestamp": 4000,
       "lyric": "둘",
       "chord": "D",
       "stroke": "D",
@@ -131,288 +187,293 @@
       ]
     },
     {
-      "timestamp": 3500,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E0",
-        "C2",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 4000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E0",
-        "C2",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
       "timestamp": 4500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 5000,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 5500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 6000,
-      "lyric": "셋",
-      "chord": "Em7",
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
+    },
+    {
+      "timestamp": 6250,
+      "stroke": "U",
+      "note": [],
+      "tab": []
     },
     {
       "timestamp": 6500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
+    },
+    {
+      "timestamp": 6750,
+      "stroke": "U",
+      "note": [],
+      "tab": []
     },
     {
       "timestamp": 7000,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
+    },
+    {
+      "timestamp": 7250,
+      "stroke": "U",
+      "note": [],
+      "tab": []
     },
     {
       "timestamp": 7500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
+      "timestamp": 7750,
+      "stroke": "U",
+      "note": [],
+      "tab": []
+    },
+    {
       "timestamp": 8000,
+      "lyric": "넷",
+      "chord": "A",
       "stroke": "D",
+      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
+        "A0",
+        "E0",
+        "C0",
+        "G2"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A0",
+        "A0",
+        "A0",
+        "A0"
       ]
     },
     {
       "timestamp": 8500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 9000,
-      "lyric": "넷",
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 9500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 10000,
-      "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 10500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 11000,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 11500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 12000,
       "lyric": "하나",
-      "chord": "C",
+      "chord": "G",
       "stroke": "D",
       "technic": "|",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 12250,
+      "stroke": "D",
       "note": [
         "A3",
         "E0",
@@ -443,7 +504,7 @@
       ]
     },
     {
-      "timestamp": 13000,
+      "timestamp": 13250,
       "stroke": "D",
       "note": [
         "A3",
@@ -475,7 +536,7 @@
       ]
     },
     {
-      "timestamp": 14000,
+      "timestamp": 13750,
       "stroke": "D",
       "note": [
         "A3",
@@ -507,28 +568,60 @@
       ]
     },
     {
-      "timestamp": 15000,
-      "lyric": "둘",
-      "chord": "D",
+      "timestamp": 15250,
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 15500,
       "stroke": "D",
       "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 15750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 16000,
+      "lyric": "둘",
+      "chord": "C",
+      "stroke": "D",
+      "technic": "|",
+      "note": [
         "A2",
         "E0",
         "C2",
@@ -542,172 +635,153 @@
       ]
     },
     {
-      "timestamp": 16000,
+      "timestamp": 16250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 16500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 17000,
+      "timestamp": 17250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 17500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 18000,
-      "lyric": "셋",
-      "chord": "Em7",
+      "timestamp": 17750,
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 18500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 19000,
+      "timestamp": 19250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 19500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 19750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 20000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 20500,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 21000,
       "lyric": "넷",
-      "chord": "G",
+      "chord": "F",
       "stroke": "D",
       "technic": "|",
       "note": [
@@ -724,83 +798,147 @@
       ]
     },
     {
-      "timestamp": 21500,
+      "timestamp": 20250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 22000,
+      "timestamp": 20500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 21250,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 21500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 21750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 22500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 23000,
+      "timestamp": 23250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 23500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 23750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
@@ -809,6 +947,22 @@
       "chord": "C",
       "stroke": "D",
       "technic": "|",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 24250,
+      "stroke": "D",
       "note": [
         "A3",
         "E0",
@@ -839,7 +993,7 @@
       ]
     },
     {
-      "timestamp": 25000,
+      "timestamp": 25250,
       "stroke": "D",
       "note": [
         "A3",
@@ -871,7 +1025,7 @@
       ]
     },
     {
-      "timestamp": 26000,
+      "timestamp": 25750,
       "stroke": "D",
       "note": [
         "A3",
@@ -903,7 +1057,55 @@
       ]
     },
     {
-      "timestamp": 27000,
+      "timestamp": 27250,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 27500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 27750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 28000,
       "lyric": "둘",
       "chord": "D",
       "stroke": "D",
@@ -922,186 +1124,151 @@
       ]
     },
     {
-      "timestamp": 27500,
+      "timestamp": 28250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 28000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E0",
-        "C2",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 28500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 29000,
+      "timestamp": 29250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 29500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 30000,
-      "lyric": "셋",
-      "chord": "Em7",
+      "timestamp": 29750,
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 30500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 31000,
+      "timestamp": 31250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 31500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 31750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 32000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 32500,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 33000,
       "lyric": "넷",
       "stroke": "D",
       "technic": "|",
@@ -1119,83 +1286,147 @@
       ]
     },
     {
-      "timestamp": 33500,
+      "timestamp": 32250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 34000,
+      "timestamp": 32500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 33250,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 33500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 33750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 34500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 35000,
+      "timestamp": 35250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 35500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 35750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
@@ -1204,6 +1435,22 @@
       "chord": "C",
       "stroke": "D",
       "technic": "|",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 36250,
+      "stroke": "D",
       "note": [
         "A3",
         "E0",
@@ -1234,7 +1481,7 @@
       ]
     },
     {
-      "timestamp": 37000,
+      "timestamp": 37250,
       "stroke": "D",
       "note": [
         "A3",
@@ -1266,7 +1513,7 @@
       ]
     },
     {
-      "timestamp": 38000,
+      "timestamp": 37750,
       "stroke": "D",
       "note": [
         "A3",
@@ -1298,7 +1545,55 @@
       ]
     },
     {
-      "timestamp": 39000,
+      "timestamp": 39250,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 39500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 39750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 40000,
       "lyric": "둘",
       "chord": "D",
       "stroke": "D",
@@ -1317,186 +1612,151 @@
       ]
     },
     {
-      "timestamp": 39500,
+      "timestamp": 40250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 40000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E0",
-        "C2",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 40500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 41000,
+      "timestamp": 41250,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 41500,
       "stroke": "D",
       "note": [
-        "A2",
+        "A3",
         "E0",
-        "C2",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 42000,
-      "lyric": "셋",
-      "chord": "Em7",
+      "timestamp": 41750,
       "stroke": "D",
-      "technic": "|",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 42500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 43000,
+      "timestamp": 43250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 43500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C4",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 43750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 44000,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 44500,
-      "stroke": "D",
-      "note": [
-        "A2",
-        "E3",
-        "C4",
-        "G0"
-      ],
-      "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
-      ]
-    },
-    {
-      "timestamp": 45000,
       "lyric": "넷",
       "chord": "G",
       "stroke": "D",
@@ -1515,83 +1775,147 @@
       ]
     },
     {
-      "timestamp": 45500,
+      "timestamp": 44250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 46000,
+      "timestamp": 44500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 45250,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 45500,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 45750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 46500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
-      "timestamp": 47000,
+      "timestamp": 47250,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     },
     {
       "timestamp": 47500,
       "stroke": "D",
       "note": [
-        "A2",
-        "E3",
-        "C2",
+        "A3",
+        "E0",
+        "C0",
         "G0"
       ],
       "tab": [
-        "A2",
-        "A2",
-        "A2",
-        "A2"
+        "A3",
+        "A3",
+        "A3",
+        "A3"
+      ]
+    },
+    {
+      "timestamp": 47750,
+      "stroke": "D",
+      "note": [
+        "A3",
+        "E0",
+        "C0",
+        "G0"
+      ],
+      "tab": [
+        "A3",
+        "A3",
+        "A3",
+        "A3"
       ]
     }
   ]

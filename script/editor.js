@@ -10,6 +10,7 @@ const song_list = [
   "오르트 구름 - 윤하",
   "60 BPM 4/4박자 드럼비트 (48000Hz)",
   "60 BPM 3/4박자 모노 드럼비트 (8000Hz)",
+  "63 BPM 4/4박자 드럼비트 (48000Hz)",
 
   "하와이 연정 - 패티킴",
   "언제나 몇번이나 - 센과 치히로의 행방불명 OST",
@@ -29,9 +30,13 @@ const song_list = [
 ];
 const host_url = "http://ccash.iptime.org:88";
 const file_list = [
-  host_url+"/uke_blog/data/oort_cloud-yunha.json",
-  host_url+"/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
-  host_url+"/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  host_url+"/uke_edit/data/oort_cloud_excel.json",
+  // host_url+"/uke_blog/data/oort_cloud-yunha.json",
+  host_url+"/uke_edit/data/60BPM_Drum_Beat_test.json", 
+  // host_url+"/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
+  host_url+"/uke_edit/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  host_url+"/uke_edit/data/63BPM_Drum_Beat_test.json", 
+
   host_url+"/uke_blog/data/hawaiian_lovesong.json",
   host_url+"/uke_blog/data/itsumonandodemo.json",
   host_url+"/uke_blog/data/sometimes_telling_old_story.json",
@@ -273,7 +278,7 @@ var play_song = () => {
       if (audioTag.ended) {
         stop_song();
       }
-    }, 50);
+    }, 16);
   } else {
     audioTag.pause();
     document.getElementById("play_song").src = "common/play.svg" ;
