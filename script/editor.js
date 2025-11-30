@@ -28,30 +28,31 @@ const song_list = [
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",
   "사건의 지평선 - 윤하"
 ];
-const host_url = "http://ccash.iptime.org:88";
+// Default to same origin; set to external host only if needed for development/testing.
+const host_url = ""; // e.g. "http://ccash.iptime.org:88"; 
 const file_list = [
-  host_url+"/uke_edit/data/oort_cloud_excel.json",
+  "data/oort_cloud-yunha.json",
   // host_url+"/uke_blog/data/oort_cloud-yunha.json",
-  host_url+"/uke_edit/data/60BPM_Drum_Beat_test.json", 
+  "data/60BPM_Drum_Beat_test.json", 
   // host_url+"/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
-  host_url+"/uke_edit/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  "data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
   host_url+"/uke_edit/data/63BPM_Drum_Beat_test.json", 
 
-  host_url+"/uke_blog/data/hawaiian_lovesong.json",
-  host_url+"/uke_blog/data/itsumonandodemo.json",
-  host_url+"/uke_blog/data/sometimes_telling_old_story.json",
-  host_url+"/uke_blog/data/appointment_of_world.json",
-  host_url+"/uke_blog/data/hikoki_gumo.json",
-  host_url+"/uke_blog/data/elcondorpasa_fingerstyle.json",
-  host_url+"/uke_blog/data/elcondorpasa_melody.json",
-  host_url+"/uke_blog/data/kiss_the_rain_new.json",
-  host_url+"/uke_blog/data/kokuriko-ghibri.json",
-  host_url+"/uke_blog/data/merry_go_round_in_Life.json",
-  host_url+"/uke_blog/data/rain_and_you.json",
-  host_url+"/uke_blog/data/umigamierumachi.json",
-  host_url+"/uke_blog/data/SomewhereOvertheRainbow.json",
-  host_url+"/uke_blog/data/me_toyou_you_tome.json",
-  host_url+"/uke_blog/data/event_horizon-yunha.json"
+  "data/hawaiian_lovesong.json",
+  "data/itsumonandodemo.json",
+  "data/sometimes_telling_old_story.json",
+  "data/appointment_of_world.json",
+  "data/hikoki_gumo.json",
+  "data/elcondorpasa_fingerstyle.json",
+  "data/elcondorpasa_melody.json",
+  "data/kiss_the_rain_new.json",
+  "data/kokuriko-ghibri.json",
+  "data/merry_go_round_in_Life.json",
+  "data/rain_and_you.json",
+  "data/umigamierumachi.json",
+  "data/SomewhereOvertheRainbow.json",
+  "data/me_toyou_you_tome.json",
+  "data/event_horizon-yunha.json"
 ];
 
 const START_XPOS = 0;     // ??
@@ -62,6 +63,8 @@ var initialSelect = 0;
 var song_data = null;
 var array_l = [];     // wav buffer
 var canvas_width, canvas_height;
+var selector;
+var audioContext = null;
 
 var scrollPosition_msec = 0;
 
@@ -109,7 +112,7 @@ var uke_json_parsing = (jsonText) => {
     dom_bpm.value = parseFloat(song_data.bpm);
     console.log("[][] BPM value set:" + dom_bpm.value + " (from:" + song_data.bpm + ")"  );
     let dom_offset = document.getElementById("offset");
-    dom_offset.value = parseInt(song_data.start_offset);
+    dom_offset.value = parseInt(song_data.start_offset, 10);
     waveformDraw.set_startOffset(dom_offset.value);
     let dom_beat = document.getElementById("signature");
     dom_beat.value = song_data.basic_beat;
@@ -223,7 +226,7 @@ function request_mp3(filename) {
 
 //// MP3 데이터를 디코딩 하여 array_l 버퍼에 저장.
 async function mp3Decode(mp3Buffer) {
-  const ac = new AudioContext();
+  const ac = audioContext || (audioContext = new AudioContext());
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
   let float32Array_l = audioBuf.getChannelData(0);
@@ -365,9 +368,9 @@ var halfWave = function () {
 var calc_note_size = () => {   // samplesPerPixel, zoomFactor 등을 계산
   let signature_divider = 8;   // 마디 당 quaver 수, default 는 4/4 박자, 8분음표
 
-  g_bpm = parseInt(document.getElementById("bpm").value);
+  g_bpm = parseInt(document.getElementById("bpm").value, 10);
   song_data.bpm = g_bpm;
-  g_offset = parseInt(document.getElementById("offset").value);
+  g_offset = parseInt(document.getElementById("offset").value, 10);
   song_data.start_offset = g_offset;
   let editSize = song_data.editsize = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;    // 8음표2개 or 16분음표4개
 
@@ -388,8 +391,8 @@ var calc_note_size = () => {   // samplesPerPixel, zoomFactor 등을 계산
       signature_divider = editSize;         // (8분음표는 8개, 16분 음표는 16개)
       break;
     default:
-      signature_divider = parseInt( editSize * _sign.split('/')[0] / _sign.split('/')[1] );
-      console.log("_sign="+_sign+ ", split[0]="+parseInt(_sign.split('/')[0])+ ", divider=" + signature_divider );
+      signature_divider = parseInt( editSize * _sign.split('/')[0] / _sign.split('/')[1], 10 );
+        console.log("_sign="+_sign+ ", split[0]="+parseInt(_sign.split('/')[0], 10)+ ", divider=" + signature_divider );
       break;
   }
 
@@ -426,7 +429,7 @@ var bpm_changed = () => {
 
 }
 var offset_changed = () => {
-  g_offset = parseInt(document.getElementById("offset").value);
+  g_offset = parseInt(document.getElementById("offset").value, 10);
   calc_note_size();
   waveformDraw.set_startOffset(g_offset);
   draw_editor(edit_area);
@@ -498,7 +501,7 @@ var edit_mouseDown = (e) => {
     // TODO: 편집 메뉴를 띄우거나 note 데이터(timestamp)를 이동시키거나 하는 등의 동작.
     let grid_width_msec = waveformDraw.get_msecPerGrid();
     let focus_in_msec = waveformDraw.get_msecPerPixel()*last_posX + scrollPosition_msec;
-    let grid_start_msec = parseInt(focus_in_msec / grid_width_msec) * grid_width_msec;    // 그리드 단위.
+    let grid_start_msec = parseInt(focus_in_msec / grid_width_msec, 10) * grid_width_msec;    // 그리드 단위.
     console.log("clicked_x=", last_posX, ", focus_in_msec=", focus_in_msec, ", start=", grid_start_msec);
     editing_note_index = findNoteIndex(grid_start_msec, grid_start_msec+grid_width_msec);
     console.log( "editing_note_index=", editing_note_index);
@@ -525,7 +528,7 @@ var edit_mouseMove = (e) => {
       if (e.altKey) {     // ALT 키가 눌려 있을 때에는, Grid 에 고정하지 않는다.
       } else {
         let gridSize = waveformDraw.get_msecPerGrid();
-        moving_msec = parseInt(moving_msec/gridSize)*gridSize;
+        moving_msec = parseInt(moving_msec/gridSize, 10)*gridSize;
       }
       if (e.shiftKey) {
         let moving_offset = moving_msec - song_data.notes[editing_note_index].timestamp;
@@ -572,14 +575,14 @@ var edit_mouseDblClick = (e) => {
   let cursor_y = e.clientY - rect.top;
 
   let grid_size = waveformDraw.get_msecPerGrid();
-  let note_seq = parseInt(waveformDraw.get_clickedTimeStamp(cursor_x) / grid_size);
+  let note_seq = parseInt(waveformDraw.get_clickedTimeStamp(cursor_x) / grid_size, 10);
   let start_msec = note_seq * grid_size;
   let edn_msec = start_msec + grid_size;
   console.log("grid: size=",grid_size," from ", start_msec, " to ", edn_msec, ", note_seq=", note_seq );
 }
 
 var edit_wheelScroll = (e) => {
-  scrollPosition_msec += parseInt(e.deltaY/2);
+  scrollPosition_msec += parseInt(e.deltaY/2, 10);
   if (scrollPosition_msec < 0)
     scrollPosition_msec = 0;
   waveformDraw.set_scrollPos(scrollPosition_msec);

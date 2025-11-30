@@ -146,6 +146,8 @@ var canvas_width = 0, canvas_height = 0;
 
 var song_data = null;   // 우쿨렐레 TAB 악보를 불러 올 JSON 객체. 
 var audioTag;           // song play & stop, etc..
+var selector;
+var audioContext = null;
 
 var scrollPosition = 0; // to drawing waveform start draw 단위는 msec.
 var focused_msec = 2300;;
@@ -214,11 +216,11 @@ window.onload = function main() {
     if (this.readyState == 4 && this.status == 200) {
       song_data = JSON.parse(this.responseText);
       let title = document.getElementById("song_title");
-      title.innerHTML = song_data.title;
+      title.textContent = song_data.title;
       let category = document.getElementById("song_category");
-      category.innerHTML = song_data.category;
+      category.textContent = song_data.category;
       let comments = document.getElementById("comments");
-      comments.innerHTML = song_data.comment;
+      comments.textContent = song_data.comment;
       let dom_bpm = document.getElementById("bpm");
       dom_bpm.value = parseFloat(song_data.bpm);
       console.log("[][] BPM value set:" + dom_bpm.value + " (from:" + song_data.bpm + ")"  );
@@ -241,7 +243,7 @@ window.onload = function main() {
       if (song_data.source.length > 0) {
         console.log("음원파일:" + song_data.source + "("+song_data.source.length+")"+", loaded="+array_l.length );
         request_mp3(song_data.source);
-        document.getElementById("loadMP3_file").innerHTML = song_data.source;
+        document.getElementById("loadMP3_file").textContent = song_data.source;
       } else {
         console.error("clear array_l. loaded="+array_l.length );
         array_l = [];
@@ -515,7 +517,7 @@ function request_mp3(filename) {
 
 //// MP3 데이터를 디코딩 하여 array_l 버퍼에 저장.
 async function mp3Decode(mp3Buffer) {
-  const ac = new AudioContext();
+  const ac = audioContext || (audioContext = new AudioContext());
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
   g_sampleRate = audioBuf.sampleRate;
@@ -727,7 +729,7 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {
 
   ctx.font = CANVAS_FONT_BASIC;
   let notes = song_data.notes;
-  for (j=0; j<notes.length; j++) {
+  for (let j=0; j<notes.length; j++) {
     let note_ts = notes[j].timestamp;
     let xpos = (((note_ts-g_offset)*g_sampleRate/1000)-scrollPosition) / g_numSmp_per_px; 
     if (xpos < 0) continue;
@@ -1211,7 +1213,7 @@ var new_data_from_edit_dlg = () => {
 
 var find_note_index = (from_ts, to_ts) => {
   let notes = song_data.notes;
-  for (i=0; i<notes.length; i++) {
+  for (let i=0; i<notes.length; i++) {
     if ( (notes[i].timestamp >= from_ts)&&(notes[i].timestamp < to_ts) ) {
       return i;
     }
@@ -1299,8 +1301,8 @@ var close_note_edit_dlg = () => {
 
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   let imgTag = document.getElementById("thumbnail");
-  imgTag.src = "http://ccash2.gonetis.com:88/uke_blog/data/"+ imgsrc;
-  document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
+  imgTag.src = "data/"+ imgsrc;
+  document.getElementById("loadThumbnail_file").textContent = imgsrc;
 }
 
 var set_copy_head = () => {
@@ -1355,7 +1357,7 @@ var upload = () => {
 var download = () => {
   //song_data에서, 실제 데이터가 없는 note 들을 제거해 주어야 함.
   let i;
-  for (i=0; i<song_data.notes.length; i++) {
+  for (let i=0; i<song_data.notes.length; i++) {
     let _note = song_data.notes[i];
     if (_note.tab.length > 0) {     // 뭔가 데이터가 있음.
       continue;
@@ -1379,7 +1381,7 @@ var download = () => {
     song_data.notes[i].timestamp = -1;    // 일단 TS 를 -1 로 설정 함. - 배열을 loop 도는 중에 빼 버리면 error 발생 가능성이 있으므로 나중에 몰아서 처리하기 위함. 
   }
   let _notes = new Array;
-  for (i=0; i<song_data.notes.length; i++) {
+  for (let i=0; i<song_data.notes.length; i++) {
     let _note = song_data.notes[i];
     if (_note.timestamp > 0) {
       _notes.push(_note);

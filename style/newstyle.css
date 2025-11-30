@@ -32,7 +32,7 @@ header {
 
 .info {
   margin: 7px;
-  padding: 5px, 30px;
+  padding: 5px 30px;
   background-color: #EED;
   border-radius: 10px;
 }
@@ -41,7 +41,7 @@ header {
 }
 .beat_setting {
   margin: 7px;
-  padding: 5px, 30px;
+  padding: 5px 30px;
   background-color: #EED;
   border-radius: 10px;
 }

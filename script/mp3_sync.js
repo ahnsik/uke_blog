@@ -19,20 +19,20 @@ var song_list = [
   "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)"
 ];
 var file_list = [
-  "http://ccash2.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/appointment_of_world.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/rain_and_you.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/umigamierumachi.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json"
+  "data/hawaiian_lovesong.json",
+  "data/itsumonandodemo.json",
+  "data/sometimes_telling_old_story.json",
+  "data/appointment_of_world.json",
+  "data/hikoki_gumo.json",
+  "data/elcondorpasa_fingerstyle.json",
+  "data/elcondorpasa_melody.json",
+  "data/kiss_the_rain_new.json",
+  "data/kokuriko-ghibri.json",
+  "data/merry_go_round_in_Life.json",
+  "data/rain_and_you.json",
+  "data/umigamierumachi.json",
+  "data/SomewhereOvertheRainbow.json",
+  "data/me_toyou_you_tome.json",
 ];
 
 var CHORD_ICON_Y = 48;
@@ -74,7 +74,8 @@ window.onload = function main() {
 
 
   ////  악보 데이터를 고를 수 있도록 selector 준비.
-  selector = document.getElementById("song_list");
+    var audioContext = null;
+    selector = document.getElementById("song_list");
   if (initialNumber >= song_list.length)    // index overflow 방지.
     initialNumber = 0;
   for (var i=0; i<song_list.length; i++) {
@@ -100,8 +101,8 @@ window.onload = function main() {
       // console.log("--> parsing Song file:" + JSON.stringify(song_data)  );
       let title = document.getElementById("song_title");
       let category = document.getElementById("song_category");
-      title.innerHTML = song_data.title;
-      category.innerHTML = song_data.category;
+      title.textContent = song_data.title;
+      category.textContent = song_data.category;
 
       ////  Drawing Tabulature
       resize_canvas( window.innerWidth-30);
@@ -232,7 +233,7 @@ var draw_a_note = function(ctx, data, xpos) {
   if (data.chord) {         // 코드를 표시
     var chord_index = chord_name_table.indexOf(data.chord);
     // console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
-    ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
+    ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14, 10)*54, 49,53,  xpos, 10,  49, 53);
   }
   // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
   if (data.stroke) {         // 스트로크를 표시
@@ -397,7 +398,7 @@ function draw_tabulature() {
 
   async function mp3Decode(arrayBuffer) {
     console.log("(MP3)arrayBuffer length:"+arrayBuffer.length);
-    const ac = new AudioContext();
+      const ac = audioContext || (audioContext = new AudioContext());
     const audioBuf =  await ac.decodeAudioData(arrayBuffer);
     console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
     var float32Array_l = audioBuf.getChannelData(0);

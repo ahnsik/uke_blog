@@ -34,8 +34,8 @@ var draw_mp3Wav = (wavBuffer) => {
     let _bunja = _bakja.split('/')[0];
     let _bunmo = _bakja.split('/')[1];
     let _quaver_mode = (document.getElementById("quaver_mode").selectedIndex == 0)?8:16;
-    g_NumQuaver_per_word = parseInt( _quaver_mode*_bunja / _bunmo);        // 1 마디 당, 8분음표의 갯수, if 16비트 편집이면, 8* 를 16* 로 바꿔야 하는데..
-    g_quaver_size = parseInt( ((_quaver_mode==8)?500:250)*60/g_bpm);
+    g_NumQuaver_per_word = parseInt( _quaver_mode*_bunja / _bunmo, 10);        // 1 마디 당, 8분음표의 갯수, if 16비트 편집이면, 8* 를 16* 로 바꿔야 하는데..
+    g_quaver_size = parseInt( ((_quaver_mode==8)?500:250)*60/g_bpm, 10);
 
     let scrollPosDisplay = document.getElementById("scrollPos");
     scrollPosDisplay.innerText = "index="+scrollPosition+", msec="+(scrollPosition/g_sampleRate);
@@ -81,7 +81,7 @@ var msec_ruller = (ctx, x,y, w,h, wavBuffer ) => {
             ctx.fillStyle = QUAVER_GRID_COLOR;      // "blue";
         } else if ( (msec>g_selection_start)&&(msec<g_selection_end) ) {
             ctx.fillStyle = "yellow";          // area selected.
-        } else if ( parseInt(msec/g_quaver_size) % g_NumQuaver_per_word == 0 ) {
+        } else if ( parseInt(msec/g_quaver_size, 10) % g_NumQuaver_per_word == 0 ) {
             ctx.fillStyle = QUAVER_BG_COLOR;      // "cyan";
         } else {
             ctx.fillStyle = "lightgray";
@@ -96,7 +96,7 @@ var msec_ruller = (ctx, x,y, w,h, wavBuffer ) => {
         let numSamples_for_pixel = g_sampleRate*g_pixel_size / 1000;
         let area_start = i +scrollPosMsec ;      // g_numSmp_per_px
         // let area_end = (i+1)*numSamples_for_pixel; 
-        for (j=0; j<numSamples_for_pixel; j++) {
+        for (let j=0; j<numSamples_for_pixel; j++) {
             value = wavBuffer[ area_start +j ];
             if ( value >= max)
               max = value;      //parseInt(value);
@@ -114,10 +114,10 @@ var msec_ruller = (ctx, x,y, w,h, wavBuffer ) => {
 }
 
 var make_msec_string = (millisec) => {
-    let sec = parseInt(millisec)/1000;
-    let m = parseInt(sec/60);
-    sec = parseInt(sec%60);
-    let milli = parseInt((millisec % 1000)/100);
+    let sec = parseInt(millisec, 10)/1000;
+    let m = parseInt(sec/60, 10);
+    sec = parseInt(sec%60, 10);
+    let milli = parseInt((millisec % 1000)/100, 10);
     // console.log("millisec ="+millisec+", min="+m+", sec="+sec+", milli="+milli );
     let timeString = m+":"+sec.toString().padStart(2,'0')+"."+milli.toString().padStart(3,'0');      // "0:00.000"
     return timeString;
@@ -165,7 +165,7 @@ var waveform_mouseDown = (e) => {
     last_posX = e.clientX - rect.left;
     last_posY = e.clientY - rect.top;
 
-    last_timeStamp = parseInt(document.getElementById("timeStamp_input").value);
+    last_timeStamp = parseInt(document.getElementById("timeStamp_input").value, 10);
     waveScroll_x = 0;
     prev_waveposition = scrollPosition;
 
@@ -194,7 +194,7 @@ var waveform_mouseUp = (e) => {
     const rect = canvas.getBoundingClientRect();
     let cursor_x = e.clientX - rect.left;
     let temp_idx = (cursor_x-START_XPOS)*g_numSmp_per_px+scrollPosition;
-    let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset);
+    let clicked_ts = parseInt(temp_idx*1000/g_sampleRate+g_offset, 10);
 
     scrollPosition = prev_waveposition-waveScroll_x;
     moving_note_idx = -1;

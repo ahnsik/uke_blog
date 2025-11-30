@@ -48,8 +48,10 @@ var note_icon;          // 운지 위치 (flet)을 표시하는 숫자들 - 비�
 
 
 var canvas_width = 0, canvas_height = 0;
+var selector;
 var note_drew = 0;
 var last_timestamp = 0;
+var audioContext = null;
 
 var note_space = 36;    // - 8분음표 기준 or 16분음표 기준, or etc..
 
@@ -106,9 +108,9 @@ window.onload = function main() {
       let comments = document.getElementById("comments");
       let dom_bpm = document.getElementById("bpm");
       let dom_offset = document.getElementById("offset");
-      title.innerHTML = song_data.title;
-      category.innerHTML = song_data.category;
-      comments.innerHTML = song_data.comment;
+      title.textContent = song_data.title;
+      category.textContent = song_data.category;
+      comments.textContent = song_data.comment;
       dom_bpm.value = song_data.bpm;
       dom_offset.value = song_data.start_offset;
       let thumbnail = document.getElementById("thumbnail");
@@ -256,7 +258,7 @@ var draw_a_note = function(ctx, data, xpos) {
   if (data.chord) {         // 코드를 표시
     var chord_index = chord_name_table.indexOf(data.chord);
     // console.log("chord: ["+data.chord+"] ==> index: " + chord_index );
-    ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14)*54, 49,53,  xpos, 10,  49, 53);
+      ctx.drawImage(total_chord_table, (chord_index%14)*50, parseInt(chord_index/14, 10)*54, 49,53,  xpos, 10,  49, 53);
   }
   // 스트로크 방향 및 Hammering-On, Pulling-Off, Slide 등을 표시 
   if (data.stroke) {         // 스트로크를 표시
@@ -432,7 +434,7 @@ function draw_tabulature() {
 
   async function mp3Decode(arrayBuffer) {
     console.log("(MP3)arrayBuffer length:"+arrayBuffer.length);
-    const ac = new AudioContext();
+    const ac = audioContext || (audioContext = new AudioContext());
     const audioBuf =  await ac.decodeAudioData(arrayBuffer);
     console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
     g_sampleRate = audioBuf.sampleRate;
@@ -504,7 +506,7 @@ function mp3Draw(arrayBuffer, ctx) {
   var offset = document.getElementById("offset");
   var min, max, value;
 
-  var numSmp_for_sec = parseInt(arrayBuffer.length / g_totalSec);
+  var numSmp_for_sec = parseInt(arrayBuffer.length / g_totalSec, 10);
   console.log("numSmp_for_sec="+numSmp_for_sec+", because array.length="+arrayBuffer.length+", g_totalSec="+ g_totalSec );
 
   // ctx.strokeStyle = "black";
@@ -520,10 +522,10 @@ function mp3Draw(arrayBuffer, ctx) {
     }
 
     // console.log("numSmp_pixel="+numSmp_pixel+", index="+(i*numSmp_pixel) + ", numSmp_for_sec="+ numSmp_for_sec + ", ...So result:" + ( parseInt((i*numSmp_pixel) / numSmp_for_sec ) % 2) );
-    if ( (i*numSmp_pixel+j +wavePosition) < (audioTag.currentTime*numSmp_for_sec) ) {
+        console.log("numSmp_pixel="+numSmp_pixel+", index="+(i*numSmp_pixel) + ", numSmp_for_sec=" + numSmp_for_sec + ", ...So result:" + ( parseInt((i*numSmp_pixel) / numSmp_for_sec, 10 ) % 2) );
       ctx.strokeStyle = "darkgray";
     } else {
-      if ( ( parseInt((i*numSmp_pixel+j +wavePosition) / numSmp_for_sec ) % 2) == 0 ) {   // /4 는, Stereo, 16 bit sample
+      if ( ( parseInt((i*numSmp_pixel+j +wavePosition) / numSmp_for_sec, 10 ) % 2) == 0 ) {   // /4 는, Stereo, 16 bit sample
         ctx.strokeStyle = "blue";
         // ctx.fillStyle = "orange";
       } else {
@@ -567,7 +569,7 @@ function mp3Draw(arrayBuffer) {
   var offset = document.getElementById("offset").value;
   var min, max, value;
 
-  var numSmp_for_sec = parseInt(arrayBuffer.length / g_totalSec);
+  var numSmp_for_sec = parseInt(arrayBuffer.length / g_totalSec, 10);
   console.log("numSmp_for_sec="+numSmp_for_sec+", because array.length="+arrayBuffer.length+", g_totalSec="+ g_totalSec );
 
   // ctx.strokeStyle = "black";
@@ -586,7 +588,7 @@ function mp3Draw(arrayBuffer) {
     if ( (i*numSmp_pixel+j +wavePosition) < (audioTag.currentTime*numSmp_for_sec) ) {
       ctx.strokeStyle = "darkgray";
     } else {
-      if ( ( parseInt((i*numSmp_pixel+j +wavePosition) / numSmp_for_sec ) % 2) == 0 ) {   // /4 는, Stereo, 16 bit sample
+      if ( ( parseInt((i*numSmp_pixel+j +wavePosition) / numSmp_for_sec, 10 ) % 2) == 0 ) {   // /4 는, Stereo, 16 bit sample
         ctx.strokeStyle = "blue";
         // ctx.fillStyle = "orange";
       } else {

@@ -30,31 +30,31 @@ const song_list = [
   "오르트 구름 - 윤하"
 ];
 const file_list = [
-  "http://ccash2.gonetis.com:88/uke_blog/data/60BPM_Drum_Beat_3min_48000Hz.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/61bpm_metronome_drum_8000hz_8bitMono.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/63 bpm metronome drum.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/63-BPM-Funk-Drum-Loop-YouTube.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
-  "http://ccash2.gonetis.com:88/uke_blog/data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json",
+  "data/60BPM_Drum_Beat_3min_48000Hz.json", 
+  "data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json", 
+  "data/61bpm_metronome_drum_8000hz_8bitMono.json", 
+  "data/62bpm_Simple_Rock_Drum_Groove_8000hz_8bitMono.json", 
+  "data/63 bpm metronome drum.json", 
+  "data/63-BPM-Funk-Drum-Loop-YouTube.json", 
+  "data/80BPM_Drum_Beat_3min_stereo16000hz.json", 
+  "data/90Bpm_3-4Beat_Drum_8bit_mono_8000hz.json",
 
-  "http://ccash2.gonetis.com:88/uke_blog/data/hawaiian_lovesong.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/itsumonandodemo.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/sometimes_telling_old_story.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/appointment_of_world.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/hikoki_gumo.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_fingerstyle.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/elcondorpasa_melody.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/kiss_the_rain_new.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/kokuriko-ghibri.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/merry_go_round_in_Life.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/rain_and_you.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/umigamierumachi.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/SomewhereOvertheRainbow.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/me_toyou_you_tome.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/event_horizon-yunha.json",
-  "http://ccash2.gonetis.com:88/uke_blog/data/oort_cloud-yunha.json"
+  "data/hawaiian_lovesong.json",
+  "data/itsumonandodemo.json",
+  "data/sometimes_telling_old_story.json",
+  "data/appointment_of_world.json",
+  "data/hikoki_gumo.json",
+  "data/elcondorpasa_fingerstyle.json",
+  "data/elcondorpasa_melody.json",
+  "data/kiss_the_rain_new.json",
+  "data/kokuriko-ghibri.json",
+  "data/merry_go_round_in_Life.json",
+  "data/rain_and_you.json",
+  "data/umigamierumachi.json",
+  "data/SomewhereOvertheRainbow.json",
+  "data/me_toyou_you_tome.json",
+  "data/event_horizon-yunha.json",
+  "data/oort_cloud-yunha.json"
 ];
 
 const strum_patrn_img_list = [
@@ -119,16 +119,16 @@ window.onload = function main() {
     if (this.readyState == 4 && this.status == 200) {
       song_data = JSON.parse(this.responseText);
       let title = document.getElementById("song_title");
-      title.innerHTML = song_data.title;
+      title.textContent = song_data.title;
       let category = document.getElementById("song_category");
-      category.innerHTML = song_data.category;
+      category.textContent = song_data.category;
       let comments = document.getElementById("comments");
-      comments.innerHTML = song_data.comment;
+      comments.textContent = song_data.comment;
       let dom_bpm = document.getElementById("bpm");
       dom_bpm.value = parseFloat(song_data.bpm);
       console.log("[][] BPM value set:" + dom_bpm.value + " (from:" + song_data.bpm + ")"  );
       let dom_offset = document.getElementById("offset");
-      dom_offset.value = parseInt(song_data.start_offset);
+      dom_offset.value = parseInt(song_data.start_offset, 10);
       let dom_beat = document.getElementById("signature");
       dom_beat.value = song_data.basic_beat;
       console.log("[][] 박자:" + song_data.basic_beat );
@@ -146,7 +146,7 @@ window.onload = function main() {
       if (song_data.source.length > 0) {
         console.log("음원파일:" + song_data.source + "("+song_data.source.length+")"+", loaded="+array_l.length );
         request_mp3(song_data.source);
-        document.getElementById("loadMP3_file").innerHTML = song_data.source;
+        document.getElementById("loadMP3_file").textContent = song_data.source;
       } else {
         console.error("clear array_l. loaded="+array_l.length );
         array_l = [];
@@ -309,14 +309,14 @@ function request_mp3(filename) {
 
 //// MP3 데이터를 디코딩 하여 array_l 버퍼에 저장.
 async function mp3Decode(mp3Buffer) {
-  const ac = new AudioContext();
+  const ac = audioContext || (audioContext = new AudioContext());
   const audioBuf =  await ac.decodeAudioData(mp3Buffer);
   console.log("[][] ac.decodeAudioData:"+audioBuf.length+" bytes, channels="+audioBuf.numberOfChannels+", sampleRate="+audioBuf.sampleRate );    // refer AudioBuffer: https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer
   g_sampleRate = audioBuf.sampleRate;
   g_totalMsec = audioBuf.duration;
   let float32Array_l = audioBuf.getChannelData(0);
   let i=0;
-  let wavefrom_size = parseInt( (H_WAVEFORM-1)/2 );
+  let wavefrom_size = parseInt( (H_WAVEFORM-1)/2, 10 );
   const length = float32Array_l.length;
   array_l = [];
   while(i<length) {
@@ -358,6 +358,9 @@ var draw_editor = () => {
   ctx.fillText("stroke:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_STROKE/2, 120);
   ctx.fillText("technic:", 20, H_OFFSET_SLIDER+H_RULER+H_WAVEFORM+H_LYRIC+H_CHORD+H_NOTES+H_STROKE+H_TECHNIC/2, 120);
 }
+
+// Shared audio context to avoid multiple creations
+var audioContext = null;
 
 var draw_offset_slider = (ctx, ypos) => {
   let color_backup = ctx.fillStyle;
@@ -536,7 +539,7 @@ var waveformDraw = (ctx, ypos, wavBuffer) => {      // samplingdata 의 index값
 
   ctx.font = CANVAS_FONT_BASIC;
   let notes = song_data.notes;
-  for (j=0; j<notes.length; j++) {
+  for (let j=0; j<notes.length; j++) {
     let note_ts = notes[j].timestamp;
     let xpos = (((note_ts-g_offset)*g_sampleRate/1000)-scrollPosition) / g_numSmp_per_px; 
     if (xpos < 0) continue;
@@ -1020,7 +1023,7 @@ var new_data_from_edit_dlg = () => {
 
 var find_note_index = (from_ts, to_ts) => {
   let notes = song_data.notes;
-  for (i=0; i<notes.length; i++) {
+  for (let i=0; i<notes.length; i++) {
     if ( (notes[i].timestamp >= from_ts)&&(notes[i].timestamp < to_ts) ) {
       return i;
     }
@@ -1089,7 +1092,7 @@ var close_note_edit_dlg = () => {
 var changeThumnail = (imgsrc) => {    /* when ThumbNail file upload succed. */
   let imgTag = document.getElementById("thumbnail");
   imgTag.src = "http://ccash2.gonetis.com:88/uke_blog/data/"+ imgsrc;
-  document.getElementById("loadThumbnail_file").innerHTML = imgsrc;
+  document.getElementById("loadThumbnail_file").textContent = imgsrc;
 }
 
 var set_copy_head = () => {
@@ -1144,7 +1147,7 @@ var upload = () => {
 var download = () => {
   //song_data에서, 실제 데이터가 없는 note 들을 제거해 주어야 함.
   let i;
-  for (i=0; i<song_data.notes.length; i++) {
+  for (let i=0; i<song_data.notes.length; i++) {
     let _note = song_data.notes[i];
     if (_note.tab.length > 0) {     // 뭔가 데이터가 있음.
       continue;
@@ -1168,7 +1171,7 @@ var download = () => {
     song_data.notes[i].timestamp = -1;    // 일단 TS 를 -1 로 설정 함. - 배열을 loop 도는 중에 빼 버리면 error 발생 가능성이 있으므로 나중에 몰아서 처리하기 위함. 
   }
   let _notes = new Array;
-  for (i=0; i<song_data.notes.length; i++) {
+  for (let i=0; i<song_data.notes.length; i++) {
     let _note = song_data.notes[i];
     if (_note.timestamp > 0) {
       _notes.push(_note);
