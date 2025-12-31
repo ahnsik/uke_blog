@@ -6,6 +6,30 @@
 const AUTOSCROLL_LEFT_LIMIT = 2000;
 // const AUTOSCROLL_RIGHT_LIMIT = 1000;
 
+// //// 곡을 선택하기 위한 곡명 리스트 - 파일명 리스트 
+// const songListObjects = [
+//   { title: "오르트 구름 - 윤하",                    file:   "data/oort_cloud-yunha.json" },
+//   { title: "60 BPM 4/4박자 드럼비트 (48000Hz)",     file:   "data/60BPM_Drum_Beat_test.json" },
+//   { title: "60 BPM 3/4박자 모노 드럼비트 (8000Hz)",  file:   "data/60Bpm_3-4Beat_Drum_8bit_mono_8000hz.json"  },
+//   { title: "63 BPM 4/4박자 드럼비트 (48000Hz)",     file:   "data/63BPM_Drum_Beat_test.json" },
+//   { title: "하와이 연정 - 패티킴",                   file:   "data/hawaiian_lovesong.json" },
+//   { title: "언제나 몇번이나 - 센과 치히로의 행방불명 OST",file:   "data/itsumonandodemo.json" },
+//   { title: "때로는 옛 이야기를 - 붉은 돼지 OST",       file:   "data/yunha.json" },
+//   { title: "세계의 약속 - 하울의 움직이는 성 OST",     file:   "data/oortcloud-yunha.json" },
+//   { title: "비행기 구름 - 바람이 분다 OST",          file:   "data/hikoki_gumo.json" },
+//   { title: "El Condor Pasa - 핑거스타일",         file:   "data/elcondorpasa_fingerstyle.json"},
+//   { title: "El Condor Pasa - 멜로디",            file:   "data/elcondorpasa_melody.json"},
+//   { title: "Kiss the Rain - 이루마",             file:   "data/kiss_the_rain_new.json"},
+//   { title: "코쿠리코 언덕에서 - 지브리OST",           file:   "data/kokuriko-ghibri.json" },
+//   { title: "인생의 회전목마 - 하울의 움직이는 성 OST",  file:   "data/merry_go_round_in_Life.json" },
+//   { title: "비와 당신",                           file:   "data/rain_and_you.json"   },
+//   { title: "바다가 보이는 마을 - 마녀의 택급편",       file:   "data/umigamierumachi.json" },
+//   { title: "Somewhere over the rainbow - IZ",  file:   "data/SomewhereOvertheRainbow.json" },
+//   { title: "너에게 난 나에게 넌 - 자탄풍(자전거 탄 풍경)",file:   "data/me_toyou_you_tome.json", },
+//   { title: "사건의 지평선 - 윤하",                file: "data/event_horizon-yunha.json" }
+// ];
+
+
 const song_list = [
   "오르트 구름 - 윤하",
   "60 BPM 4/4박자 드럼비트 (48000Hz)",
@@ -133,6 +157,7 @@ var uke_json_parsing = (jsonText) => {
       array_l = [];
     }
     calc_note_size();
+    buildGridNoteArray();     // Grid 기반 배열 생성
     change_speed(1.0);
 }
 
@@ -194,6 +219,10 @@ var note_idx_editing = -1;    // Dialog 에서 편집중인 음표의 index.
 var copy_head_idx = -1;
 var copy_tail_idx = -1;
 
+///// Grid 기반 note 배열 - 빠른 접근과 편집을 위한 자료구조
+var gridNoteArray = [];       // grid index를 key로 하는 note 배열
+var totalGridCount = 0;       // 전체 grid 개수
+
 //// MP3 데이터를 로딩 하여 디코딩 요청.
 function request_mp3(filename) {
   stop_song();
@@ -234,6 +263,7 @@ async function mp3Decode(mp3Buffer) {
 
   waveformDraw.set_audioBuffer(array_l, audioBuf.sampleRate);
   waveformDraw.set_scrollPos(0);
+  buildGridNoteArray();     // Grid 기반 배열 재생성
   draw_editor(edit_area);
 }
 
@@ -405,6 +435,8 @@ var calc_note_size = () => {   // samplesPerPixel, zoomFactor 등을 계산
     waveformDraw.set_quaverSize(30000/g_bpm);   // quaver 는 8분 음표 길이
     waveformDraw.set_wordSize(signature_divider);
   }
+  
+  buildGridNoteArray();     // Grid 크기 변경 시 배열 재생성
 }
 
 var quaver_changed = () => {
@@ -418,7 +450,7 @@ var quaver_changed = () => {
   }
   console.log("편집단위:" + edit_size + "분음표로 편집");
   song_data.editsize = edit_size;
-  calc_note_size();
+  calc_note_size();     // 내부에서 buildGridNoteArray() 호출
   draw_editor(edit_area);
 }
 var bpm_changed = () => {
@@ -593,12 +625,105 @@ var edit_wheelScroll = (e) => {
 ///////////////////////////////////////////////////////////////
 //// 그 외, 잡다한 서브 함수들.
 ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+//// Grid 기반 Note 배열 관리 함수들
+///////////////////////////////////////////////////////////////
+
+/**
+ * Grid 기반 note 배열을 생성합니다.
+ * 전체 waveform 시간을 grid 크기로 나누어 배열을 만들고,
+ * 각 grid 위치에 해당하는 note들을 매핑합니다.
+ */
+var buildGridNoteArray = () => {
+  if (!song_data || !song_data.notes) {
+    gridNoteArray = [];
+    totalGridCount = 0;
+    return;
+  }
+
+  let gridSize_msec = waveformDraw.get_msecPerGrid();
+  if (!gridSize_msec || gridSize_msec <= 0) {
+    console.warn("Invalid grid size:", gridSize_msec);
+    return;
+  }
+
+  // 전체 시간 계산 (array_l 버퍼와 samplerate 기반)
+  let totalTime_msec = 0;
+  if (array_l.length > 0 && waveformDraw.samplerate > 0) {
+    totalTime_msec = (array_l.length / waveformDraw.samplerate) * 1000;
+  } else if (song_data.notes.length > 0) {
+    // 버퍼가 없으면 마지막 note의 timestamp 기준으로 계산
+    let lastNote = song_data.notes[song_data.notes.length - 1];
+    totalTime_msec = lastNote.timestamp + gridSize_msec * 10; // 여유분 추가
+  } else {
+    totalTime_msec = 300000; // 기본 5분
+  }
+
+  // Grid 배열 초기화
+  totalGridCount = Math.ceil(totalTime_msec / gridSize_msec);
+  gridNoteArray = new Array(totalGridCount);
+  for (let i = 0; i < totalGridCount; i++) {
+    gridNoteArray[i] = [];
+  }
+
+  // 각 note를 해당 grid에 매핑
+  song_data.notes.forEach((note, idx) => {
+    let gridIndex = Math.floor(note.timestamp / gridSize_msec);
+    if (gridIndex >= 0 && gridIndex < totalGridCount) {
+      gridNoteArray[gridIndex].push({
+        noteIndex: idx,
+        note: note
+      });
+    }
+  });
+
+  console.log(`Grid Note Array built: ${totalGridCount} grids, grid_size=${gridSize_msec}ms, total_time=${totalTime_msec}ms`);
+}
+
+/**
+ * Grid 인덱스로 note를 찾습니다.
+ * @param {number} gridIndex - Grid 인덱스
+ * @returns {Array} 해당 grid의 note 배열
+ */
+var getNotesAtGrid = (gridIndex) => {
+  if (gridIndex < 0 || gridIndex >= totalGridCount) {
+    return [];
+  }
+  return gridNoteArray[gridIndex] || [];
+}
+
+/**
+ * timestamp 범위로 note의 원본 인덱스를 찾습니다. (Grid 기반 최적화)
+ * @param {number} start - 시작 timestamp (msec)
+ * @param {number} end - 끝 timestamp (msec)
+ * @returns {number} note 인덱스 (없으면 -1)
+ */
 var findNoteIndex = (start, end) => {
-  let notes = song_data.notes;
-  for (var i=0; i<notes.length; i++) {
-    if ( (notes[i].timestamp >= start) && (notes[i].timestamp < end) ) {
-      console.log("start=", start, ", end=", end, ",   found_msec=", notes[i].timestamp );
-      return i;
+  let gridSize_msec = waveformDraw.get_msecPerGrid();
+  if (!gridSize_msec || gridSize_msec <= 0) {
+    // Grid가 없으면 기존 방식으로 검색
+    let notes = song_data.notes;
+    for (var i=0; i<notes.length; i++) {
+      if ( (notes[i].timestamp >= start) && (notes[i].timestamp < end) ) {
+        console.log("start=", start, ", end=", end, ",   found_msec=", notes[i].timestamp );
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // Grid 기반 빠른 검색
+  let startGrid = Math.floor(start / gridSize_msec);
+  let endGrid = Math.floor(end / gridSize_msec);
+  
+  // 해당 범위의 grid들을 확인
+  for (let gridIdx = startGrid; gridIdx <= endGrid && gridIdx < totalGridCount; gridIdx++) {
+    let notesInGrid = gridNoteArray[gridIdx] || [];
+    for (let item of notesInGrid) {
+      if (item.note.timestamp >= start && item.note.timestamp < end) {
+        console.log("Grid-based search: start=", start, ", end=", end, ", found_msec=", item.note.timestamp, ", grid=", gridIdx);
+        return item.noteIndex;
+      }
     }
   }
   return -1;
